@@ -1,0 +1,37 @@
+﻿@inject AuthenticationService _authService
+
+@if (_authService.SessionState == SessionStates.Undefined)
+{
+    @UndefinedSessionContent
+}
+
+@if (_authService.SessionState == SessionStates.Active)
+{
+    @ActiveSessionContent
+}
+
+@if (_authService.SessionState == SessionStates.Inactive)
+{
+    @InactiveSessionContent
+}
+
+@if (_authService.SessionState == SessionStates.Inactive || _authService.SessionState == SessionStates.Active)
+{
+    @ActiveInactiveSessionContent
+}
+
+@functions{
+
+    [Parameter]
+    private RenderFragment UndefinedSessionContent { get; set; }
+
+    [Parameter]
+    private RenderFragment ActiveSessionContent { get; set; }
+
+    [Parameter]
+    private RenderFragment InactiveSessionContent { get; set; }
+
+    [Parameter]
+    private RenderFragment ActiveInactiveSessionContent { get; set; }
+
+}
