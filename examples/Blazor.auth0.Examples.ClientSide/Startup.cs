@@ -23,8 +23,8 @@ namespace Blazor.auth0.Examples.ClientSide
             // REQUIRED: Indicate the Auth0's tenant & client information
             authenticationService.Auth0Settings = new Auth0.Models.Auth0Settings()
             {
-                Domain = "[AUTH0_DOMAIN]",
-                ClientId = "[AUTH0_CLIENT_ID]",
+                Domain = "blazor-demo.auth0.com",
+                ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
                 // OPTIONAL:  Uncomment following line to redirect always to "/" after user authentication, otherwise RedirectUri will be the current path:
                 RedirectUri = new Uri(uriHelper.GetAbsoluteUri()).GetLeftPart(System.UriPartial.Authority),
                 Scope = "openid profile email"

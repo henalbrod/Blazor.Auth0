@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject Auth0.Authentication.AuthenticationService _authService
 
 <WebAuthComponent>
 
@@ -16,11 +17,15 @@
 
         <div class="main">
             <div class="top-row px-4">
-
-                <UserInfo/>
-                
+                @if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
+                {
+                    <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
+                }
+                else
+                {
+                    <a href="" class="ml-md-auto" onclick="@_authService.LogIn">LogIn</a>
+                }
             </div>
-
             <div class="content px-4">
                 @Body
             </div>
