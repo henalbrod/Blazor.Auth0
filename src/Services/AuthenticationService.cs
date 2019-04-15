@@ -18,7 +18,7 @@ namespace Blazor.Auth0.Authentication
 
         public Dictionary<string, object> UserInfo { get; set; }
         public SessionStates SessionState { get; set; }
-        public Auth0Settings Settings { get; set; }
+        public Auth0Settings Auth0Settings { get; set; }
         /// <summary>
         /// Forces the user to be authenticated, redirecting it to the login page automatically in case no active session is present
         /// </summary>     
@@ -32,9 +32,8 @@ namespace Blazor.Auth0.Authentication
         private string _redirectUri { get; set; }
         private TokenInfoDto _tokenInfo { get; set; }
 
-#pragma warning disable CS0122 // 'GetAccessTokenResult' is inaccessible due to its protection level
+
         public AuthenticationService(HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper)
-#pragma warning restore CS0122 // 'GetAccessTokenResult' is inaccessible due to its protection level
         {
             _httpClient = httpClient;
             _jsInProcessRuntime = (jsRuntime as IJSInProcessRuntime);
@@ -43,6 +42,7 @@ namespace Blazor.Auth0.Authentication
 
         public string GetAuthorizeUrl()
         {
+
 
             var abosulteUri = new Uri(_uriHelper.GetAbsoluteUri());
 
@@ -55,17 +55,17 @@ namespace Blazor.Auth0.Authentication
                 _state = Convert.ToBase64String(tokenData);
             }
 
-            _redirectUri = !string.IsNullOrEmpty(Settings.RedirectUri) ? Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Path);
+            _redirectUri = !string.IsNullOrEmpty(Auth0Settings.RedirectUri) ? Auth0Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Path);
 
-            var url = $"https://{Settings.Domain}/authorize?" +
+            var url = $"https://{Auth0Settings.Domain}/authorize?" +
                       "&response_type=code" +
                       "&code_challenge_method=S256" +
                       $"code_challenge={_codeChallenge}" +
                       $"&state={_state}" +
-                      $"&client_id={Settings.ClientId}" +
-                      $"&scope={Settings.Scope.Replace(" ", "%20")}" +
-                      (!string.IsNullOrEmpty(Settings.Connection) ? "&connection=" + Settings.Connection : "") +
-                      (!string.IsNullOrEmpty(Settings.Audience) ? "&audience=" + Settings.Audience : "") +
+                      $"&client_id={Auth0Settings.ClientId}" +
+                      $"&scope={Auth0Settings.Scope.Replace(" ", "%20")}" +
+                      (!string.IsNullOrEmpty(Auth0Settings.Connection) ? "&connection=" + Auth0Settings.Connection : "") +
+                      (!string.IsNullOrEmpty(Auth0Settings.Audience) ? "&audience=" + Auth0Settings.Audience : "") +
                       $"&redirect_uri={_redirectUri}";
 
             return url;
@@ -79,12 +79,13 @@ namespace Blazor.Auth0.Authentication
         {
             var abosulteUri = new Uri(_uriHelper.GetAbsoluteUri());
             SetIsLoggedIn(false);
-            _uriHelper.NavigateTo($"https://{Settings.Domain}/v2/logout?" +
-                                  $"client_id={Settings.ClientId}" +
-                                  $"&returnTo={(!string.IsNullOrEmpty(Settings.RedirectUri) ? Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Authority))}");
+            _uriHelper.NavigateTo($"https://{Auth0Settings.Domain}/v2/logout?" +
+                                  $"client_id={Auth0Settings.ClientId}" +
+                                  $"&returnTo={(!string.IsNullOrEmpty(Auth0Settings.RedirectUri) ? Auth0Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Authority))}");
         }
         public void ValidateSession()
         {
+
             var abosulteUri = new Uri(_uriHelper.GetAbsoluteUri());
             var isLoggedIn = _jsInProcessRuntime.Invoke<bool>("isLoggedIn", null);
             if (!isLoggedIn && !abosulteUri.Query.Contains("code"))
@@ -102,13 +103,14 @@ namespace Blazor.Auth0.Authentication
             {
                 _jsInProcessRuntime.Invoke<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{GetAuthorizeUrl()}&response_mode=web_message&prompt=none");
             }
+
         }
         public async Task<Dictionary<string, object>> GetUserInfo(string accessToken)
         {
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            HttpResponseMessage response = await _httpClient.GetAsync($@"https://{Settings.Domain}/userinfo");
+            HttpResponseMessage response = await _httpClient.GetAsync($@"https://{Auth0Settings.Domain}/userinfo");
 
             var responseText = await response.Content.ReadAsStringAsync();
 
@@ -131,7 +133,7 @@ namespace Blazor.Auth0.Authentication
             string loginError = null;
 
             // Validate Origin
-            if (!message.IsTrusted || origin.Authority != Settings.Domain) loginError = "Invalid Origin";
+            if (!message.IsTrusted || origin.Authority != Auth0Settings.Domain) loginError = "Invalid Origin";
 
             // Validate Error
             if (loginError == null && !string.IsNullOrEmpty(message.Error))
@@ -204,13 +206,13 @@ namespace Blazor.Auth0.Authentication
             HttpContent content = new StringContent(Json.Serialize(new
             {
                 grant_type = "authorization_code",
-                client_id = Settings.ClientId,
+                client_id = Auth0Settings.ClientId,
                 code_verifier = _codeChallenge,
                 code = code,
                 redirect_uri = _redirectUri
             }), System.Text.Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _httpClient.PostAsync($@"https://{Settings.Domain}/oauth/token", content);
+            HttpResponseMessage response = await _httpClient.PostAsync($@"https://{Auth0Settings.Domain}/oauth/token", content);
 
             var responseText = await response.Content.ReadAsStringAsync();
 

@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+
+<WebAuthComponent>
+
+    @*Will render while determining user's session state*@
+    <UndefinedSessionContent>
+        Determining session state, please wait...
+    </UndefinedSessionContent>
+
+    @*Will render after determining session state*@
+    <ActiveInactiveSessionContent>
+
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <div class="main">
+            <div class="top-row px-4">
+
+                <UserInfo/>
+                
+            </div>
+
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
+
+    </ActiveInactiveSessionContent>
+
+    @*There's also options for showing content on Active & Inactive session state alone*@
+    <ActiveSessionContent></ActiveSessionContent>
+    <InactiveSessionContent></InactiveSessionContent>
+
+</WebAuthComponent>
