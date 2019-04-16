@@ -10,13 +10,16 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Components.Services;
 using System.Text;
+using System.Timers;
+using Microsoft.AspNetCore.Components;
 
 namespace Blazor.Auth0.Authentication
 {
     public class AuthenticationService
     {
 
-        public Dictionary<string, object> UserInfo { get; set; }
+        public EventHandler<SessionStates> OnSessionStateChanged { get; set; }
+        public UserInfo UserInfo { get; set; }
         public SessionStates SessionState { get; set; }
         public Auth0Settings Auth0Settings { get; set; }
         /// <summary>
@@ -31,6 +34,7 @@ namespace Blazor.Auth0.Authentication
         private string _state { get; set; }
         private string _redirectUri { get; set; }
         private TokenInfoDto _tokenInfo { get; set; }
+        private Timer _timer { get; set; }
 
 
         public AuthenticationService(HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper)
@@ -97,6 +101,7 @@ namespace Blazor.Auth0.Authentication
                 else
                 {
                     SessionState = SessionStates.Inactive;
+                    InvokeOnSessionStateChanged();
                 }
             }
             else
@@ -105,7 +110,7 @@ namespace Blazor.Auth0.Authentication
             }
 
         }
-        public async Task<Dictionary<string, object>> GetUserInfo(string accessToken)
+        public async Task<UserInfo> GetUserInfo(string accessToken)
         {
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -116,7 +121,7 @@ namespace Blazor.Auth0.Authentication
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return Json.Deserialize<Dictionary<string, object>>(responseText);
+                return new UserInfo(Json.Deserialize<Dictionary<string, object>>(responseText));
             }
 
             return null;
@@ -168,6 +173,8 @@ namespace Blazor.Auth0.Authentication
 
                 await GetAccessToken(message.Code);
 
+                ScheduleSilentLogin();
+
                 // In case we're not getting the id_token from the message try to get it from Auth0's API
                 if (string.IsNullOrEmpty(_tokenInfo.id_token))
                 {
@@ -183,12 +190,21 @@ namespace Blazor.Auth0.Authentication
 
                 SetIsLoggedIn(true);
 
+                InvokeOnSessionStateChanged();
+
             }
             else
             {
                 SessionState = SessionStates.Inactive;
+                UserInfo = null;
+                _tokenInfo = null;
+                _codeChallenge = null;
+                _state = null;
+                _timer?.Stop();
+                _timer?.Dispose();
                 SetIsLoggedIn(false);
                 Console.WriteLine("Login Error: " + loginError);
+                InvokeOnSessionStateChanged();
             }
 
             // Redirect to home (removing the hash)
@@ -222,7 +238,7 @@ namespace Blazor.Auth0.Authentication
             }
 
         }
-        private Dictionary<string, object> DecodeTokenPayload(string token)
+        private UserInfo DecodeTokenPayload(string token)
         {
 
             string tokenPayload = token.Split('.')[1].Replace('-', '+').Replace('_', '/');
@@ -240,8 +256,39 @@ namespace Blazor.Auth0.Authentication
             var bytesArray = Convert.FromBase64String(tokenPayload);
             var decodedString = Encoding.UTF8.GetString(bytesArray, 0, bytesArray.Count());
 
-            return Json.Deserialize<Dictionary<string, object>>(decodedString);
+            var claimsInfo = Json.Deserialize<Dictionary<string, object>>(decodedString);
 
+            return new UserInfo(claimsInfo);
+
+        }
+        private void ScheduleSilentLogin() {
+            
+             _timer?.Stop();
+            
+            if(_timer == null)
+            {
+                Console.WriteLine("Creating timer");
+                _timer = new Timer();
+                _timer.Elapsed += (Object source, ElapsedEventArgs e) => {
+                    Console.WriteLine("Calling silent login");
+                    ValidateSession();
+                };
+            }
+
+            _timer.Interval = _tokenInfo.expires_in - 5000;
+
+            _timer.Start();
+
+            Console.WriteLine("Scheduling Silent Login into " + _timer.Interval + " miliseconds");
+
+        }
+
+        private void InvokeOnSessionStateChanged() {
+
+            if (OnSessionStateChanged != null) {
+                OnSessionStateChanged.Invoke(this, SessionState);
+            }
+             
         }
 
     }

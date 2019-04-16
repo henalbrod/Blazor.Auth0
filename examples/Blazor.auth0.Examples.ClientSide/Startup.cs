@@ -27,7 +27,8 @@ namespace Blazor.auth0.Examples.ClientSide
                 ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
                 // OPTIONAL:  Uncomment following line to redirect always to "/" after user authentication, otherwise RedirectUri will be the current path:
                 RedirectUri = new Uri(uriHelper.GetAbsoluteUri()).GetLeftPart(System.UriPartial.Authority),
-                Scope = "openid profile email"
+                Scope = "openid profile email",
+                Audience= "https://blazor-demo.com"
             };
 
             // REQUIRED: Initializes the service and validates user's session state.

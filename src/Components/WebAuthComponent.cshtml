@@ -34,4 +34,14 @@
     [Parameter]
     private RenderFragment ActiveInactiveSessionContent { get; set; }
 
+    protected override void OnInit()
+    {
+        _authService.OnSessionStateChanged += OnSessionStateChangeHandler;
+        base.OnInit();
+    }
+
+    protected void OnSessionStateChangeHandler(object sender, SessionStates state) {
+        StateHasChanged();
+    }
+
 }
