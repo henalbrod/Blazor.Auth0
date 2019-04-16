@@ -9,31 +9,30 @@ namespace Blazor.auth0.Examples.ClientSide
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<Auth0.Authentication.AuthenticationService>();
+
+            services.AddScoped((sp) =>
+            {
+                var uriHelper = sp.GetRequiredService<IUriHelper>();
+                return new Auth0.Models.ClientSettings()
+                {
+                    Auth0Domain = "blazor-demo.auth0.com",
+                    Auth0ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
+                    Auth0Scope = "openid profile email",
+                    Auth0Audience = "https://blazor-demo.com",
+                    // Uncomment following line to redirect always to an specific URL after user authentication, otherwise Auth0RedirectUri will be the current path:
+                    // Auth0RedirectUri = "http://localhost:62702/counter",
+                    // Redirection to home can be forced uncommenting the following line, this setting primes over Auth0RedirectUri
+                    // RedirectAlwaysToHome = true,
+                    // Uncomment following line to force the user to be authenticated
+                    // LoginRequired = true
+                };
+            });
+
+            services.AddScoped<Auth0.Authentication.AuthenticationService>();
         }
 
         public void Configure(IComponentsApplicationBuilder app, IUriHelper uriHelper)
         {
-
-            var authenticationService = app.Services.GetService<Auth0.Authentication.AuthenticationService>();
-
-            // OPTIONAL: Uncomment following line to force the user to be authenticated
-            //authenticationService.LoginRequired = true;
-
-            // REQUIRED: Indicate the Auth0's tenant & client information
-            authenticationService.Auth0Settings = new Auth0.Models.Auth0Settings()
-            {
-                Domain = "blazor-demo.auth0.com",
-                ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
-                // OPTIONAL:  Uncomment following line to redirect always to "/" after user authentication, otherwise RedirectUri will be the current path:
-                RedirectUri = new Uri(uriHelper.GetAbsoluteUri()).GetLeftPart(System.UriPartial.Authority),
-                Scope = "openid profile email",
-                Audience= "https://blazor-demo.com"
-            };
-
-            // REQUIRED: Initializes the service and validates user's session state.
-            authenticationService.ValidateSession();
-
             app.AddComponent<App>("app");
         }
     }

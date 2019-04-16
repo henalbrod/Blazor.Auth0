@@ -2,37 +2,37 @@
 
 @if (_authService.SessionState == SessionStates.Undefined)
 {
-    @UndefinedSessionContent
+    @UndefinedSessionStateContent
 }
 
 @if (_authService.SessionState == SessionStates.Active)
 {
-    @ActiveSessionContent
+    @ActiveSessionStateContent
 }
 
 @if (_authService.SessionState == SessionStates.Inactive)
 {
-    @InactiveSessionContent
+    @InactiveSessionStateContent
 }
 
 @if (_authService.SessionState == SessionStates.Inactive || _authService.SessionState == SessionStates.Active)
 {
-    @ActiveInactiveSessionContent
+    @ActiveInactiveSessionStateContent
 }
 
 @functions{
 
     [Parameter]
-    private RenderFragment UndefinedSessionContent { get; set; }
+    private RenderFragment UndefinedSessionStateContent { get; set; }
 
     [Parameter]
-    private RenderFragment ActiveSessionContent { get; set; }
+    private RenderFragment ActiveSessionStateContent { get; set; }
 
     [Parameter]
-    private RenderFragment InactiveSessionContent { get; set; }
+    private RenderFragment InactiveSessionStateContent { get; set; }
 
     [Parameter]
-    private RenderFragment ActiveInactiveSessionContent { get; set; }
+    private RenderFragment ActiveInactiveSessionStateContent { get; set; }
 
     protected override void OnInit()
     {

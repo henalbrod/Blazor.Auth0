@@ -17,15 +17,10 @@ namespace Blazor.Auth0.Authentication
 {
     public class AuthenticationService
     {
-
         public EventHandler<SessionStates> OnSessionStateChanged { get; set; }
         public UserInfo UserInfo { get; set; }
         public SessionStates SessionState { get; set; }
-        public Auth0Settings Auth0Settings { get; set; }
-        /// <summary>
-        /// Forces the user to be authenticated, redirecting it to the login page automatically in case no active session is present
-        /// </summary>     
-        public bool LoginRequired { get; set; }
+        private ClientSettings _settings { get; set; }
 
         private IUriHelper _uriHelper { get; set; }
         private HttpClient _httpClient;
@@ -33,20 +28,23 @@ namespace Blazor.Auth0.Authentication
         private string _codeChallenge { get; set; }
         private string _state { get; set; }
         private string _redirectUri { get; set; }
-        private TokenInfoDto _tokenInfo { get; set; }
+        private TokenInfo _tokenInfo { get; set; }
         private Timer _timer { get; set; }
 
 
-        public AuthenticationService(HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper)
+        public AuthenticationService(HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientSettings settings)
         {
             _httpClient = httpClient;
             _jsInProcessRuntime = (jsRuntime as IJSInProcessRuntime);
             _uriHelper = uriHelper;
+            _settings = settings;
+
+            ValidateSession();            
+
         }
 
         public string GetAuthorizeUrl()
         {
-
 
             var abosulteUri = new Uri(_uriHelper.GetAbsoluteUri());
 
@@ -59,17 +57,27 @@ namespace Blazor.Auth0.Authentication
                 _state = Convert.ToBase64String(tokenData);
             }
 
-            _redirectUri = !string.IsNullOrEmpty(Auth0Settings.RedirectUri) ? Auth0Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Path);
 
-            var url = $"https://{Auth0Settings.Domain}/authorize?" +
+            if (_settings.RedirectAlwaysToHome)
+            {
+                _redirectUri = new Uri(_uriHelper.GetAbsoluteUri()).GetLeftPart(UriPartial.Authority);
+            }
+            else {
+                _redirectUri = !string.IsNullOrEmpty(_settings.Auth0RedirectUri) ? 
+                    _settings.Auth0RedirectUri :
+                    new Uri(_uriHelper.GetAbsoluteUri()).GetLeftPart(UriPartial.Path);
+            }
+            
+
+            var url = $"https://{_settings.Auth0Domain}/authorize?" +
                       "&response_type=code" +
                       "&code_challenge_method=S256" +
                       $"code_challenge={_codeChallenge}" +
                       $"&state={_state}" +
-                      $"&client_id={Auth0Settings.ClientId}" +
-                      $"&scope={Auth0Settings.Scope.Replace(" ", "%20")}" +
-                      (!string.IsNullOrEmpty(Auth0Settings.Connection) ? "&connection=" + Auth0Settings.Connection : "") +
-                      (!string.IsNullOrEmpty(Auth0Settings.Audience) ? "&audience=" + Auth0Settings.Audience : "") +
+                      $"&client_id={_settings.Auth0ClientId}" +
+                      $"&scope={_settings.Auth0Scope.Replace(" ", "%20")}" +
+                      (!string.IsNullOrEmpty(_settings.Auth0Connection) ? "&connection=" + _settings.Auth0Connection : "") +
+                      (!string.IsNullOrEmpty(_settings.Auth0Audience) ? "&audience=" + _settings.Auth0Audience : "") +
                       $"&redirect_uri={_redirectUri}";
 
             return url;
@@ -83,9 +91,9 @@ namespace Blazor.Auth0.Authentication
         {
             var abosulteUri = new Uri(_uriHelper.GetAbsoluteUri());
             SetIsLoggedIn(false);
-            _uriHelper.NavigateTo($"https://{Auth0Settings.Domain}/v2/logout?" +
-                                  $"client_id={Auth0Settings.ClientId}" +
-                                  $"&returnTo={(!string.IsNullOrEmpty(Auth0Settings.RedirectUri) ? Auth0Settings.RedirectUri : abosulteUri.GetLeftPart(UriPartial.Authority))}");
+            _uriHelper.NavigateTo($"https://{_settings.Auth0Domain}/v2/logout?" +
+                                  $"client_id={_settings.Auth0ClientId}" +
+                                  $"&returnTo={(!string.IsNullOrEmpty(_settings.Auth0RedirectUri) ? _settings.Auth0RedirectUri : abosulteUri.GetLeftPart(UriPartial.Authority))}");
         }
         public void ValidateSession()
         {
@@ -94,7 +102,7 @@ namespace Blazor.Auth0.Authentication
             var isLoggedIn = _jsInProcessRuntime.Invoke<bool>("isLoggedIn", null);
             if (!isLoggedIn && !abosulteUri.Query.Contains("code"))
             {
-                if (LoginRequired)
+                if (_settings.LoginRequired)
                 {
                     _uriHelper.NavigateTo(GetAuthorizeUrl());
                 }
@@ -115,7 +123,7 @@ namespace Blazor.Auth0.Authentication
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            HttpResponseMessage response = await _httpClient.GetAsync($@"https://{Auth0Settings.Domain}/userinfo");
+            HttpResponseMessage response = await _httpClient.GetAsync($@"https://{_settings.Auth0Domain}/userinfo");
 
             var responseText = await response.Content.ReadAsStringAsync();
 
@@ -138,7 +146,7 @@ namespace Blazor.Auth0.Authentication
             string loginError = null;
 
             // Validate Origin
-            if (!message.IsTrusted || origin.Authority != Auth0Settings.Domain) loginError = "Invalid Origin";
+            if (!message.IsTrusted || origin.Authority != _settings.Auth0Domain) loginError = "Invalid Origin";
 
             // Validate Error
             if (loginError == null && !string.IsNullOrEmpty(message.Error))
@@ -150,7 +158,7 @@ namespace Blazor.Auth0.Authentication
 
                         loginError = "Login Required";
 
-                        if (LoginRequired)
+                        if (_settings.LoginRequired)
                         {
                             SetIsLoggedIn(false);
                             _uriHelper.NavigateTo(GetAuthorizeUrl());
@@ -222,19 +230,19 @@ namespace Blazor.Auth0.Authentication
             HttpContent content = new StringContent(Json.Serialize(new
             {
                 grant_type = "authorization_code",
-                client_id = Auth0Settings.ClientId,
+                client_id = _settings.Auth0ClientId,
                 code_verifier = _codeChallenge,
                 code = code,
                 redirect_uri = _redirectUri
             }), System.Text.Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _httpClient.PostAsync($@"https://{Auth0Settings.Domain}/oauth/token", content);
+            HttpResponseMessage response = await _httpClient.PostAsync($@"https://{_settings.Auth0Domain}/oauth/token", content);
 
             var responseText = await response.Content.ReadAsStringAsync();
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _tokenInfo = Json.Deserialize<TokenInfoDto>(responseText);
+                _tokenInfo = Json.Deserialize<TokenInfo>(responseText);
             }
 
         }

@@ -1,15 +1,15 @@
 @inherits LayoutComponentBase
 @inject Auth0.Authentication.AuthenticationService _authService
 
-<WebAuthComponent>
+<AuthComponent>
 
     @*Will render while determining user's session state*@
-    <UndefinedSessionContent>
+    <UndefinedSessionStateContent>
         Determining session state, please wait...
-    </UndefinedSessionContent>
+    </UndefinedSessionStateContent>
 
     @*Will render after determining session state*@
-    <ActiveInactiveSessionContent>
+    <ActiveInactiveSessionStateContent>
 
         <div class="sidebar">
             <NavMenu />
@@ -31,10 +31,10 @@
             </div>
         </div>
 
-    </ActiveInactiveSessionContent>
+    </ActiveInactiveSessionStateContent>
 
-    @*There's also options for showing content on Active & Inactive session state alone*@
-    <ActiveSessionContent></ActiveSessionContent>
-    <InactiveSessionContent></InactiveSessionContent>
+    @*There's also options for showing content on Active & Inactive session states alone*@
+    <ActiveSessionStateContent></ActiveSessionStateContent>
+    <InactiveSessionStateContent></InactiveSessionStateContent>
 
-</WebAuthComponent>
+</AuthComponent>

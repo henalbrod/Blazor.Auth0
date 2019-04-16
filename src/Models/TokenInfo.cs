@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Blazor.Auth0.Models
 {
-    public class TokenInfoDto
+    internal class TokenInfo
     {
         public string access_token { get; set; }
         public string refresh_token { get; set; }
