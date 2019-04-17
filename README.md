@@ -1,90 +1,73 @@
-# Blazor (client-side) Auth0 Library
-
+# Blazor Auth0 Library (client-side)
+#
+#
 This is a library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login for [Blazor](http://blazor.net) v0.9+ client side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+#
+#
+## Start using it in 4 simple steps!
+#
+#
+Start by adding a reference to Blazor-Auth0.0.1.0-alpha-5 to your Blazor Client Side project
 
-
-### How to use it?
-
-Start by adding a reference to Blazor.Auth0.0.1.0-alpha-1 to your Blazor Client Side project [Nuget Comming soon]
-
-In Startup.cs:
-
-Add a new line inside ConfigureServices method
-
-```C#
-  public void ConfigureServices(IServiceCollection services)
-  {
-      //...
-      services.AddSingleton<Auth0.Authentication.AuthenticationService>();
-      //...
-  }
 ```
+Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
+````
+#
+#
+1) In Startup.cs, register the service inside ConfigureServices method
+#
+#
+```C#
+        public void ConfigureServices(IServiceCollection services)
+        {
 
+            services.AddScoped((sp) =>
+            {
+                var uriHelper = sp.GetRequiredService<IUriHelper>();
+                return new Auth0.Models.ClientSettings()
+                {
+                    Auth0Domain = "[Auth0_Domain]",
+                    Auth0ClientId = "[Auth0_Client_Id]"
+                };
+            });
 
-Add the following inside the Configure method
-
- ```C#
-  public void Configure(IComponentsApplicationBuilder app, IUriHelper uriHelper)
-  {
-
-      var authenticationService = app.Services.GetService<Auth0.Authentication.AuthenticationService>();
-
-      // OPTIONAL: Uncomment following line to force the user to be authenticated
-      //authenticationService.LoginRequired = true;
-
-      // REQUIRED: Indicate the Auth0's tenant & client information
-      authenticationService.Auth0Settings = new Auth0.Models.Auth0Settings()
-      {
-          Domain = "[AUTH0_DOMAIN]",
-          ClientId = "[AUTH0_CLIENT_ID]",
-          // OPTIONAL: Comment following line to redirect to current path:
-          RedirectUri = new Uri(uriHelper.GetAbsoluteUri()).GetLeftPart(System.UriPartial.Authority),
-          Scope = "openid profile email"
-      };
-
-      // REQUIRED: Initializes the service and validates user's session state.
-      authenticationService.ValidateSession();
-
-      //...
-
-      app.AddComponent<App>("app");
-      
-  }
-  ```
-  
-
-3) Add a tag helper in _ViewImports.cshtml
-
+            services.AddScoped<Auth0.Authentication.AuthenticationService>();
+        }
+```
+#
+#
+2) Add a tag helper in the *_ViewImports.cshtml* of the root folder
+#
+#
 ```C#
 @using Blazor.Auth0;
 @addTagHelper *, Blazor.Auth0
 ```
-
-
-4) Replace MainLayout.cshtml with the following
-
+#
+#
+3) Replace the content of *MainLayout.cshtml* with the following code
+#
+#
 ```C#
 @inherits LayoutComponentBase
-@inject Auth0.Authentication.AuthenticationService _authService
+@inject Blazor.Auth0.Authentication.AuthenticationService _authService
 
-<WebAuthComponent>
+@*This component helps you to render the proper content in regards the current user session state, its usage is optional*@
+<AuthComponent>
 
-  @*Will render while determining user's session state*@
-  <UndefinedSessionContent>
-      Determining session state, please wait...
-  </UndefinedSessionContent>
+    <UndefinedSessionStateContent>
+        @*Will render this content while the Authentication service determines the current user's session state*@
+        Determining session state, please wait...
+    </UndefinedSessionStateContent>
+    
+    <ActiveInactiveSessionStateContent>
+        @*Will render this content after determining session state (in this case it can be either Active or Inactive)*@
+        
+        <div class="sidebar">
+            <NavMenu />
+        </div>
 
-  @*Will render after determining session state*@
-  <ActiveInactiveSessionContent>
-
-      <div class="sidebar">
-          <NavMenu />
-      </div>
-
-      <div class="main">
-          <div class="top-row px-4">
-          @if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
-          {
+        <div class="main">
             <div class="top-row px-4">
                 @if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
                 {
@@ -92,27 +75,38 @@ Add the following inside the Configure method
                 }
                 else
                 {
-                    <a href="" class="ml-md-auto" onclick="@_authService.LogIn">LogIn</a>
+                    <a href="" class="ml-md-auto" onclick="@_authService.Authorize">LogIn</a>
                 }
             </div>
-          }
-          </div>
-          <div class="content px-4">
-              @Body
-          </div>
-      </div>
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
 
-  </ActiveInactiveSessionContent>
+    </ActiveInactiveSessionStateContent>
 
-  @*There's also options for showing content on Active & Inactive session state alone*@
-  <ActiveSessionContent></ActiveSessionContent>
-  <InactiveSessionContent></InactiveSessionContent>
+    @*There's also options for showing content on Active & Inactive session states alone*@
+    <ActiveSessionStateContent></ActiveSessionStateContent>
+    <InactiveSessionStateContent></InactiveSessionStateContent>
 
-</WebAuthComponent>
+</AuthComponent>
 ```
+#
+#
+### Other options include:
+#
+#
+* **RedirectAlwaysToHome**: When set to true, forces the redirect_uri param to be the home path, this value overrides *Auth0RedirectUri*
 
+* **LoginRequired**: When set to true, forces a redirection to the login page in case the user is not authenticated.
 
+* **GetUserInfoFromIdToken**: When set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default value is *false*
+#
+#
 ### Known issues
-
+#
+#
 - Only Code-Grant Flow tested
 - No server-side support yet
+#
+#

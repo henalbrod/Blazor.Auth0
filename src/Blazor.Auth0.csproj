@@ -6,7 +6,7 @@
     <IsPackable>true</IsPackable>
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
     <_RazorComponentInclude>*.cshtml</_RazorComponentInclude>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.1.0-alpha-5</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -16,7 +16,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>favicon.ico</PackageIconUrl>
+    <PackageIconUrl>https://github.com/Pegazux/Blazor.Auth0/blob/develop/src/favicon.ico?raw=true</PackageIconUrl>
+    <PackageId>Blazor-Auth0</PackageId>
+    <PackageReleaseNotes>- Fully implemented the Authorization Code Grant flow with Auth0's Universal Login
+- RedirectAlwaysToHome option
+- LoginRequired option
+- GetUserInfoFromIdToken option
+- Only Blazor client-side supported so far</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

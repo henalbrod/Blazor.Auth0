@@ -32,7 +32,7 @@ namespace Blazor.Auth0.Models
         /// </summary>
         public string Auth0Audience { get; set; }
         /// <summary>
-        /// Determines if the user is required to be authenticated
+        /// When set to true, forces a redirection to the login page in case the user is not authenticated
         /// </summary>
         public bool LoginRequired { get; set; }
         /// <summary>
