@@ -6,14 +6,14 @@ This is a library for Blazor authentication using Auth0 Authorization Code Grant
 ## Start using it in 4 simple steps!
 
 
-Start by adding a reference to Blazor-Auth0.0.1.0-alpha-5 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0.0.1.0-alpha-5 to your Blazor Client Side project
 
 ```
 Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 ````
 
 
-1) In Startup.cs, register the service inside ConfigureServices method
+2) In Startup.cs, register the service inside ConfigureServices method
 
 
 ```C#
@@ -35,7 +35,7 @@ Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 ```
 
 
-2) Add a tag helper in the *_ViewImports.cshtml* of the root folder
+3) Add a tag helper in the *_ViewImports.cshtml* of the root folder
 
 
 ```C#
@@ -44,7 +44,7 @@ Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 ```
 
 
-3) Replace the content of *MainLayout.cshtml* with the following code
+4) Replace the content of *MainLayout.cshtml* with the following code
 
 
 ```C#
