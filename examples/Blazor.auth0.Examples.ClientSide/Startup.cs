@@ -12,7 +12,6 @@ namespace Blazor.auth0.Examples.ClientSide
 
             services.AddScoped((sp) =>
             {
-                var uriHelper = sp.GetRequiredService<IUriHelper>();
                 return new Auth0.Models.ClientSettings()
                 {
                     Auth0Domain = "[AUTH0_DOMAIN]",

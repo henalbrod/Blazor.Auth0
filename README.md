@@ -22,7 +22,6 @@ Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 
             services.AddScoped((sp) =>
             {
-                var uriHelper = sp.GetRequiredService<IUriHelper>();
                 return new Auth0.Models.ClientSettings()
                 {
                     Auth0Domain = "[Auth0_Domain]",
