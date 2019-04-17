@@ -16,6 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageIconUrl>favicon.ico</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +27,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Content\blazor_auth0.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
