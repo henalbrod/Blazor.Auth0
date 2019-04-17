@@ -25,13 +25,14 @@ namespace Blazor.auth0.Examples.ClientSide
                     // RedirectAlwaysToHome = true,
                     // Uncomment following line to force the user to be authenticated
                     // LoginRequired = true
+                     GetUserInfoFromIdToken=true
                 };
             });
 
             services.AddScoped<Auth0.Authentication.AuthenticationService>();
         }
 
-        public void Configure(IComponentsApplicationBuilder app, IUriHelper uriHelper)
+        public void Configure(IComponentsApplicationBuilder app)
         {
             app.AddComponent<App>("app");
         }

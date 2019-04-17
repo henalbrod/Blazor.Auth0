@@ -44,7 +44,7 @@ else
         // Enforcing user log-in for this page
         if (_authService.SessionState != Auth0.Models.Enumerations.SessionStates.Active)
         {
-            _authService.LogIn();            
+            _authService.Authorize();            
         }
         else
         {
