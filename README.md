@@ -1,15 +1,15 @@
 # Blazor Auth0 Library (client-side)
 
-This is a library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login for [Blazor](http://blazor.net) v0.9+ client side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) v0.9+ client side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 
 ## Start using it in 4 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0.0.1.0-alpha-5 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0.0.2.0-alpha-1 to your Blazor Client Side project
 
 ```
-Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
+Install-Package Blazor-Auth0 -Version 0.2.0-alpha-1
 ````
 
 
@@ -93,6 +93,7 @@ Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 
 ### Other options include:
 
+* **AuthenticationGrant**:  Allows you to choose between authorization_code (recommended) and implicit_grant authentication flows.
 
 * **RedirectAlwaysToHome**: When set to true, forces the redirect_uri param to be the home path, this value overrides *Auth0RedirectUri*
 
@@ -104,5 +105,4 @@ Install-Package Blazor-Auth0 -Version 0.1.0-alpha-5
 ### Known issues
 
 
-- Only Code-Grant Flow tested
 - No server-side support yet

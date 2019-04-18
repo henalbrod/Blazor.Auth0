@@ -37,4 +37,30 @@ namespace Blazor.Auth0.Models.Enumerations
         updated_at
 
     }
+
+    public enum AuthenticationGrantTypes {
+
+        // -- Spec-conforming grants --
+        /// <summary>
+        /// New recomended authentication grant flow for SPAs as per OAuth2 working group [https://auth0.com/blog/oauth2-implicit-grant-and-spa/]
+        /// </summary>
+        authorization_code = 0,
+        /// <summary>
+        /// Previous recommended authentication grant flow for SPAs, now replaced with authorization_code as per OAuth2 working group [https://auth0.com/blog/oauth2-implicit-grant-and-spa/]
+        /// </summary>
+        implicit_grant,
+        //client_credentials,
+        //password
+        //refresh_token // <-- Should I bother? this is a bad Idea in client side, maybe for server side
+
+        // -- Auth0 extension grants --
+        //password-realm, //http://auth0.com/oauth/grant-type/password-realm	
+        //mfa-oob, //http://auth0.com/oauth/grant-type/mfa-oob
+        //mfa-otp, //http://auth0.com/oauth/grant-type/mfa-otp
+        //mfa-recovery-code //http://auth0.com/oauth/grant-type/mfa-recovery-code
+
+        //No Legacy grant will be supported
+
+    }
+
 }

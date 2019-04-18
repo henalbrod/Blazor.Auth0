@@ -37,7 +37,7 @@ namespace Blazor.Auth0.Authentication
             uriHelperService = uriHelper;
             clientSettings = settings;
 
-            ValidateSession();            
+            ValidateSession();
 
         }
 
@@ -45,23 +45,39 @@ namespace Blazor.Auth0.Authentication
         {
 
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
+            var responseType = string.Empty;
 
             latestAuthorizeUrlCodeChallenge = GenerateNonce();
             latestAuthorizeUrlState = GenerateNonce();
+            var nonce = GenerateNonce();
+
+            jsInProcessRuntimeService.Invoke<object>("setNonce", nonce);
 
             if (clientSettings.RedirectAlwaysToHome)
             {
                 latestAuthorizeUrRedirectUri = abosulteUri.GetLeftPart(UriPartial.Authority);
             }
-            if(!clientSettings.RedirectAlwaysToHome) {
-                latestAuthorizeUrRedirectUri = !string.IsNullOrEmpty(clientSettings.Auth0RedirectUri) ?  clientSettings.Auth0RedirectUri : abosulteUri.GetLeftPart(UriPartial.Path);
+            if (!clientSettings.RedirectAlwaysToHome)
+            {
+                latestAuthorizeUrRedirectUri = !string.IsNullOrEmpty(clientSettings.Auth0RedirectUri) ? clientSettings.Auth0RedirectUri : abosulteUri.GetLeftPart(UriPartial.Path);
+            }
+
+            switch (clientSettings.AuthenticationGrant)
+            {
+                case AuthenticationGrantTypes.implicit_grant:
+                    responseType = "token id_token";
+                    break;
+                default:
+                    responseType = "code";
+                    break;
             }
 
             return $"https://{clientSettings.Auth0Domain}/authorize?" +
-                      "&response_type=code" +
+                      $"&response_type={responseType}" +
                       "&code_challenge_method=S256" +
                       $"code_challenge={latestAuthorizeUrlCodeChallenge}" +
                       $"&state={latestAuthorizeUrlState}" +
+                      $"&nonce={nonce}" +
                       $"&client_id={clientSettings.Auth0ClientId}" +
                       $"&scope={clientSettings.Auth0Scope.Replace(" ", "%20")}" +
                       (!string.IsNullOrEmpty(clientSettings.Auth0Connection) ? "&connection=" + clientSettings.Auth0Connection : "") +
@@ -69,15 +85,15 @@ namespace Blazor.Auth0.Authentication
                       $"&redirect_uri={latestAuthorizeUrRedirectUri}";
 
         }
-
-        public string BuildLogoutUrl() {
+        public string BuildLogoutUrl()
+        {
 
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var host = abosulteUri.GetLeftPart(UriPartial.Authority);
             SetIsLoggedIn(false);
             return $"https://{clientSettings.Auth0Domain}/v2/logout?" +
                    $"client_id={clientSettings.Auth0ClientId}" +
-                   $"&returnTo={(clientSettings.RedirectAlwaysToHome ? host : string.IsNullOrEmpty(clientSettings.Auth0RedirectUri) ? host : clientSettings.Auth0RedirectUri )}";
+                   $"&returnTo={(clientSettings.RedirectAlwaysToHome ? host : string.IsNullOrEmpty(clientSettings.Auth0RedirectUri) ? host : clientSettings.Auth0RedirectUri)}";
 
         }
         public void Authorize()
@@ -90,26 +106,7 @@ namespace Blazor.Auth0.Authentication
         }
         public void ValidateSession()
         {
-
-            var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
-            var isLoggedIn = jsInProcessRuntimeService.Invoke<bool>("isLoggedIn", null);
-            if (!isLoggedIn && !abosulteUri.Query.Contains("code"))
-            {
-                if (clientSettings.LoginRequired)
-                {
-                    uriHelperService.NavigateTo(BuildAuthorizeUrl());
-                }
-                else
-                {
-                    SessionState = SessionStates.Inactive;
-                    InvokeOnSessionStateChanged();
-                }
-            }
-            else
-            {
-                jsInProcessRuntimeService.Invoke<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none");
-            }
-
+            jsInProcessRuntimeService.Invoke<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none");
         }
         /// <summary>
         /// Makes a call to the /userinfo endpoint and returns the user profile
@@ -137,7 +134,6 @@ namespace Blazor.Auth0.Authentication
             return null;
 
         }
-       
         /// <summary>
         /// Meant for internal API use only.
         /// </summary>
@@ -145,8 +141,106 @@ namespace Blazor.Auth0.Authentication
         public async Task HandleAuth0Message(Auth0IframeMessage message)
         {
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
-            var origin = new Uri(message.Origin);
+            var validationError = ValidateAth0IframeMessage(message);
+            
+           TokenInfo tokenInfo = null;
+
+            if (string.IsNullOrEmpty(validationError))
+            {
+
+                switch (clientSettings.AuthenticationGrant)
+                {
+                    case AuthenticationGrantTypes.implicit_grant:
+
+                        tokenInfo = new TokenInfo()
+                        {
+                            access_token = message.AccessToken,
+                            expires_in = message.ExpiresIn,
+                            id_token = message.IdToken,
+                            scope = message.Scope,
+                            token_type = message.TokenType
+                        };
+
+                        break;
+                    default:
+
+                        tokenInfo = await GetAccessToken(message.Code);                        
+
+                        break;
+                }
+
+                var nonceIsValid = ValidateNonce(tokenInfo.id_token);
+                var atHashIsValid = ValidateAccessTokenHash(tokenInfo.id_token, tokenInfo.access_token);
+
+                if (!nonceIsValid)
+                {
+                    validationError = "Invalid Nonce";
+                }
+
+                if(!atHashIsValid)
+                {
+                     validationError = "Invalid at_hash";
+                }
+
+            }
+
+            if (string.IsNullOrEmpty(validationError))
+            {
+
+                 currentSessionTokenInfo = tokenInfo;
+
+                ScheduleSilentLogin();
+
+                if (clientSettings.GetUserInfoFromIdToken && !string.IsNullOrEmpty(currentSessionTokenInfo.id_token))
+                {
+                    // Decode JWT payload into user info
+                    User = DecodeTokenPayload(currentSessionTokenInfo.id_token);
+                }
+                else
+                {
+                    // In case we're not getting the id_token from the message response or GetUserInfoFromIdToken is set to false try to get it from Auth0's API
+                    User = await UserInfo(currentSessionTokenInfo.access_token);
+                }
+
+                SessionState = SessionStates.Active;
+                SetIsLoggedIn(true);
+                InvokeOnSessionStateChanged();
+
+            }
+
+            if (!string.IsNullOrEmpty(validationError))
+            {
+
+                SessionState = SessionStates.Inactive;
+                User = null;
+                currentSessionTokenInfo = null;
+                latestAuthorizeUrlCodeChallenge = null;
+                latestAuthorizeUrlState = null;
+                nextSilentLoginTimer?.Stop();
+                nextSilentLoginTimer?.Dispose();
+                SetIsLoggedIn(false);
+                Console.WriteLine("Login Error: " + validationError);                                
+                    
+                if (message.Error.ToLower() == "login_required" && clientSettings.LoginRequired)
+                {
+                    uriHelperService.NavigateTo(BuildAuthorizeUrl());
+                }
+
+                InvokeOnSessionStateChanged();
+
+            }
+
+            // Redirect to home (removing the hash)
+            uriHelperService.NavigateTo(abosulteUri.GetLeftPart(UriPartial.Path));
+
+        }
+
+
+        private string ValidateAth0IframeMessage(Auth0IframeMessage message)
+        {
+
             string loginError = null;
+            var origin = new Uri(message.Origin);
 
             // Validate Origin
             if (!message.IsTrusted || origin.Authority != clientSettings.Auth0Domain) loginError = "Invalid Origin";
@@ -154,7 +248,6 @@ namespace Blazor.Auth0.Authentication
             // Validate Error
             if (loginError == null && !string.IsNullOrEmpty(message.Error))
             {
-
                 switch (message.Error.ToLower())
                 {
                     case "login_required":
@@ -172,61 +265,19 @@ namespace Blazor.Auth0.Authentication
                         loginError = message.ErrorDescription;
                         break;
                 }
-
             }
 
             // Validate State
             if (loginError == null && !string.IsNullOrEmpty(latestAuthorizeUrlState) ? latestAuthorizeUrlState != message.State.Replace(' ', '+') : false) loginError = "Invalid State";
 
-
-            if (loginError == null)
-            {
-
-                await GetAccessToken(message.Code);
-
-                ScheduleSilentLogin();
-
-                if (clientSettings.GetUserInfoFromIdToken && string.IsNullOrEmpty(currentSessionTokenInfo.id_token))
-                {
-                    // Decode JWT payload into user info
-                    User = DecodeTokenPayload(currentSessionTokenInfo.id_token);
-                }
-                else {
-                    // In case we're not getting the id_token from the message response or GetUserInfoFromIdToken is set to false try to get it from Auth0's API
-                    User = await UserInfo(currentSessionTokenInfo.access_token);
-                }                
-
-                SessionState = SessionStates.Active;
-
-                SetIsLoggedIn(true);
-
-                InvokeOnSessionStateChanged();
-
-            }
-            else
-            {
-                SessionState = SessionStates.Inactive;
-                User = null;
-                currentSessionTokenInfo = null;
-                latestAuthorizeUrlCodeChallenge = null;
-                latestAuthorizeUrlState = null;
-                nextSilentLoginTimer?.Stop();
-                nextSilentLoginTimer?.Dispose();
-                SetIsLoggedIn(false);
-                Console.WriteLine("Login Error: " + loginError);
-                InvokeOnSessionStateChanged();
-            }
-
-            // Redirect to home (removing the hash)
-            uriHelperService.NavigateTo(abosulteUri.GetLeftPart(UriPartial.Path));
+            return loginError;
 
         }
-
         private void SetIsLoggedIn(bool value)
         {
             jsInProcessRuntimeService.Invoke<object>("setIsLoggedIn", value);
         }
-        private async Task GetAccessToken(string code)
+        private async Task<TokenInfo> GetAccessToken(string code)
         {
 
             HttpContent content = new StringContent(Json.Serialize(new
@@ -244,8 +295,10 @@ namespace Blazor.Auth0.Authentication
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                currentSessionTokenInfo = Json.Deserialize<TokenInfo>(responseText);
+                return Json.Deserialize<TokenInfo>(responseText);                
             }
+
+            return null;
 
         }
         private UserInfoDto DecodeTokenPayload(string token)
@@ -271,8 +324,8 @@ namespace Blazor.Auth0.Authentication
             return GetUserInfoFromClaims(claims);
 
         }
-
-        private UserInfoDto GetUserInfoFromClaims(IDictionary<string, object> claims) {
+        private UserInfoDto GetUserInfoFromClaims(IDictionary<string, object> claims)
+        {
 
             var result = new UserInfoDto();
 
@@ -342,7 +395,7 @@ namespace Blazor.Auth0.Authentication
                         result.Zoneinfo = claim.Value?.ToString();
                         break;
                     default:
-                        result.CustomClaims.Add(claim.Key,claim.Value);
+                        result.CustomClaims.Add(claim.Key, claim.Value);
                         break;
                 }
 
@@ -351,15 +404,16 @@ namespace Blazor.Auth0.Authentication
             return result;
 
         }
+        private void ScheduleSilentLogin()
+        {
 
-        private void ScheduleSilentLogin() {
-            
-             nextSilentLoginTimer?.Stop();
-            
-            if(nextSilentLoginTimer == null)
-            {                
+            nextSilentLoginTimer?.Stop();
+
+            if (nextSilentLoginTimer == null)
+            {
                 nextSilentLoginTimer = new Timer();
-                nextSilentLoginTimer.Elapsed += (Object source, ElapsedEventArgs e) => {
+                nextSilentLoginTimer.Elapsed += (Object source, ElapsedEventArgs e) =>
+                {
                     ValidateSession();
                 };
             }
@@ -369,16 +423,17 @@ namespace Blazor.Auth0.Authentication
             nextSilentLoginTimer.Start();
 
         }
+        private void InvokeOnSessionStateChanged()
+        {
 
-        private void InvokeOnSessionStateChanged() {
-
-            if (OnSessionStateChanged != null) {
+            if (OnSessionStateChanged != null)
+            {
                 OnSessionStateChanged.Invoke(this, SessionState);
             }
-             
-        }
 
-        private string GenerateNonce() {
+        }
+        private string GenerateNonce()
+        {
 
             string result = "";
 
@@ -390,6 +445,50 @@ namespace Blazor.Auth0.Authentication
             }
 
             return result;
+
+        }
+        private bool ValidateNonce(string idToken) {
+
+            var idTokenPayload = DecodeTokenPayload(idToken);
+            var nonce = jsInProcessRuntimeService.Invoke<string>("getNonce",null).Replace(' ', '+');
+            var idTokenNonce = idTokenPayload.CustomClaims["nonce"]?.ToString().Replace(' ', '+');
+
+            jsInProcessRuntimeService.Invoke<string>("clearNonce", null);
+
+            return nonce.Equals(idTokenNonce);
+
+        }
+        private bool ValidateAccessTokenHash(string idToken, string accessToken)
+        {
+            var atHashName = "at_hash";
+            var idTokenPayload = DecodeTokenPayload(idToken);
+
+            if (idTokenPayload.CustomClaims.ContainsKey(atHashName))
+            {
+
+                var accessTokenHash = string.Empty;
+
+                using (SHA256 mySHA256 = SHA256.Create())
+                {
+
+                    byte[] hashValue = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(accessToken));
+                    var base64Encoded = Convert.ToBase64String(hashValue.Take(16).ToArray());
+                    accessTokenHash = Convert.ToBase64String(hashValue.Take(16).ToArray()).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+                }
+
+                return accessTokenHash.Equals(idTokenPayload.CustomClaims["at_hash"]);
+
+            }
+            else {
+
+                if (clientSettings.AuthenticationGrant == AuthenticationGrantTypes.implicit_grant) {
+                    Console.WriteLine("WARNING: No at_hash claim was present in the id_token.");
+                }
+
+                return true;
+
+            }
 
         }
 

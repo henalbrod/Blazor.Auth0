@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blazor.Auth0.Models.Enumerations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,10 @@ namespace Blazor.Auth0.Models
         /// (String) The default audience to be used for requesting API access.
         /// </summary>
         public string Auth0Audience { get; set; }
+        /// <summary>
+        /// (String) The Authentication Granrt Flow to be used (authorization_code recommended).
+        /// </summary>
+        public AuthenticationGrantTypes AuthenticationGrant { get; set; } = AuthenticationGrantTypes.authorization_code;
         /// <summary>
         /// When set to true, forces a redirection to the login page in case the user is not authenticated
         /// </summary>
