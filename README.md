@@ -9,10 +9,10 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 ## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0.0.3.0-alpha-2 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0-ClientSide.0.3.0-alpha-2 to your Blazor Client Side project
 
 ```
-Install-Package Blazor-Auth0 -Version 0.3.0-alpha-2
+Install-Package Blazor-Auth0-ClientSide -Version 0.3.0-alpha-2
 ````
 
 
