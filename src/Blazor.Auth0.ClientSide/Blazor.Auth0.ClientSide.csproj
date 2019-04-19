@@ -14,7 +14,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
     <!--<OutputType>Library</OutputType>-->
-    <Version>0.3.0-alpha-1</Version>
+    <Version>0.3.0-alpha-2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -24,7 +24,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>https://github.com/Pegazux/Blazor.Auth0/blob/develop/src/icon.png?raw=true</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
     <PackageReleaseNotes>- Upgraded to latest Blazor 3.0.0-preview4-19216-03</PackageReleaseNotes>    
     

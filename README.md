@@ -1,3 +1,6 @@
+
+![alt-text](https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png "Blazor.Auth0")
+
 # Blazor Auth0 Library (client-side)
 
 This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) v0.9+ client side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
@@ -6,10 +9,10 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 ## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0.0.3.0-alpha-1 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0.0.3.0-alpha-2 to your Blazor Client Side project
 
 ```
-Install-Package Blazor-Auth0 -Version 0.3.0-alpha-1
+Install-Package Blazor-Auth0 -Version 0.3.0-alpha-2
 ````
 
 
