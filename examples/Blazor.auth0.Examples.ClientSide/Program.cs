@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor.Hosting;
 
-namespace Blazor.auth0.Examples.ClientSide
+namespace Blazor.Auth0.Examples.ClientSide
 {
     public class Program
     {

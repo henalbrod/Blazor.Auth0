@@ -1,6 +1,12 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
-@inject Auth0.Authentication.AuthenticationService _authService
+
+@using System.Net.Http
+@using Microsoft.AspNetCore.Components
+
+@inherits Microsoft.AspNetCore.Components.ComponentBase
+
+@inject Blazor.Auth0.ClientSide.Authentication.AuthenticationService _authService
+@inject HttpClient _httpClient
 
 <h1>Weather forecast</h1>
 
@@ -42,13 +48,13 @@ else
     {
 
         // Enforcing user log-in for this page
-        if (_authService.SessionState != Auth0.Models.Enumerations.SessionStates.Active)
+        if (_authService.SessionState != Blazor.Auth0.ClientSide.Models.Enumerations.SessionStates.Active)
         {
-            _authService.Authorize();            
+            _authService.Authorize();
         }
         else
         {
-            forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+            forecasts = await _httpClient.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
         }
 
     }

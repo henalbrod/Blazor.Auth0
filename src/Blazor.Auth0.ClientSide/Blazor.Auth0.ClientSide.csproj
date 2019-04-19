@@ -1,12 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>true</IsPackable>
-    <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
-    <_RazorComponentInclude>*.cshtml</_RazorComponentInclude>
-    <Version>0.2.0-alpha-1</Version>
+    <RestoreAdditionalProjectSources>
+      https://dotnet.myget.org/F/aspnetcore-dev/api/v3/index.json;
+      https://dotnet.myget.org/F/blazor-dev/api/v3/index.json;
+    </RestoreAdditionalProjectSources>
+    <LangVersion>7.3</LangVersion>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    
+    <!--<OutputType>Library</OutputType>-->
+    <Version>0.3.0-alpha-1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -16,37 +24,22 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>https://github.com/Pegazux/Blazor.Auth0/blob/develop/src/favicon.ico?raw=true</PackageIconUrl>
-    <PackageId>Blazor-Auth0</PackageId>
-    <PackageReleaseNotes>- Fully implemented the Authorization Implicit Grant flow with Auth0's Universal Login
-- New AuthenticationGrant option! allows you to choose between authorization_code (recommended) and implicit_grant
-- Improved security:
-	"nonce" validation in all cases and "at_hash" validation in implicit grant flow
-- Some code refactoring and optimization</PackageReleaseNotes>
+    <PackageIconUrl>https://github.com/Pegazux/Blazor.Auth0/blob/develop/src/icon.png?raw=true</PackageIconUrl>
+    <PackageId>Blazor-Auth0-ClientSide</PackageId>
+    <PackageReleaseNotes>- Upgraded to latest Blazor 3.0.0-preview4-19216-03</PackageReleaseNotes>    
+    
   </PropertyGroup>
 
-  <ItemGroup>
+ <ItemGroup>
     <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
     <EmbeddedResource Include="Content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="Content\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="Content\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
-  </ItemGroup>
-
+  </ItemGroup>  
+  
   <ItemGroup>
-    <None Remove="favicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Content\blazor_auth0.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="favicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="0.9.0-preview3-19154-02" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.9.0-preview3-19154-02" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview4-19216-03" />
   </ItemGroup>
 
 </Project>

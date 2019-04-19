@@ -1,9 +1,15 @@
 ﻿@page "/"
-@inject Auth0.Authentication.AuthenticationService _authService
+@inherits Microsoft.AspNetCore.Components.ComponentBase
+
+@using Microsoft.AspNetCore.Components
+@using Blazor.Auth0.ClientSide.Authentication
+@using Blazor.Auth0.ClientSide.Models.Enumerations
+
+@inject AuthenticationService _authService
 
 <h1>User Info</h1>
 
-@if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
+@if (_authService.SessionState == SessionStates.Active)
 {
 
     <div>
@@ -54,7 +60,7 @@ else
         base.OnInit();
     }
 
-    protected void OnSessionStateChangeHandler(object sender, Auth0.Models.Enumerations.SessionStates state)
+    protected void OnSessionStateChangeHandler(object sender, SessionStates state)
     {
         StateHasChanged();
     }

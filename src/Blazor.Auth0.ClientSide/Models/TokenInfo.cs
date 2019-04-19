@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Blazor.Auth0.Models
+namespace Blazor.Auth0.ClientSide.Models
 {
     internal class TokenInfo
     {

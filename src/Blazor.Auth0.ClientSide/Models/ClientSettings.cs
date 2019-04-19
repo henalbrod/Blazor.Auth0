@@ -1,10 +1,10 @@
-﻿using Blazor.Auth0.Models.Enumerations;
+﻿using Blazor.Auth0.ClientSide.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Blazor.Auth0.Models
+namespace Blazor.Auth0.ClientSide.Models
 {
     public class ClientSettings
     {

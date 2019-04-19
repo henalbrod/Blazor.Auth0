@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Components.Layouts
+@using Blazor.Auth0.ClientSide.Components
 @inherits LayoutComponentBase
-@inject Auth0.Authentication.AuthenticationService _authService
+@inject Blazor.Auth0.ClientSide.Authentication.AuthenticationService _authService
 
 <AuthComponent>
 
@@ -17,7 +19,7 @@
 
         <div class="main">
             <div class="top-row px-4">
-                @if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
+                @if (_authService.SessionState == Blazor.Auth0.ClientSide.Models.Enumerations.SessionStates.Active)
                 {
                     <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
                 }

@@ -1,5 +1,5 @@
-﻿using Blazor.Auth0.Models;
-using Blazor.Auth0.Models.Enumerations;
+﻿using Blazor.Auth0.ClientSide.Models;
+using Blazor.Auth0.ClientSide.Models.Enumerations;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Components.Services;
 using System.Text;
 using System.Timers;
+using Microsoft.AspNetCore.Components;
 
-namespace Blazor.Auth0.Authentication
+namespace Blazor.Auth0.ClientSide.Authentication
 {
     public class AuthenticationService
     {

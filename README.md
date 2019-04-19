@@ -3,13 +3,13 @@
 This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) v0.9+ client side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 
-## Start using it in 4 simple steps!
+## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0.0.2.0-alpha-1 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0.0.3.0-alpha-1 to your Blazor Client Side project
 
 ```
-Install-Package Blazor-Auth0 -Version 0.2.0-alpha-1
+Install-Package Blazor-Auth0 -Version 0.3.0-alpha-1
 ````
 
 
@@ -22,52 +22,44 @@ Install-Package Blazor-Auth0 -Version 0.2.0-alpha-1
 
             services.AddScoped((sp) =>
             {
-                return new Auth0.Models.ClientSettings()
+                return new Blazor.Auth0.ClientSide.Models.ClientSettings()
                 {
                     Auth0Domain = "[Auth0_Domain]",
                     Auth0ClientId = "[Auth0_Client_Id]"
                 };
             });
 
-            services.AddScoped<Auth0.Authentication.AuthenticationService>();
+            services.AddScoped<Blazor.Auth0.ClientSide.Authentication.AuthenticationService>();
         }
 ```
 
 
-3) Add a tag helper in the *_ViewImports.cshtml* of the root folder
+3) Replace the content of *MainLayout.cshtml* with the following code
 
 
 ```C#
-@using Blazor.Auth0;
-@addTagHelper *, Blazor.Auth0
-```
-
-
-4) Replace the content of *MainLayout.cshtml* with the following code
-
-
-```C#
+@using Microsoft.AspNetCore.Components.Layouts
+@using Blazor.Auth0.ClientSide.Components
 @inherits LayoutComponentBase
-@inject Blazor.Auth0.Authentication.AuthenticationService _authService
+@inject Blazor.Auth0.ClientSide.Authentication.AuthenticationService _authService
 
-@*This component helps you to render the proper content in regards the current user session state, its usage is optional*@
 <AuthComponent>
 
+    @*Will render while determining user's session state*@
     <UndefinedSessionStateContent>
-        @*Will render this content while the Authentication service determines the current user's session state*@
         Determining session state, please wait...
     </UndefinedSessionStateContent>
-    
+
+    @*Will render after determining session state*@
     <ActiveInactiveSessionStateContent>
-        @*Will render this content after determining session state (in this case it can be either Active or Inactive)*@
-        
+
         <div class="sidebar">
             <NavMenu />
         </div>
 
         <div class="main">
             <div class="top-row px-4">
-                @if (_authService.SessionState == Auth0.Models.Enumerations.SessionStates.Active)
+                @if (_authService.SessionState == Blazor.Auth0.ClientSide.Models.Enumerations.SessionStates.Active)
                 {
                     <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
                 }
