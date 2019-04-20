@@ -1,10 +1,4 @@
-﻿@inherits Microsoft.AspNetCore.Components.ComponentBase
-@using Microsoft.AspNetCore.Components
-
-@using Blazor.Auth0.ClientSide.Models.Enumerations
-@using Blazor.Auth0.ClientSide.Authentication
-
-@inject AuthenticationService _authService
+﻿@inject AuthenticationService _authService
 
 @if (_authService.SessionState == SessionStates.Undefined)
 {

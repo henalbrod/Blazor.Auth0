@@ -14,7 +14,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
     <!--<OutputType>Library</OutputType>-->
-    <Version>0.3.0-alpha-2</Version>
+    <Version>0.3.0-alpha-3</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication using Auth0 Authorization Code Grant Flow, Universal Login &amp; Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -30,16 +30,21 @@
     
   </PropertyGroup>
 
- <ItemGroup>
+  <ItemGroup>
     <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
     <EmbeddedResource Include="Content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="Content\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="Content\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
-  </ItemGroup>  
-  
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="*.razor">
+      <Pack>false</Pack>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview4-19216-03" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview4-19216-03" />
   </ItemGroup>
-
+  
 </Project>
