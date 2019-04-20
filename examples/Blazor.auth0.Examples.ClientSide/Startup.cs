@@ -11,8 +11,8 @@ namespace Blazor.Auth0.Examples.ClientSide
             {
                 return new Auth0.ClientSide.Models.ClientSettings()
                 {
-                    Auth0Domain = "[Auth0_Domain]",
-                    Auth0ClientId = "[Auth0_Client_Id]",
+                    Auth0Domain = "blazor-demo.auth0.com",
+                    Auth0ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
                     //// Redirection to home can be forced uncommenting the following line, this setting primes over Auth0RedirectUri
                     // RedirectAlwaysToHome = true,
                     //// Uncomment following line to force the user to be authenticated

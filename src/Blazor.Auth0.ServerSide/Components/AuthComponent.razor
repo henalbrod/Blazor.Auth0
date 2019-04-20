@@ -1,0 +1,48 @@
+﻿@inject AuthenticationService _authService
+
+@if (_authService.SessionState == SessionStates.Undefined)
+{
+    @UndefinedSessionStateContent
+}
+
+@if (_authService.SessionState == SessionStates.Active)
+{
+    @ActiveSessionStateContent
+}
+
+@if (_authService.SessionState == SessionStates.Inactive)
+{
+    @InactiveSessionStateContent
+}
+
+@if (_authService.SessionState == SessionStates.Inactive || _authService.SessionState == SessionStates.Active)
+{
+    @ActiveInactiveSessionStateContent
+}
+
+@functions{
+
+    [Parameter]
+    private RenderFragment UndefinedSessionStateContent { get; set; }
+
+    [Parameter]
+    private RenderFragment ActiveSessionStateContent { get; set; }
+
+    [Parameter]
+    private RenderFragment InactiveSessionStateContent { get; set; }
+
+    [Parameter]
+    private RenderFragment ActiveInactiveSessionStateContent { get; set; }
+
+    protected override void OnInit()
+    {
+        _authService.OnSessionStateChanged += OnSessionStateChangeHandler;
+        base.OnInit();
+    }
+
+    protected void OnSessionStateChangeHandler(object sender, SessionStates state)
+    {
+        StateHasChanged();
+    }
+
+}

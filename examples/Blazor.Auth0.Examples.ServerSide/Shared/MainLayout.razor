@@ -1,0 +1,40 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationService _authService
+
+<AuthComponent>
+
+    @*Will render while determining user's session state*@
+    <UndefinedSessionStateContent>
+        Determining session state, please wait...
+    </UndefinedSessionStateContent>
+
+    @*Will render after determining session state*@
+    <ActiveInactiveSessionStateContent>
+
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <div class="main">
+            <div class="top-row px-4">
+                @if (_authService.SessionState == Blazor.Auth0.Shared.Models.Enumerations.SessionStates.Active)
+                {
+                    <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
+                }
+                else
+                {
+                    <a href="" class="ml-md-auto" onclick="@_authService.Authorize">LogIn</a>
+                }
+            </div>
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
+
+    </ActiveInactiveSessionStateContent>
+
+    @*There's also options for showing content on Active & Inactive session states alone*@
+    <ActiveSessionStateContent></ActiveSessionStateContent>
+    <InactiveSessionStateContent></InactiveSessionStateContent>
+
+</AuthComponent>
