@@ -21,22 +21,22 @@ namespace Blazor.Auth0.Examples.ServerSide
         {        
 
             services.AddRazorPages();
-            services.AddServerSideBlazor();            
+            services.AddServerSideBlazor();
 
             services.AddScoped<HttpClient>();
             services.AddScoped((sp) =>
             {
-                return new Auth0.Shared.Models.ClientSettings()
+                return new Blazor.Auth0.Shared.Models.ClientSettings()
                 {
-                    Auth0Domain = "blazor-demo.auth0.com",
-                    Auth0ClientId = "ZTMQoX1IpWJoDxW74PXMc9XNGcy1blYZ",
+                    Auth0Domain = "[Auth0_Domain]",
+                    Auth0ClientId = "[Auth0_Client_Id]",
                     //// Redirection to home can be forced uncommenting the following line, this setting primes over Auth0RedirectUri
                     // RedirectAlwaysToHome = true,
                     //// Uncomment following line to force the user to be authenticated
                     // LoginRequired = true
                 };
             });
-            services.AddScoped<Auth0.ServerSide.Authentication.AuthenticationService>();
+            services.AddScoped<Blazor.Auth0.ServerSide.Authentication.AuthenticationService>();
             
             services.AddSingleton<WeatherForecastService>();
 

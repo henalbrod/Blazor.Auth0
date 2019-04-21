@@ -7,12 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.ServerSide", "Blazor.Auth0.Examples.ServerSide\Blazor.Auth0.Examples.ServerSide.csproj", "{62B5CB15-1B9E-4ABA-B95B-0491082E1353}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.ServerSide", "..\src\Blazor.Auth0.ServerSide\Blazor.Auth0.ServerSide.csproj", "{0557576F-4D3C-4BF9-8836-0A7B11A4B56C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.ClientSide", "..\src\Blazor.Auth0.ClientSide\Blazor.Auth0.ClientSide.csproj", "{AFBF06F9-E60C-4067-B6F8-19FBE221CBF5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Auth0.Shared", "..\src\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj", "{492A237D-29F9-4669-B108-DE9089898D1F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,18 +21,6 @@ Global
 		{62B5CB15-1B9E-4ABA-B95B-0491082E1353}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62B5CB15-1B9E-4ABA-B95B-0491082E1353}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62B5CB15-1B9E-4ABA-B95B-0491082E1353}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0557576F-4D3C-4BF9-8836-0A7B11A4B56C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0557576F-4D3C-4BF9-8836-0A7B11A4B56C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0557576F-4D3C-4BF9-8836-0A7B11A4B56C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0557576F-4D3C-4BF9-8836-0A7B11A4B56C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFBF06F9-E60C-4067-B6F8-19FBE221CBF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFBF06F9-E60C-4067-B6F8-19FBE221CBF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFBF06F9-E60C-4067-B6F8-19FBE221CBF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFBF06F9-E60C-4067-B6F8-19FBE221CBF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{492A237D-29F9-4669-B108-DE9089898D1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{492A237D-29F9-4669-B108-DE9089898D1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{492A237D-29F9-4669-B108-DE9089898D1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{492A237D-29F9-4669-B108-DE9089898D1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

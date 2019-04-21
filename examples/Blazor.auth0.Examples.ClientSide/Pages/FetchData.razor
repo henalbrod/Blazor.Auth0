@@ -1,11 +1,8 @@
 ﻿@page "/fetchdata"
 
 @using System.Net.Http
-@using Microsoft.AspNetCore.Components
 
-@inherits Microsoft.AspNetCore.Components.ComponentBase
-
-@inject Blazor.Auth0.ClientSide.Authentication.AuthenticationService _authService
+@inject AuthenticationService _authService
 @inject HttpClient _httpClient
 
 <h1>Weather forecast</h1>
@@ -48,7 +45,7 @@ else
     {
 
         // Enforcing user log-in for this page
-        if (_authService.SessionState != Blazor.Auth0.ClientSide.Models.Enumerations.SessionStates.Active)
+        if (_authService.SessionState != SessionStates.Active)
         {
             _authService.Authorize();
         }

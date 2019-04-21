@@ -1,7 +1,7 @@
 @page "/fetchdata"
 @using Blazor.Auth0.Examples.ServerSide.Data
 @inject WeatherForecastService ForecastService
-@inject Blazor.Auth0.ServerSide.Authentication.AuthenticationService _authService
+@inject AuthenticationService _authService
 
 <h1>Weather forecast</h1>
 
@@ -42,7 +42,7 @@ else
     protected override async Task OnInitAsync()
     {
         // Enforcing user log-in for this page
-        if (_authService.SessionState != Blazor.Auth0.Shared.Models.Enumerations.SessionStates.Active)
+        if (_authService.SessionState != SessionStates.Active)
         {
             _authService.Authorize();
         }

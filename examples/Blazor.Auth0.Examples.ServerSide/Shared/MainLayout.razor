@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazor.Auth0.ServerSide.Components
+@using Blazor.Auth0.ServerSide.Authentication
+@inherits LayoutComponentBase
 @inject AuthenticationService _authService
 
 <AuthComponent>
@@ -17,7 +19,7 @@
 
         <div class="main">
             <div class="top-row px-4">
-                @if (_authService.SessionState == Blazor.Auth0.Shared.Models.Enumerations.SessionStates.Active)
+                @if (_authService.SessionState == SessionStates.Active)
                 {
                     <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
                 }

@@ -1,6 +1,4 @@
-﻿using Blazor.Auth0.ClientSide.Models;
-using Blazor.Auth0.ClientSide.Models.Enumerations;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,33 +9,42 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Timers;
 using Microsoft.AspNetCore.Components;
+using Blazor.Auth0.Shared.Models.Enumerations;
+using Blazor.Auth0.Shared.Models;
 
-namespace Blazor.Auth0.ClientSide.Authentication
+namespace Blazor.Auth0.Shared.Authentication
 {
-    public class AuthenticationService
+    public abstract class AuthenticationServiceBase
     {
         public EventHandler<SessionStates> OnSessionStateChanged { get; set; }
         public UserInfoDto User { get; private set; }
         public SessionStates SessionState { get; private set; }
 
-        private readonly ClientSettings clientSettings;
-        private readonly IUriHelper uriHelperService;
-        private readonly HttpClient httpClientService;
-        private readonly IJSInProcessRuntime jsInProcessRuntimeService;
-        private string latestAuthorizeUrlCodeChallenge;
-        private string latestAuthorizeUrlState;
-        private string latestAuthorizeUrRedirectUri;
-        private TokenInfo currentSessionTokenInfo;
-        private Timer nextSilentLoginTimer;
+        protected readonly ClientSettings clientSettings;
+        protected readonly IUriHelper uriHelperService;
+        protected readonly HttpClient httpClientService;
+        protected readonly IJSRuntime jsRuntimeService;
+        protected string latestAuthorizeUrlCodeChallenge;
+        protected string latestAuthorizeUrlState;
+        protected string latestAuthorizeUrRedirectUri;
+        protected TokenInfo currentSessionTokenInfo;
 
-        public AuthenticationService(HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientSettings settings)
+        protected Timer nextSilentLoginTimer;
+        protected Timer injectJavascriptTimer;
+
+        protected IComponentContext componentContextService;
+
+        public AuthenticationServiceBase(IComponentContext componentContext, HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientSettings settings)
         {
+            componentContextService = componentContext;
             httpClientService = httpClient;
-            jsInProcessRuntimeService = (jsRuntime as IJSInProcessRuntime);
+            jsRuntimeService = jsRuntime;
             uriHelperService = uriHelper;
             clientSettings = settings;
 
-            ValidateSession();
+            injectJavascriptTimer = new Timer(50);
+            injectJavascriptTimer.Elapsed += async (Object source, ElapsedEventArgs e) => await InjectJavascript();
+            injectJavascriptTimer.Start();
 
         }
 
@@ -51,7 +58,7 @@ namespace Blazor.Auth0.ClientSide.Authentication
             latestAuthorizeUrlState = GenerateNonce();
             var nonce = GenerateNonce();
 
-            jsInProcessRuntimeService.Invoke<object>("setNonce", nonce);
+            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("setNonce", nonce)).ConfigureAwait(false);
 
             if (clientSettings.RedirectAlwaysToHome)
             {
@@ -106,7 +113,7 @@ namespace Blazor.Auth0.ClientSide.Authentication
         }
         public void ValidateSession()
         {
-            jsInProcessRuntimeService.Invoke<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none");
+            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none")).ConfigureAwait(false);
         }
         /// <summary>
         /// Makes a call to the /userinfo endpoint and returns the user profile
@@ -134,16 +141,13 @@ namespace Blazor.Auth0.ClientSide.Authentication
             return null;
 
         }
-        /// <summary>
-        /// Meant for internal API use only.
-        /// </summary>
-        [JSInvokable]
-        public async Task HandleAuth0Message(Auth0IframeMessage message)
+
+        virtual public async Task HandleAuth0Message(Auth0IframeMessage message)
         {
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var validationError = ValidateAth0IframeMessage(message);
-            
-           TokenInfo tokenInfo = null;
+
+            TokenInfo tokenInfo = null;
 
             if (string.IsNullOrEmpty(validationError))
             {
@@ -164,12 +168,12 @@ namespace Blazor.Auth0.ClientSide.Authentication
                         break;
                     default:
 
-                        tokenInfo = await GetAccessToken(message.Code);                        
+                        tokenInfo = await GetAccessToken(message.Code);
 
                         break;
                 }
 
-                var nonceIsValid = ValidateNonce(tokenInfo.id_token);
+                var nonceIsValid = await ValidateNonce(tokenInfo.id_token);
                 var atHashIsValid = ValidateAccessTokenHash(tokenInfo.id_token, tokenInfo.access_token);
 
                 if (!nonceIsValid)
@@ -177,9 +181,9 @@ namespace Blazor.Auth0.ClientSide.Authentication
                     validationError = "Invalid Nonce";
                 }
 
-                if(!atHashIsValid)
+                if (!atHashIsValid)
                 {
-                     validationError = "Invalid at_hash";
+                    validationError = "Invalid at_hash";
                 }
 
             }
@@ -187,7 +191,7 @@ namespace Blazor.Auth0.ClientSide.Authentication
             if (string.IsNullOrEmpty(validationError))
             {
 
-                 currentSessionTokenInfo = tokenInfo;
+                currentSessionTokenInfo = tokenInfo;
 
                 ScheduleSilentLogin();
 
@@ -219,8 +223,8 @@ namespace Blazor.Auth0.ClientSide.Authentication
                 nextSilentLoginTimer?.Stop();
                 nextSilentLoginTimer?.Dispose();
                 SetIsLoggedIn(false);
-                Console.WriteLine("Login Error: " + validationError);                                
-                    
+                Console.WriteLine("Login Error: " + validationError);
+
                 if (message.Error.ToLower() == "login_required" && clientSettings.LoginRequired)
                 {
                     uriHelperService.NavigateTo(BuildAuthorizeUrl());
@@ -275,7 +279,7 @@ namespace Blazor.Auth0.ClientSide.Authentication
         }
         private void SetIsLoggedIn(bool value)
         {
-            jsInProcessRuntimeService.Invoke<object>("setIsLoggedIn", value);
+            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("setIsLoggedIn", value)).ConfigureAwait(false);
         }
         private async Task<TokenInfo> GetAccessToken(string code)
         {
@@ -295,13 +299,13 @@ namespace Blazor.Auth0.ClientSide.Authentication
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return Json.Deserialize<TokenInfo>(responseText);                
+                return Json.Deserialize<TokenInfo>(responseText);
             }
 
             return null;
 
         }
-        private UserInfoDto DecodeTokenPayload(string token)
+        protected UserInfoDto DecodeTokenPayload(string token)
         {
 
             string tokenPayload = token.Split('.')[1].Replace('-', '+').Replace('_', '/');
@@ -447,18 +451,20 @@ namespace Blazor.Auth0.ClientSide.Authentication
             return result;
 
         }
-        private bool ValidateNonce(string idToken) {
+
+        virtual protected async Task<bool> ValidateNonce(string idToken)
+        {
 
             var idTokenPayload = DecodeTokenPayload(idToken);
-            var nonce = jsInProcessRuntimeService.Invoke<string>("getNonce",null).Replace(' ', '+');
+            var nonce = await jsRuntimeService.InvokeAsync<string>("getNonce", null);
             var idTokenNonce = idTokenPayload.CustomClaims["nonce"]?.ToString().Replace(' ', '+');
 
-            jsInProcessRuntimeService.Invoke<string>("clearNonce", null);
+            var task = jsRuntimeService.InvokeAsync<string>("clearNonce", null).ConfigureAwait(false);
 
-            return nonce.Equals(idTokenNonce);
+            return nonce.Replace(' ', '+').Equals(idTokenNonce);
 
         }
-        private bool ValidateAccessTokenHash(string idToken, string accessToken)
+        protected bool ValidateAccessTokenHash(string idToken, string accessToken)
         {
             var atHashName = "at_hash";
             var idTokenPayload = DecodeTokenPayload(idToken);
@@ -480,14 +486,91 @@ namespace Blazor.Auth0.ClientSide.Authentication
                 return accessTokenHash.Equals(idTokenPayload.CustomClaims["at_hash"]);
 
             }
-            else {
+            else
+            {
 
-                if (clientSettings.AuthenticationGrant == AuthenticationGrantTypes.implicit_grant) {
+                if (clientSettings.AuthenticationGrant == AuthenticationGrantTypes.implicit_grant)
+                {
                     Console.WriteLine("WARNING: No at_hash claim was present in the id_token.");
                 }
 
                 return true;
 
+            }
+
+        }
+
+
+        private async Task InjectJavascript()
+        {
+
+            injectJavascriptTimer.Stop();
+
+            if (componentContextService.IsConnected)
+            {
+                var magicString = @"
+(function (window, document) {
+
+    window.isLoggedIn = () => localStorage.getItem('isLoggedIn') === 'true';
+    window.setIsLoggedIn = (val) => localStorage.setItem('isLoggedIn', val);
+    window.getNonce = () => localStorage.getItem('nonce');
+    window.setNonce = (val) => localStorage.setItem('nonce', val);
+    window.clearNonce = () => localStorage.removeItem('nonce');
+
+    window.drawAuth0Iframe = (instance, src) => {
+
+        console.log('instance: ', instance);
+        console.log('src: ', src);
+
+        let iframe = document.createElement('iframe');
+        iframe.setAttribute('src', src);
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        var messageListener = (msg) => {
+            if (msg.data.type == 'authorization_response') {
+                window.removeEventListener('message', messageListener);
+                instance.invokeMethodAsync('HandleAuth0Message', {
+                    isTrusted: msg.isTrusted,
+                    origin: msg.origin,
+                    type: msg.data.type,
+                    state: msg.data.response.state,
+                    error: msg.data.response.error,
+                    errorDescription: msg.data.response.error_description,
+                    // Code Grant (Recommended)
+                    code: msg.data.response.code,
+                    // Implicit Grant (Legacy)
+                    accessToken: msg.data.response.access_token,
+                    idToken: msg.data.response.id_token,
+                    scope: msg.data.response.scope,
+                    tokenType: msg.data.response.token_type,
+                    expiresIn: msg.data.response.expires_in
+                }).then((r) => { document.body.removeChild(iframe); });
+            }
+        };
+        window.addEventListener('message', messageListener);
+    };
+
+})(this, this.document);";
+
+                // Dispose timer no matter if the js call works
+                injectJavascriptTimer.Dispose();
+
+                Console.WriteLine("Inject JS begin...");
+
+                // Call the eval with the magic string
+                var result = await jsRuntimeService.InvokeAsync<object>("eval", magicString);
+
+                Console.WriteLine("Inject JS ready...");
+
+                // If all goes well call the validate session method
+                ValidateSession();
+
+                Console.WriteLine("Validate session called...");
+
+            }
+            else
+            {
+                injectJavascriptTimer.Start();
             }
 
         }

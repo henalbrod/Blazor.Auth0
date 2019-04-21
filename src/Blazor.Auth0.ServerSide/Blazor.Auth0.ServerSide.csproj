@@ -4,34 +4,32 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <PackageId>Blazor-Auth0-ServerSide</PackageId>
+    <Version>0.1.0-alpha-1</Version>
+    <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
+    <Company>Henry Alberto Rodriguez Rodriguez</Company>
+    <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
+    <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Pegazux/Blazor.Auth0</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
+    <PackageReleaseNotes>- Passwordless implementation for MagicLinks via email</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Content\blazor_auth0.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Content\blazor_auth0.js">
-      <LogicalName>blazor:js:%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="_Imports.razor">
-      <Pack>false</Pack>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazor-Auth0-Shared" Version="0.1.0-alpha-1" />
   </ItemGroup>
 
 </Project>
