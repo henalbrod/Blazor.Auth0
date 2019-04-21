@@ -9,10 +9,18 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 ## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0-ClientSide.0.3.0-alpha-3 to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0-ClientSide.0.4.0-alpha-1 for client side and Blazor-Auth0-ServerSide.0.1.0-alpha-1 for server side to your Blazor Client Side project
+
+### Client Side
 
 ```
-Install-Package Blazor-Auth0-ClientSide -Version 0.3.0-alpha-3
+Install-Package Blazor-Auth0-ClientSide -Version 0.4.0-alpha-1
+````
+
+### Server Side
+
+```
+Install-Package Blazor-Auth0-ServerSide -Version 0.1.0-alpha-1
 ````
 
 
@@ -25,26 +33,29 @@ Install-Package Blazor-Auth0-ClientSide -Version 0.3.0-alpha-3
 
             services.AddScoped((sp) =>
             {
-                return new Blazor.Auth0.ClientSide.Models.ClientSettings()
+                return new Blazor.Auth0.Shared.Models.ClientSettings()
                 {
                     Auth0Domain = "[Auth0_Domain]",
                     Auth0ClientId = "[Auth0_Client_Id]"
                 };
             });
 
-            services.AddScoped<Blazor.Auth0.ClientSide.Authentication.AuthenticationService>();
+            services.AddScoped<Blazor.Auth0.[ClientSide|ServerSide].Authentication.AuthenticationService>();
         }
 ```
 
 
-3) Replace the content of *MainLayout.cshtml* with the following code
+3) Replace the content of *MainLayout.razor* with the following code
 
 
 ```C#
-@using Microsoft.AspNetCore.Components.Layouts
-@using Blazor.Auth0.ClientSide.Components
+@using Blazor.Auth0.Shared.Models.Enumerations
+@using Blazor.Auth0.[ClientSide|ServerSide].Components
+@using Blazor.Auth0.[ClientSide|ServerSide].Authentication
+
 @inherits LayoutComponentBase
-@inject Blazor.Auth0.ClientSide.Authentication.AuthenticationService _authService
+
+@inject AuthenticationService _authService
 
 <AuthComponent>
 
@@ -62,7 +73,7 @@ Install-Package Blazor-Auth0-ClientSide -Version 0.3.0-alpha-3
 
         <div class="main">
             <div class="top-row px-4">
-                @if (_authService.SessionState == Blazor.Auth0.ClientSide.Models.Enumerations.SessionStates.Active)
+                @if (_authService.SessionState == SessionStates.Active)
                 {
                     <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
                 }
@@ -95,9 +106,3 @@ Install-Package Blazor-Auth0-ClientSide -Version 0.3.0-alpha-3
 * **LoginRequired**: When set to true, forces a redirection to the login page in case the user is not authenticated.
 
 * **GetUserInfoFromIdToken**: When set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default value is *false*
-
-
-### Known issues
-
-
-- No server-side support yet
