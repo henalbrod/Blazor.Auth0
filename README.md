@@ -9,7 +9,7 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 ## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0-ClientSide.0.4.0-alpha-1 for client side and Blazor-Auth0-ServerSide.0.1.0-alpha-1 for server side to your Blazor Client Side project
+1) Start by adding a reference to Blazor-Auth0-ClientSide.0.4.0-alpha-1 for client side and Blazor-Auth0-ServerSide.0.1.0-alpha-1 for server side to your Blazor project
 
 ### Client Side
 
