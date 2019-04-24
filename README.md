@@ -30,6 +30,8 @@ Install-Package Blazor-Auth0-ServerSide -Version 0.1.0-alpha-1
 ```C#
         public void ConfigureServices(IServiceCollection services)
         {
+            // Uncomment for Server Side implementations
+            // services.AddScoped<HttpClient>();
 
             services.AddScoped((sp) =>
             {
