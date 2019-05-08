@@ -8,13 +8,10 @@
       https://dotnet.myget.org/F/blazor-dev/api/v3/index.json;
     </RestoreAdditionalProjectSources>
     <LangVersion>7.3</LangVersion>
-    <RazorLangVersion>3.0</RazorLangVersion>
-    
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <RazorLangVersion>3.0</RazorLangVersion>    
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
-    <!--<OutputType>Library</OutputType>-->
-    <Version>0.4.0-alpha-1</Version>
+    <Version>0.4.0-alpha-2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -26,22 +23,20 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>- Removed js content reference, now it can be used in both Client and Server side, but, for server side is recommended to use Blazor-Auth0-ServerSide
-- New Passwordless implementation for MagicLinks via email
-- Models namespace moved out into Shared</PackageReleaseNotes>    
+    <PackageReleaseNotes>Updated to preview 5</PackageReleaseNotes>    
     
   </PropertyGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Content Update="*.razor">
       <Pack>false</Pack>
     </Content>
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="0.1.0-alpha-1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview4-19216-03" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Blazor-Auth0-Shared" Version="0.1.0-alpha-2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview5-19227-01" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview5-19227-01" />
   </ItemGroup>
   
 </Project>
