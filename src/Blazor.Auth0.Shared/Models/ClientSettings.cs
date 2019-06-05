@@ -48,5 +48,6 @@ namespace Blazor.Auth0.Shared.Models
         /// When set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default = false
         /// </summary>
         public bool GetUserInfoFromIdToken { get; set; } = false;
+
     }
 }

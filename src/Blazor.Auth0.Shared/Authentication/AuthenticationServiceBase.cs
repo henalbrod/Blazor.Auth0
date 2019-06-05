@@ -19,6 +19,7 @@ namespace Blazor.Auth0.Shared.Authentication
         public EventHandler<SessionStates> OnSessionStateChanged { get; set; }
         public UserInfoDto User { get; private set; }
         public SessionStates SessionState { get; private set; }
+        public SessionInfo SessionInfo { get; private set; }
 
         protected readonly ClientSettings clientSettings;
         protected readonly IUriHelper uriHelperService;
@@ -27,12 +28,21 @@ namespace Blazor.Auth0.Shared.Authentication
         protected string latestAuthorizeUrlCodeChallenge;
         protected string latestAuthorizeUrlState;
         protected string latestAuthorizeUrRedirectUri;
-        protected TokenInfo currentSessionTokenInfo;
 
         protected Timer nextSilentLoginTimer;
         protected Timer injectJavascriptTimer;
 
         protected IComponentContext componentContextService;
+
+        private struct Auth0GetAccessTokenResponseDto
+        {
+            public string access_token;
+            public int expires_in;
+            public string id_token;
+            public string refresh_token;
+            public string scope;
+            public string token_type;
+        }
 
         public AuthenticationServiceBase(IComponentContext componentContext, HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientSettings settings)
         {
@@ -147,7 +157,7 @@ namespace Blazor.Auth0.Shared.Authentication
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var validationError = ValidateAth0IframeMessage(message);
 
-            TokenInfo tokenInfo = null;
+            SessionInfo sessionInfo = null;
 
             if (string.IsNullOrEmpty(validationError))
             {
@@ -156,25 +166,25 @@ namespace Blazor.Auth0.Shared.Authentication
                 {
                     case AuthenticationGrantTypes.implicit_grant:
 
-                        tokenInfo = new TokenInfo()
+                        sessionInfo = new SessionInfo()
                         {
-                            access_token = message.AccessToken,
-                            expires_in = message.ExpiresIn,
-                            id_token = message.IdToken,
-                            scope = message.Scope,
-                            token_type = message.TokenType
+                            AccessToken = message.AccessToken,
+                            ExpiresIn = message.ExpiresIn,
+                            IdToken = message.IdToken,
+                            Scope = message.Scope,
+                            TokenType = message.TokenType
                         };
 
                         break;
                     default:
 
-                        tokenInfo = await GetAccessToken(message.Code);
+                        sessionInfo = await GetAccessToken(message.Code);
 
                         break;
                 }
 
-                var nonceIsValid = await ValidateNonce(tokenInfo.id_token);
-                var atHashIsValid = ValidateAccessTokenHash(tokenInfo.id_token, tokenInfo.access_token);
+                var nonceIsValid = await ValidateNonce(sessionInfo.IdToken);
+                var atHashIsValid = ValidateAccessTokenHash(sessionInfo.IdToken, sessionInfo.AccessToken);
 
                 if (!nonceIsValid)
                 {
@@ -191,19 +201,19 @@ namespace Blazor.Auth0.Shared.Authentication
             if (string.IsNullOrEmpty(validationError))
             {
 
-                currentSessionTokenInfo = tokenInfo;
+                SessionInfo = sessionInfo;
 
                 ScheduleSilentLogin();
 
-                if (clientSettings.GetUserInfoFromIdToken && !string.IsNullOrEmpty(currentSessionTokenInfo.id_token))
+                if (clientSettings.GetUserInfoFromIdToken && !string.IsNullOrEmpty(SessionInfo.IdToken))
                 {
                     // Decode JWT payload into user info
-                    User = DecodeTokenPayload(currentSessionTokenInfo.id_token);
+                    User = DecodeTokenPayload(SessionInfo.IdToken);
                 }
                 else
                 {
                     // In case we're not getting the id_token from the message response or GetUserInfoFromIdToken is set to false try to get it from Auth0's API
-                    User = await UserInfo(currentSessionTokenInfo.access_token);
+                    User = await UserInfo(SessionInfo.AccessToken);
                 }
 
                 SessionState = SessionStates.Active;
@@ -217,7 +227,7 @@ namespace Blazor.Auth0.Shared.Authentication
 
                 SessionState = SessionStates.Inactive;
                 User = null;
-                currentSessionTokenInfo = null;
+                SessionInfo = null;
                 latestAuthorizeUrlCodeChallenge = null;
                 latestAuthorizeUrlState = null;
                 nextSilentLoginTimer?.Stop();
@@ -280,8 +290,9 @@ namespace Blazor.Auth0.Shared.Authentication
         private void SetIsLoggedIn(bool value)
         {
             Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("setIsLoggedIn", value)).ConfigureAwait(false);
-        }
-        private async Task<TokenInfo> GetAccessToken(string code)
+        }        
+
+        private async Task<SessionInfo> GetAccessToken(string code)
         {
 
             HttpContent content = new StringContent(Json.Serialize(new
@@ -293,13 +304,25 @@ namespace Blazor.Auth0.Shared.Authentication
                 redirect_uri = latestAuthorizeUrRedirectUri
             }), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await httpClientService.PostAsync($@"https://{clientSettings.Auth0Domain}/oauth/token", content);
 
-            var responseText = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage httpResponseMessage = await httpClientService.PostAsync($@"https://{clientSettings.Auth0Domain}/oauth/token", content);            
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            var responseText = await httpResponseMessage.Content.ReadAsStringAsync();
+
+            if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return Json.Deserialize<TokenInfo>(responseText);
+
+                var sessionInfo = Json.Deserialize<Auth0GetAccessTokenResponseDto>(responseText);
+
+                return new SessionInfo()
+                {
+                    AccessToken = sessionInfo.access_token,
+                    ExpiresIn = sessionInfo.expires_in,
+                    IdToken = sessionInfo.id_token,
+                    RefreshToken = sessionInfo.refresh_token,
+                    Scope = sessionInfo.scope,
+                    TokenType = sessionInfo.token_type
+                };
             }
 
             return null;
@@ -422,7 +445,7 @@ namespace Blazor.Auth0.Shared.Authentication
                 };
             }
 
-            nextSilentLoginTimer.Interval = currentSessionTokenInfo.expires_in - 5000;
+            nextSilentLoginTimer.Interval = SessionInfo.ExpiresIn - 5000;
 
             nextSilentLoginTimer.Start();
 

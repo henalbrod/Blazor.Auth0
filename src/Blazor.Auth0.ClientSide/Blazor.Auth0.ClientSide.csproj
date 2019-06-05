@@ -11,7 +11,7 @@
     <RazorLangVersion>3.0</RazorLangVersion>    
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
-    <Version>0.4.0-alpha-2</Version>
+    <Version>0.5.0-alpha-1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -23,7 +23,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>Updated to preview 5</PackageReleaseNotes>    
+    <PackageReleaseNotes>Added new "SessionInfo" property to AuthenticationServiceBase to enable access to Retrieved Access Token [https://github.com/Pegazux/Blazor.Auth0/issues/2]</PackageReleaseNotes>    
     
   </PropertyGroup>
 
@@ -34,7 +34,7 @@
   </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="0.1.0-alpha-2" />
+    <PackageReference Include="Blazor-Auth0-Shared" Version="0.2.0-alpha-1" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview5-19227-01" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview5-19227-01" />
   </ItemGroup>
