@@ -104,10 +104,8 @@ namespace Blazor.Auth0.Shared.Authentication
         }
         public string BuildLogoutUrl()
         {
-
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var host = abosulteUri.GetLeftPart(UriPartial.Authority);
-            SetIsLoggedIn(false);
             return $"https://{clientSettings.Auth0Domain}/v2/logout?" +
                    $"client_id={clientSettings.Auth0ClientId}" +
                    $"&returnTo={(clientSettings.RedirectAlwaysToHome ? host : string.IsNullOrEmpty(clientSettings.Auth0RedirectUri) ? host : clientSettings.Auth0RedirectUri)}";
@@ -119,6 +117,7 @@ namespace Blazor.Auth0.Shared.Authentication
         }
         public void LogOut()
         {
+            ClearSession();
             uriHelperService.NavigateTo(BuildLogoutUrl());
         }
         public void ValidateSession()
@@ -154,6 +153,8 @@ namespace Blazor.Auth0.Shared.Authentication
 
         virtual public async Task HandleAuth0Message(Auth0IframeMessage message)
         {
+
+            var previousSessionState = SessionState;
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var validationError = ValidateAth0IframeMessage(message);
 
@@ -216,23 +217,16 @@ namespace Blazor.Auth0.Shared.Authentication
                     User = await UserInfo(SessionInfo.AccessToken);
                 }
 
+
                 SessionState = SessionStates.Active;
-                SetIsLoggedIn(true);
-                InvokeOnSessionStateChanged();
 
             }
 
             if (!string.IsNullOrEmpty(validationError))
             {
 
-                SessionState = SessionStates.Inactive;
-                User = null;
-                SessionInfo = null;
-                latestAuthorizeUrlCodeChallenge = null;
-                latestAuthorizeUrlState = null;
-                nextSilentLoginTimer?.Stop();
-                nextSilentLoginTimer?.Dispose();
-                SetIsLoggedIn(false);
+                ClearSession();
+
                 Console.WriteLine("Login Error: " + validationError);
 
                 if (message.Error.ToLower() == "login_required" && clientSettings.LoginRequired)
@@ -240,8 +234,12 @@ namespace Blazor.Auth0.Shared.Authentication
                     uriHelperService.NavigateTo(BuildAuthorizeUrl());
                 }
 
-                InvokeOnSessionStateChanged();
+            }
 
+            if (previousSessionState != SessionState)
+            {
+                SetIsLoggedIn();
+                InvokeOnSessionStateChanged();
             }
 
             // Redirect to home (removing the hash)
@@ -268,12 +266,6 @@ namespace Blazor.Auth0.Shared.Authentication
 
                         loginError = "Login Required";
 
-                        if (clientSettings.LoginRequired)
-                        {
-                            SetIsLoggedIn(false);
-                            uriHelperService.NavigateTo(BuildAuthorizeUrl());
-                        }
-
                         break;
                     default:
                         loginError = message.ErrorDescription;
@@ -287,10 +279,24 @@ namespace Blazor.Auth0.Shared.Authentication
             return loginError;
 
         }
-        private void SetIsLoggedIn(bool value)
+        private void ClearSession()
         {
-            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("setIsLoggedIn", value)).ConfigureAwait(false);
-        }        
+            SessionState = SessionStates.Inactive;
+            User = null;
+            SessionInfo = null;
+            latestAuthorizeUrlCodeChallenge = null;
+            latestAuthorizeUrlState = null;
+            nextSilentLoginTimer?.Stop();
+            nextSilentLoginTimer?.Dispose();
+            SetIsLoggedIn();
+        }
+        /// <summary>
+        /// This should be called just after writing SessionState value
+        /// </summary>
+        private void SetIsLoggedIn()
+        {
+            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("setIsLoggedIn", SessionState == SessionStates.Active)).ConfigureAwait(false);
+        }
 
         private async Task<SessionInfo> GetAccessToken(string code)
         {
@@ -305,7 +311,7 @@ namespace Blazor.Auth0.Shared.Authentication
             }), Encoding.UTF8, "application/json");
 
 
-            HttpResponseMessage httpResponseMessage = await httpClientService.PostAsync($@"https://{clientSettings.Auth0Domain}/oauth/token", content);            
+            HttpResponseMessage httpResponseMessage = await httpClientService.PostAsync($@"https://{clientSettings.Auth0Domain}/oauth/token", content);
 
             var responseText = await httpResponseMessage.Content.ReadAsStringAsync();
 
@@ -445,7 +451,7 @@ namespace Blazor.Auth0.Shared.Authentication
                 };
             }
 
-            nextSilentLoginTimer.Interval = SessionInfo.ExpiresIn - 5000;
+            nextSilentLoginTimer.Interval = (SessionInfo.ExpiresIn - 5) * 1000;
 
             nextSilentLoginTimer.Start();
 
@@ -541,54 +547,61 @@ namespace Blazor.Auth0.Shared.Authentication
     window.clearNonce = () => localStorage.removeItem('nonce');
 
     window.drawAuth0Iframe = (instance, src) => {
+";
 
-        console.log('instance: ', instance);
-        console.log('src: ', src);
+#if DEBUG
+                magicString += @"
+    console.log('instance: ', instance);
+    console.log('src: ', src);";
+#endif
 
-        let iframe = document.createElement('iframe');
-        iframe.setAttribute('src', src);
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        var messageListener = (msg) => {
-            if (msg.data.type == 'authorization_response') {
-                window.removeEventListener('message', messageListener);
-                instance.invokeMethodAsync('HandleAuth0Message', {
-                    isTrusted: msg.isTrusted,
-                    origin: msg.origin,
-                    type: msg.data.type,
-                    state: msg.data.response.state,
-                    error: msg.data.response.error,
-                    errorDescription: msg.data.response.error_description,
-                    // Code Grant (Recommended)
-                    code: msg.data.response.code,
-                    // Implicit Grant (Legacy)
-                    accessToken: msg.data.response.access_token,
-                    idToken: msg.data.response.id_token,
-                    scope: msg.data.response.scope,
-                    tokenType: msg.data.response.token_type,
-                    expiresIn: msg.data.response.expires_in
-                }).then((r) => { document.body.removeChild(iframe); });
-            }
-        };
-        window.addEventListener('message', messageListener);
+                magicString += @"
+    let iframe = document.createElement('iframe');
+    iframe.setAttribute('src', src);
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    var messageListener = (msg) => {
+        if (msg.data.type == 'authorization_response') {
+            window.removeEventListener('message', messageListener);
+            instance.invokeMethodAsync('HandleAuth0Message', {
+                isTrusted: msg.isTrusted,
+                origin: msg.origin,
+                type: msg.data.type,
+                state: msg.data.response.state,
+                error: msg.data.response.error,
+                errorDescription: msg.data.response.error_description,
+                // Code Grant (Recommended)
+                code: msg.data.response.code,
+                // Implicit Grant (Legacy)
+                accessToken: msg.data.response.access_token,
+                idToken: msg.data.response.id_token,
+                scope: msg.data.response.scope,
+                tokenType: msg.data.response.token_type,
+                expiresIn: msg.data.response.expires_in
+            }).then((r) => { document.body.removeChild(iframe); });
+        }
     };
+    window.addEventListener('message', messageListener);
+};
 
 })(this, this.document);";
 
                 // Dispose timer no matter if the js call works
                 injectJavascriptTimer.Dispose();
 
+#if DEBUG
                 Console.WriteLine("Inject JS begin...");
-
+#endif
                 // Call the eval with the magic string
                 var result = await jsRuntimeService.InvokeAsync<object>("eval", magicString);
-
+#if DEBUG
                 Console.WriteLine("Inject JS ready...");
-
+#endif
                 // If all goes well call the validate session method
                 ValidateSession();
-
+#if DEBUG
                 Console.WriteLine("Validate session called...");
+#endif
 
             }
             else
