@@ -11,6 +11,7 @@ using System.Timers;
 using Microsoft.AspNetCore.Components;
 using Blazor.Auth0.Shared.Models.Enumerations;
 using Blazor.Auth0.Shared.Models;
+using System.Text.Json.Serialization;
 
 namespace Blazor.Auth0.Shared.Authentication
 {
@@ -36,26 +37,40 @@ namespace Blazor.Auth0.Shared.Authentication
 
         private struct Auth0GetAccessTokenResponseDto
         {
-            public string access_token;
-            public int expires_in;
-            public string id_token;
-            public string refresh_token;
-            public string scope;
-            public string token_type;
+            public string access_token { get; set; }
+            public int expires_in { get; set; }
+            public string id_token { get; set; }
+            public string refresh_token { get; set; }
+            public string scope { get; set; }
+            public string token_type { get; set; }
         }
+
+        #region Hack to fix https://github.com/aspnet/AspNetCore/issues/11159
+
+        public static object CreateDotNetObjectRefSyncObj = new object();
+
+        protected DotNetObjectRef<T> CreateDotNetObjectRef<T>(T value) where T : class
+        {
+            lock (CreateDotNetObjectRefSyncObj)
+            {
+                JSRuntime.SetCurrentJSRuntime(jsRuntimeService);
+                return DotNetObjectRef.Create(value);
+            }
+        }
+
+        #endregion
 
         public AuthenticationServiceBase(IComponentContext componentContext, HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientSettings settings)
         {
-            componentContextService = componentContext;
-            httpClientService = httpClient;
-            jsRuntimeService = jsRuntime;
-            uriHelperService = uriHelper;
-            clientSettings = settings;
+            componentContextService = componentContext ?? throw new ArgumentNullException(nameof(componentContext)); ;
+            httpClientService = httpClient ?? throw new ArgumentNullException(nameof(httpClient)); ;
+            jsRuntimeService = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime)); ;
+            uriHelperService = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper)); ;
+            clientSettings = settings ?? throw new ArgumentNullException(nameof(settings));
 
             injectJavascriptTimer = new Timer(50);
             injectJavascriptTimer.Elapsed += async (Object source, ElapsedEventArgs e) => await InjectJavascript();
             injectJavascriptTimer.Start();
-
         }
 
         public string BuildAuthorizeUrl()
@@ -120,9 +135,10 @@ namespace Blazor.Auth0.Shared.Authentication
             ClearSession();
             uriHelperService.NavigateTo(BuildLogoutUrl());
         }
-        public void ValidateSession()
+        public async Task ValidateSession()
         {
-            Task.Run(async () => await jsRuntimeService.InvokeAsync<object>("drawAuth0Iframe", new DotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none")).ConfigureAwait(false);
+            //TODO: Replace hacky CreateDotNetObjectRef call for DotNetObjectRef.Create(this)
+            await jsRuntimeService.InvokeAsync<object>("drawAuth0Iframe", CreateDotNetObjectRef(this), $"{BuildAuthorizeUrl()}&response_mode=web_message&prompt=none").ConfigureAwait(false);
         }
         /// <summary>
         /// Makes a call to the /userinfo endpoint and returns the user profile
@@ -141,7 +157,7 @@ namespace Blazor.Auth0.Shared.Authentication
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
 
-                var claims = Json.Deserialize<IDictionary<string, object>>(responseText);
+                var claims = JsonSerializer.Parse<Dictionary<string, object>>(responseText);
 
                 return GetUserInfoFromClaims(claims);
 
@@ -232,6 +248,8 @@ namespace Blazor.Auth0.Shared.Authentication
                 if (message.Error.ToLower() == "login_required" && clientSettings.LoginRequired)
                 {
                     uriHelperService.NavigateTo(BuildAuthorizeUrl());
+                    System.Threading.Thread.Sleep(30000);
+                    uriHelperService.NavigateTo("/");
                 }
 
             }
@@ -301,7 +319,7 @@ namespace Blazor.Auth0.Shared.Authentication
         private async Task<SessionInfo> GetAccessToken(string code)
         {
 
-            HttpContent content = new StringContent(Json.Serialize(new
+            HttpContent content = new StringContent(JsonSerializer.ToString(new
             {
                 grant_type = "authorization_code",
                 client_id = clientSettings.Auth0ClientId,
@@ -318,7 +336,7 @@ namespace Blazor.Auth0.Shared.Authentication
             if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
             {
 
-                var sessionInfo = Json.Deserialize<Auth0GetAccessTokenResponseDto>(responseText);
+                var sessionInfo = JsonSerializer.Parse<Auth0GetAccessTokenResponseDto>(responseText);
 
                 return new SessionInfo()
                 {
@@ -352,12 +370,12 @@ namespace Blazor.Auth0.Shared.Authentication
             var bytesArray = Convert.FromBase64String(tokenPayload);
             var decodedString = Encoding.UTF8.GetString(bytesArray, 0, bytesArray.Count());
 
-            var claims = Json.Deserialize<IDictionary<string, object>>(decodedString);
+            var claims = JsonSerializer.Parse<Dictionary<string, object>>(decodedString);
 
             return GetUserInfoFromClaims(claims);
 
         }
-        private UserInfoDto GetUserInfoFromClaims(IDictionary<string, object> claims)
+        private UserInfoDto GetUserInfoFromClaims(Dictionary<string, object> claims)
         {
 
             var result = new UserInfoDto();
@@ -445,9 +463,9 @@ namespace Blazor.Auth0.Shared.Authentication
             if (nextSilentLoginTimer == null)
             {
                 nextSilentLoginTimer = new Timer();
-                nextSilentLoginTimer.Elapsed += (Object source, ElapsedEventArgs e) =>
+                nextSilentLoginTimer.Elapsed += async (Object source, ElapsedEventArgs e) =>
                 {
-                    ValidateSession();
+                    await ValidateSession();
                 };
             }
 
@@ -598,7 +616,7 @@ namespace Blazor.Auth0.Shared.Authentication
                 Console.WriteLine("Inject JS ready...");
 #endif
                 // If all goes well call the validate session method
-                ValidateSession();
+                await ValidateSession();
 #if DEBUG
                 Console.WriteLine("Validate session called...");
 #endif

@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-ServerSide" Version="0.2.1-alpha-2" />
+    <ProjectReference Include="..\..\src\Blazor.Auth0.ServerSide\Blazor.Auth0.ServerSide.csproj" />
   </ItemGroup>
 
 </Project>

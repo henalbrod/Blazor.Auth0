@@ -9,18 +9,18 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 ## Start using it in 3 simple steps!
 
 
-1) Start by adding a reference to Blazor-Auth0-ClientSide.0.5.1-alpha-2 for client side and Blazor-Auth0-ServerSide.0.2.1-alpha-2 for server side to your Blazor project
+1) Start by adding a reference to Blazor-Auth0-ClientSide.0.6.0-alpha-1 for client side and Blazor-Auth0-ServerSide.0.3.0-alpha-1 for server side to your Blazor project
 
 ### Client Side
 
 ```
-Install-Package Blazor-Auth0-ClientSide -Version 0.5.1-alpha-2
+Install-Package Blazor-Auth0-ClientSide -Version 0.6.0-alpha-1
 ````
 
 ### Server Side
 
 ```
-Install-Package Blazor-Auth0-ServerSide -Version 0.2.1-alpha-2
+Install-Package Blazor-Auth0-ServerSide -Version 0.3.0-alpha-1
 ````
 
 
@@ -77,11 +77,11 @@ Install-Package Blazor-Auth0-ServerSide -Version 0.2.1-alpha-2
             <div class="top-row px-4">
                 @if (_authService.SessionState == SessionStates.Active)
                 {
-                    <a href="" class="ml-md-auto" onclick="@_authService.LogOut">LogOut</a>
+                    <a href="" class="ml-md-auto" @onclick="@_authService.LogOut">LogOut</a>
                 }
                 else
                 {
-                    <a href="" class="ml-md-auto" onclick="@_authService.Authorize">LogIn</a>
+                    <a href="" class="ml-md-auto" @onclick="@_authService.Authorize">LogIn</a>
                 }
             </div>
             <div class="content px-4">

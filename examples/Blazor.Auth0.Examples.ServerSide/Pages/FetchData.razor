@@ -1,7 +1,6 @@
 @page "/fetchdata"
 @using Blazor.Auth0.Examples.ServerSide.Data
 @inject WeatherForecastService ForecastService
-@inject AuthenticationService _authService
 
 <h1>Weather forecast</h1>
 
@@ -36,20 +35,12 @@ else
     </table>
 }
 
-@functions {
+@code {
     WeatherForecast[] forecasts;
 
     protected override async Task OnInitAsync()
     {
-        // Enforcing user log-in for this page
-        if (_authService.SessionState != SessionStates.Active)
-        {
-            _authService.Authorize();
-        }
-        else
-        {
-            forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
-        }
-        
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+
     }
 }

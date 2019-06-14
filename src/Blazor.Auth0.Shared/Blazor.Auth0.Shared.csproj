@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Blazor-Auth0-Shared</PackageId>
-    <Version>0.2.1-alpha-2</Version>
+    <Version>0.3.1-alpha-4</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -13,13 +13,11 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Fixed Bugs:
-- Silent Login interval is too short [https://github.com/Pegazux/Blazor.Auth0/issues/5]
-- Unnecesary StateHasChanged event fired on silent login [https://github.com/Pegazux/Blazor.Auth0/issues/6]</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 6</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview5-19227-01" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview6.19307.2" />
   </ItemGroup>
 
 </Project>

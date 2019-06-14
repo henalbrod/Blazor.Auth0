@@ -1,5 +1,42 @@
-﻿@*
-    The Router component displays whichever component has a @page
-    directive matching the current URI.
-*@
-<Router AppAssembly="typeof(Startup).Assembly" />
+﻿@inject AuthenticationService _authService
+@inject IUriHelper _uriHelper
+
+<CascadingAuthenticationState>
+
+    <AuthComponent ProtectedPaths="protectedPaths" ForceLoginOnProtectedPaths="true">
+
+        @*Will render while determining user's session state*@
+        <UndefinedSessionStateContent>
+            Determining session state, please wait...
+        </UndefinedSessionStateContent>
+
+        @*Will render after determining session state*@
+        <AuthorizedContent>
+
+            <Router AppAssembly="typeof(Startup).Assembly">
+
+                <NotFoundContent>
+                    <p>Sorry, there's nothing at this address.</p>
+                </NotFoundContent>
+
+            </Router>
+
+        </AuthorizedContent>
+
+        <UnAuthorizedContent>
+            ERROR 401: Unauthorized
+        </UnAuthorizedContent>
+
+    </AuthComponent>
+
+
+</CascadingAuthenticationState>
+
+
+@code {
+
+    List<string> protectedPaths = new List<string> {
+        "fetchdata"
+    };
+
+}

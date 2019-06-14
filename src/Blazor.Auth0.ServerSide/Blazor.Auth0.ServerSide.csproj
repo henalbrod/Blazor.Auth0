@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <PackageId>Blazor-Auth0-ServerSide</PackageId>
-    <Version>0.2.1-alpha-2</Version>
+    <Version>0.3.0-alpha-1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Company>Henry Alberto Rodriguez Rodriguez</Company>
     <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
@@ -16,10 +15,8 @@
     <RepositoryUrl>https://github.com/Pegazux/Blazor.Auth0</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
-    <PackageReleaseNotes>Fixed Bugs:
-- Silent Login interval is too short [https://github.com/Pegazux/Blazor.Auth0/issues/5]
-- Unnecesary StateHasChanged event fired on silent login [https://github.com/Pegazux/Blazor.Auth0/issues/6]</PackageReleaseNotes>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 6</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>    
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,11 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="0.2.1-alpha-2" />
+    <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
   </ItemGroup>
 
 </Project>
