@@ -46,59 +46,6 @@ Install-Package Blazor-Auth0-ServerSide -Version 0.3.0-alpha-1
         }
 ```
 
-
-3) Replace the content of *MainLayout.razor* with the following code
-
-
-```C#
-@using Blazor.Auth0.Shared.Models.Enumerations
-@using Blazor.Auth0.[ClientSide|ServerSide].Components
-@using Blazor.Auth0.[ClientSide|ServerSide].Authentication
-
-@inherits LayoutComponentBase
-
-@inject AuthenticationService _authService
-
-<AuthComponent>
-
-    @*Will render while determining user's session state*@
-    <UndefinedSessionStateContent>
-        Determining session state, please wait...
-    </UndefinedSessionStateContent>
-
-    @*Will render after determining session state*@
-    <ActiveInactiveSessionStateContent>
-
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-
-        <div class="main">
-            <div class="top-row px-4">
-                @if (_authService.SessionState == SessionStates.Active)
-                {
-                    <a href="" class="ml-md-auto" @onclick="@_authService.LogOut">LogOut</a>
-                }
-                else
-                {
-                    <a href="" class="ml-md-auto" @onclick="@_authService.Authorize">LogIn</a>
-                }
-            </div>
-            <div class="content px-4">
-                @Body
-            </div>
-        </div>
-
-    </ActiveInactiveSessionStateContent>
-
-    @*There's also options for showing content on Active & Inactive session states alone*@
-    <ActiveSessionStateContent></ActiveSessionStateContent>
-    <InactiveSessionStateContent></InactiveSessionStateContent>
-
-</AuthComponent>
-```
-
-
 ### Other options include:
 
 * **AuthenticationGrant**:  Allows you to choose between authorization_code (recommended) and implicit_grant authentication flows.
@@ -108,3 +55,63 @@ Install-Package Blazor-Auth0-ServerSide -Version 0.3.0-alpha-1
 * **LoginRequired**: When set to true, forces a redirection to the login page in case the user is not authenticated.
 
 * **GetUserInfoFromIdToken**: When set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default value is *false*
+
+
+
+3) Replace the content of *App.razor* with the following code
+
+
+```C#
+@using Blazor.Auth0.Shared.Models.Enumerations
+@using Blazor.Auth0.[ClientSide|ServerSide].Components
+@using Blazor.Auth0.[ClientSide|ServerSide].Authentication
+
+@inject AuthenticationService _authService
+
+@*CascadingAuthenticationState component exists on server side only*@
+<CascadingAuthenticationState>
+
+    <AuthComponent ProtectedPaths="protectedPaths">
+
+        @*Will render while determining user's session state*@
+        <UndefinedSessionStateContent>
+            Determining session state, please wait...
+        </UndefinedSessionStateContent>
+
+        @*Will render after determining session state*@
+        <AuthorizedContent>
+
+            <Router AppAssembly="typeof(Startup).Assembly">
+
+                <NotFoundContent>
+                    <p>Sorry, there's nothing at this address.</p>
+                </NotFoundContent>
+
+            </Router>
+
+        </AuthorizedContent>
+
+        <UnAuthorizedContent>
+            ERROR 401: Unauthorized
+        </UnAuthorizedContent>
+
+    </AuthComponent>
+
+
+</CascadingAuthenticationState>
+
+
+@code {
+
+    List<string> protectedPaths = new List<string> {
+        "fetchdata"
+    };
+
+}
+```
+
+### Other options include:
+
+* **ProtectedPaths**:  Allows you to indicate a list of paths that requires an authenticated user, only affects if LoginRequired is set to false.
+* **LoginRequiredOnProtectedPaths**:  Alters the ProtectedPaths behavior. When set to true redirect the user to the login page automatically, otherwise, the content from the UnAuthorizedContent fragment will be rendered.
+

@@ -1,9 +1,8 @@
 ﻿@inject AuthenticationService _authService
-@inject IUriHelper _uriHelper
 
 <CascadingAuthenticationState>
 
-    <AuthComponent ProtectedPaths="protectedPaths" ForceLoginOnProtectedPaths="true">
+    <AuthComponent ProtectedPaths="protectedPaths" LoginRequiredOnProtectedPaths="true">
 
         @*Will render while determining user's session state*@
         <UndefinedSessionStateContent>

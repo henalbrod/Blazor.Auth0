@@ -2,7 +2,6 @@
 
 @using System.Net.Http
 
-@inject AuthenticationService _authService
 @inject HttpClient _httpClient
 
 <h1>Weather forecast</h1>
@@ -44,15 +43,7 @@ else
     protected override async Task OnInitAsync()
     {
 
-        // Enforcing user log-in for this page
-        if (_authService.SessionState != SessionStates.Active)
-        {
-            _authService.Authorize();
-        }
-        else
-        {
-            forecasts = await _httpClient.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-        }
+         forecasts = await _httpClient.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");        
 
     }
 

@@ -1,1 +1,36 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" />
+﻿@inject AuthenticationService _authService
+
+<AuthComponent ProtectedPaths="protectedPaths" LoginRequiredOnProtectedPaths="true">
+
+    @*Will render while determining user's session state*@
+    <UndefinedSessionStateContent>
+        Determining session state, please wait...
+    </UndefinedSessionStateContent>
+
+    @*Will render after determining session state*@
+    <AuthorizedContent>
+
+        <Router AppAssembly="typeof(Startup).Assembly">
+
+            <NotFoundContent>
+                <p>Sorry, there's nothing at this address.</p>
+            </NotFoundContent>
+
+        </Router>
+
+    </AuthorizedContent>
+
+    <UnAuthorizedContent>
+        ERROR 401: Unauthorized
+    </UnAuthorizedContent>
+
+</AuthComponent>
+
+
+@code {
+
+    List<string> protectedPaths = new List<string> {
+        "fetchdata"
+    };
+
+}

@@ -33,7 +33,7 @@ namespace Blazor.Auth0.Examples.ServerSide
             services.AddScoped<HttpClient>();
 
             services.Configure<Blazor.Auth0.Shared.Models.ClientSettings>(Configuration.GetSection("Auth0"));
-            services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<Blazor.Auth0.Shared.Models.ClientSettings>>().Value);
+            services.AddScoped(resolver => resolver.GetRequiredService<IOptions<Blazor.Auth0.Shared.Models.ClientSettings>>().Value);
 
             services.AddScoped<Blazor.Auth0.ServerSide.Authentication.AuthenticationService>();
 

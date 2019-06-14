@@ -62,7 +62,17 @@ namespace Blazor.Auth0.Examples.CoreHosted.Server
 
             app.UseMvcWithDefaultRoute();
 
-            app.UseBlazor<Blazor.Auth0.Examples.CoreHosted.Client.Startup>();
+            app.UseClientSideBlazorFiles<Client.Startup>();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+            });
+
+
         }
 
     }

@@ -35,78 +35,78 @@
 
 @code{
 
-        [Parameter]        
-        private List<string> ProtectedPaths { get; set; } = new List<string>();
+[Parameter]
+private List<string> ProtectedPaths { get; set; } = new List<string>();
 
-        [Parameter]
-        private bool ForceLoginOnProtectedPaths { get; set; } = false;
+[Parameter]
+private bool LoginRequiredOnProtectedPaths { get; set; } = false;
 
-        [Parameter]
-        private RenderFragment UndefinedSessionStateContent { get; set; }
+[Parameter]
+private RenderFragment UndefinedSessionStateContent { get; set; }
 
-        [Parameter]
-        private RenderFragment AuthorizedContent { get; set; }
+[Parameter]
+private RenderFragment AuthorizedContent { get; set; }
 
-        [Parameter]
-        private RenderFragment UnAuthorizedContent { get; set; }
-
-
-        private bool isProtectedPath = false;
-        private bool latestStatusOk = true;
+[Parameter]
+private RenderFragment UnAuthorizedContent { get; set; }
 
 
-        protected override void OnInit()
+private bool isProtectedPath = false;
+private bool latestStatusOk = true;
+
+
+protected override void OnInit()
+{
+
+    _authService.OnSessionStateChanged += OnSessionStateChangeHandler;
+
+    if (ProtectedPaths.Count > 0)
+    {
+
+        _uriHelper.OnLocationChanged += (a, b) =>
         {
 
-            _authService.OnSessionStateChanged += OnSessionStateChangeHandler;
+            var uri = new Uri(b.Location);
+            var path = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped).ToLower();
+            isProtectedPath = ProtectedPaths.Contains(path);
 
-            if (ProtectedPaths.Count > 0)
+            // Enforcing user log-in for this paths
+            if (_authService.SessionState != SessionStates.Active && isProtectedPath)
             {
 
-                _uriHelper.OnLocationChanged += (a, b) =>
+                latestStatusOk = false;
+
+                if (LoginRequiredOnProtectedPaths)
                 {
+                    _authService.Authorize();
+                    System.Threading.Thread.Sleep(30000);
+                    _uriHelper.NavigateTo("/");
+                }
+                else
+                {
+                    StateHasChanged();
+                }
 
-                    var uri = new Uri(b.Location);
-                    var path = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped).ToLower();
-                    isProtectedPath = ProtectedPaths.Contains(path);
+            }
+            else if (!latestStatusOk)
+            {
 
-                    // Enforcing user log-in for this paths
-                    if (_authService.SessionState != SessionStates.Active && isProtectedPath)
-                    {
+                latestStatusOk = true;
+                StateHasChanged();
 
-                        latestStatusOk = false;
-
-                        if (ForceLoginOnProtectedPaths)
-                        {
-                            _authService.Authorize();
-                            System.Threading.Thread.Sleep(30000);
-                            _uriHelper.NavigateTo("/");
-                        }
-                        else
-                        {
-                            StateHasChanged();
-                        }
-
-                    }
-                    else if (!latestStatusOk)
-                    {
-
-                        latestStatusOk = true;
-                        StateHasChanged();
-
-                    }
-
-                };
             }
 
-            base.OnInit();
+        };
+    }
 
-        }
+    base.OnInit();
+
+}
 
 
-        protected void OnSessionStateChangeHandler(object sender, SessionStates state)
-        {
-            StateHasChanged();
-        }
+protected void OnSessionStateChangeHandler(object sender, SessionStates state)
+{
+    StateHasChanged();
+}
 
 }
