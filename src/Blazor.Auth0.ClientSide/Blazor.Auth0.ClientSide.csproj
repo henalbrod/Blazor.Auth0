@@ -11,7 +11,7 @@
     <RazorLangVersion>3.0</RazorLangVersion>    
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
-    <Version>0.6.0-beta-1</Version>
+    <Version>0.7.0-beta.1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
     <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
@@ -23,18 +23,11 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 6
+    <PackageReleaseNotes>Added support for built-in Blazor Authentication and Authorization
 
-Breaking Changes:
+Break Fix:
 
-AuthComponent ActiveSessionStateContent Removed
-AuthComponent InactiveSessionStateContent Removed
-AuthComponent ActiveInactiveSessionStateContent Removed
-
-AuthComponent AuthorizedContent Added
-AuthComponent UnAuthorizedContent Added
-AuthComponent ProtectedPaths Added: Now you can indicate a list of paths, Unauthorized users will either get an 401 error page or redirected to the login page (see ForceLoginOnProtectedPaths)
-AuthComponent ForceLoginOnProtectedPaths Added: When set to true will redirect Unauthorized users to the login page</PackageReleaseNotes>    
+AuthComponent RenderFragments renamed to better fit built-in Blazor Authentication and Authorization</PackageReleaseNotes>    
     
   </PropertyGroup>
 
@@ -45,7 +38,7 @@ AuthComponent ForceLoginOnProtectedPaths Added: When set to true will redirect U
   </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="0.3.1-beta-1" />
+    <PackageReference Include="Blazor-Auth0-Shared" Version="0.4.0-beta.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview6.19307.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview6.19307.2" />
   </ItemGroup>

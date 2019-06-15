@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Blazor.Auth0.Shared.Models;
 using Blazor.Auth0.Shared.Authentication;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Blazor.Auth0.ServerSide.Authentication
 {

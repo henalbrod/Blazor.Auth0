@@ -5,9 +5,9 @@
     <AuthComponent ProtectedPaths="protectedPaths" LoginRequiredOnProtectedPaths="true">
 
         @*Will render while determining user's session state*@
-        <UndefinedSessionStateContent>
+        <AuthorizingContent>
             Determining session state, please wait...
-        </UndefinedSessionStateContent>
+        </AuthorizingContent>
 
         @*Will render after determining session state*@
         <AuthorizedContent>
@@ -22,9 +22,9 @@
 
         </AuthorizedContent>
 
-        <UnAuthorizedContent>
+        <NotAuthorizedContent>
             ERROR 401: Unauthorized
-        </UnAuthorizedContent>
+        </NotAuthorizedContent>
 
     </AuthComponent>
 

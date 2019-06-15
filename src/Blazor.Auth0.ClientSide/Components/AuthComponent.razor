@@ -11,7 +11,7 @@
 @switch (_authService.SessionState)
 {
     case SessionStates.Undefined:
-        @UndefinedSessionStateContent
+        @AuthorizingContent
         break;
     case SessionStates.Active:
 
@@ -26,7 +26,7 @@
         }
         else
         {
-            @UnAuthorizedContent
+            @NotAuthorizedContent
         }
 
         break;
@@ -42,13 +42,13 @@
     private bool LoginRequiredOnProtectedPaths { get; set; } = false;
 
     [Parameter]
-    private RenderFragment UndefinedSessionStateContent { get; set; }
+    private RenderFragment AuthorizingContent { get; set; }
 
     [Parameter]
     private RenderFragment AuthorizedContent { get; set; }
 
     [Parameter]
-    private RenderFragment UnAuthorizedContent { get; set; }
+    private RenderFragment NotAuthorizedContent { get; set; }
 
 
     private bool isProtectedPath = false;
@@ -70,8 +70,8 @@
                 var path = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped).ToLower();
                 isProtectedPath = ProtectedPaths.Contains(path);
 
-        // Enforcing user log-in for this paths
-        if (_authService.SessionState != SessionStates.Active && isProtectedPath)
+            // Enforcing user log-in for this paths
+            if (_authService.SessionState != SessionStates.Active && isProtectedPath)
                 {
 
                     latestStatusOk = false;

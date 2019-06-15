@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Components;
 using Blazor.Auth0.Shared.Models.Enumerations;
 using Blazor.Auth0.Shared.Models;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Blazor.Auth0.Shared.Authentication
 {
@@ -26,6 +29,7 @@ namespace Blazor.Auth0.Shared.Authentication
         protected readonly IUriHelper uriHelperService;
         protected readonly HttpClient httpClientService;
         protected readonly IJSRuntime jsRuntimeService;
+
         protected string latestAuthorizeUrlCodeChallenge;
         protected string latestAuthorizeUrlState;
         protected string latestAuthorizeUrRedirectUri;
@@ -167,6 +171,153 @@ namespace Blazor.Auth0.Shared.Authentication
 
         }
 
+        public Task<AuthenticationState> GetAuthenticationStateAsync()
+        {
+
+            if (SessionState == SessionStates.Active)
+            {
+
+                var identity = new GenericIdentity(User?.Name ?? string.Empty, "Auth0 User");
+
+
+                if (!string.IsNullOrEmpty(User.Sub?.Trim()))
+                {
+                    identity.AddClaim(new Claim("sub", User.Sub));
+                }
+
+                if (!string.IsNullOrEmpty(User.Name?.Trim()))
+                {
+                    identity.AddClaim(new Claim("name", User.Name));
+                }
+
+                if (!string.IsNullOrEmpty(User.GivenName?.Trim()))
+                {
+                    identity.AddClaim(new Claim("given_name", User.GivenName));
+                }
+
+                if (!string.IsNullOrEmpty(User.FamilyName?.Trim()))
+                {
+                    identity.AddClaim(new Claim("family_name", User.FamilyName));
+                }
+
+                if (!string.IsNullOrEmpty(User.MiddleName?.Trim()))
+                {
+                    identity.AddClaim(new Claim("middle_name", User.MiddleName));
+                }
+
+                if (!string.IsNullOrEmpty(User.Nickname?.Trim()))
+                {
+                    identity.AddClaim(new Claim("nickname", User.Nickname));
+                }
+
+                if (!string.IsNullOrEmpty(User.PreferredUsername?.Trim()))
+                {
+                    identity.AddClaim(new Claim("preferred_username", User.PreferredUsername));
+                }
+
+                if (!string.IsNullOrEmpty(User.Profile?.Trim()))
+                {
+                    identity.AddClaim(new Claim("profile", User.Profile));
+                }
+
+                if (!string.IsNullOrEmpty(User.Picture?.Trim()))
+                {
+                    identity.AddClaim(new Claim("picture", User.Picture));
+                }
+
+                if (!string.IsNullOrEmpty(User.Website?.Trim()))
+                {
+                    identity.AddClaim(new Claim("website", User.Website));
+                }
+
+                if (!string.IsNullOrEmpty(User.Email?.Trim()))
+                {
+                    identity.AddClaim(new Claim("email", User.Email));
+                }
+
+                identity.AddClaim(new Claim("email_verified", User.EmailVerified.ToString()));
+
+                if (!string.IsNullOrEmpty(User.Gender?.Trim()))
+                {
+                    identity.AddClaim(new Claim("gender", User.Gender));
+                }
+
+                if (!string.IsNullOrEmpty(User.Birthdate?.Trim()))
+                {
+                    identity.AddClaim(new Claim("birthdate", User.Birthdate));
+                }
+
+                if (!string.IsNullOrEmpty(User.Zoneinfo?.Trim()))
+                {
+                    identity.AddClaim(new Claim("zoneinfo", User.Zoneinfo));
+                }
+
+                if (!string.IsNullOrEmpty(User.Locale?.Trim()))
+                {
+                    identity.AddClaim(new Claim("locale", User.Locale));
+                }
+
+                if (!string.IsNullOrEmpty(User.PhoneNumber?.Trim()))
+                {
+                    identity.AddClaim(new Claim("phone_number", User.PhoneNumber));
+                }
+
+                identity.AddClaim(new Claim("phone_number_verified", User.PhoneNumberVerified.ToString()));
+
+                if (!string.IsNullOrEmpty(User.Address?.Trim()))
+                {
+                    identity.AddClaim(new Claim("address", User.Address));
+                }
+
+
+                identity.AddClaim(new Claim("updated_at", User.UpdatedAt.ToString()));
+
+
+                foreach (var claim in User.CustomClaims) {
+
+                    if (!string.IsNullOrEmpty(claim.Value?.ToString().Trim()))
+                    {
+                        identity.AddClaim(new Claim(claim.Key, claim.Value.ToString()));
+                    }
+                }
+
+
+                // Try to add permissions claims, this only works when an audience is indicated
+                if (!string.IsNullOrEmpty(clientSettings.Auth0Audience)){
+
+                    var accessTokenPayload = DecodeTokenPayload(SessionInfo.AccessToken);
+
+                    if (accessTokenPayload.CustomClaims.ContainsKey("permissions"))
+                    {
+
+                        var permissionsClaim = accessTokenPayload.CustomClaims["permissions"].ToString();
+
+                        identity.AddClaim(new Claim("permissions", permissionsClaim));
+
+                        var permisions = JsonSerializer.Parse<List<string>>(permissionsClaim);
+
+                        identity.AddClaims(permisions.Select(x => new Claim($"permission:{x}", "true")));
+
+                    }
+
+                }
+
+
+                var user = new ClaimsPrincipal(identity);
+
+                return Task.FromResult(new AuthenticationState(user));
+
+            }
+            else
+            {
+                var identity = new GenericIdentity("", "Auth0 User");
+                var user = new ClaimsPrincipal(identity);
+                return Task.FromResult(new AuthenticationState(user));
+
+            }
+
+        }
+
         virtual public async Task HandleAuth0Message(Auth0IframeMessage message)
         {
 
@@ -232,7 +383,6 @@ namespace Blazor.Auth0.Shared.Authentication
                     // In case we're not getting the id_token from the message response or GetUserInfoFromIdToken is set to false try to get it from Auth0's API
                     User = await UserInfo(SessionInfo.AccessToken);
                 }
-
 
                 SessionState = SessionStates.Active;
 
@@ -530,7 +680,7 @@ namespace Blazor.Auth0.Shared.Authentication
 
                 }
 
-                return accessTokenHash.Equals(idTokenPayload.CustomClaims["at_hash"]);
+                return accessTokenHash.Equals(idTokenPayload.CustomClaims["at_hash"].ToString());
 
             }
             else
