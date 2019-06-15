@@ -1,0 +1,11 @@
+@inject Blazor.Auth0.ServerSide.Authentication.AuthenticationService authService
+
+<AuthorizeView>
+    <Authorized>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
+        <a href="" @onclick="@authService.LogOut" >Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="@authService.BuildAuthorizeUrl()">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>

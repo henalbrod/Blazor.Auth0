@@ -132,6 +132,12 @@ In the Configure method of the same file, instructs the app to use Authenticatio
 	
 ```
 
+### IMPORTANT!
+
+If you're planning to use built-in Blazor Authorization capabilities like Claims-based and Policy-based authorization, then you will need to indicate an Auth0 audience/api with the "Enable RBAC" and "Add Permissions in the Access Token" settings set to true, here you have some reading about [Auth0's RBAC](https://auth0.com/docs/authorization/concepts/rbac).
+
+
+
 > The actual mechanism of authenticating the user, i.e., determining their identity using cookies or other information, is the same in Blazor as in any other ASP.NET Core application. So to control and customize any aspect of it, see documentation about authentication in ASP.NET Core.
 >> SteveSandersonMS
 
