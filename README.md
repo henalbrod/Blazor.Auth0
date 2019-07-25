@@ -3,24 +3,25 @@
 
 # Blazor Auth0 Library
 
-This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview6 client & server side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview7 client & server side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 
 ## Start using it in 3 simple steps!
 
+**Note**: Following example will implement a "An authenticated user is Required" flow, for a "Login/Logout Buttons" flow please refer to [here](https://github.com/Pegazux/Blazor.Auth0/tree/master/examples/Blazor.Auth0.Examples.ServerSide)
 
-1) Start by adding a reference to Blazor-Auth0-ClientSide.0.7.0-beta.1 for client side and Blazor-Auth0-ServerSide.0.4.0-beta.1 for server side to your Blazor project
+1) Start by adding a reference to Blazor-Auth0-ClientSide.0.7.2-beta.2 for client side and Blazor-Auth0-ServerSide.0.4.2-beta.2 for server side to your Blazor project
 
 ### Client Side
 
 ```
-Install-Package Blazor-Auth0-ClientSide -Version 0.7.0-beta.1
+Install-Package Blazor-Auth0-ClientSide -Version 0.7.2-beta.2
 ````
 
 ### Server Side
 
 ```
-Install-Package Blazor-Auth0-ServerSide -Version 0.4.0-beta.1
+Install-Package Blazor-Auth0-ServerSide -Version 0.4.2-beta.2
 ````
 
 
@@ -38,11 +39,13 @@ Install-Package Blazor-Auth0-ServerSide -Version 0.4.0-beta.1
                 return new Blazor.Auth0.Shared.Models.ClientSettings()
                 {
                     Auth0Domain = "[Auth0_Domain]",
-                    Auth0ClientId = "[Auth0_Client_Id]"
+                    Auth0ClientId = "[Auth0_Client_Id]",
+					LoginRequired = true
                 };
             });
 
             services.AddScoped<Blazor.Auth0.[ClientSide|ServerSide].Authentication.AuthenticationService>();
+			
         }
 ```
 
@@ -141,10 +144,10 @@ If you're planning to use built-in Blazor Authorization capabilities like Claims
 > The actual mechanism of authenticating the user, i.e., determining their identity using cookies or other information, is the same in Blazor as in any other ASP.NET Core application. So to control and customize any aspect of it, see documentation about authentication in ASP.NET Core.
 >> SteveSandersonMS
 
-# Following are a great sources about how to implement the Authentication and Authorization:
+# Following are great sources of how to implement the Authentication and Authorization:
 
-[ASP.NET Core and Blazor updates in .NET Core 3.0 Preview](https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-6/)
-[SteveSandersonMS/blazor-auth.md](https://gist.github.com/SteveSandersonMS/175a08dcdccb384a52ba760122cd2eda)
-[Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.0)
+[ASP.NET Core and Blazor updates in .NET Core 3.0 Preview](https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-6/),
+[SteveSandersonMS/blazor-auth.md](https://gist.github.com/SteveSandersonMS/175a08dcdccb384a52ba760122cd2eda),
+[Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.0),
 [Claims-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-3.0)
 
