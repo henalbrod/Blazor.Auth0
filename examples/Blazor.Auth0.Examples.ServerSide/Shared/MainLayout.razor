@@ -10,11 +10,11 @@
     <div class="top-row px-4">
         @if (_authService.SessionState == SessionStates.Active)
         {
-            <a href="" class="ml-md-auto" @onclick="@_authService.LogOut">LogOut</a>
+            <a href="" class="ml-md-auto" @onclick="_authService.LogOut">LogOut</a>
         }
         else
         {
-            <a href="" class="ml-md-auto" @onclick="@_authService.Authorize">LogIn</a>
+            <a href="" class="ml-md-auto" @onclick="_authService.Authorize">LogIn</a>
         }
     </div>
     <div class="content px-4">

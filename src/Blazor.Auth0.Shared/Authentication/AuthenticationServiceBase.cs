@@ -15,6 +15,10 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text.Json;
+using System.Collections.Specialized;
+using System.Web;
+using System.Net;
 
 namespace Blazor.Auth0.Shared.Authentication
 {
@@ -30,7 +34,7 @@ namespace Blazor.Auth0.Shared.Authentication
         protected readonly HttpClient httpClientService;
         protected readonly IJSRuntime jsRuntimeService;
 
-        protected string latestAuthorizeUrlCodeChallenge;
+        protected string latestAuthorizeUrlCodeVerifier;
         protected string latestAuthorizeUrlState;
         protected string latestAuthorizeUrRedirectUri;
 
@@ -83,7 +87,7 @@ namespace Blazor.Auth0.Shared.Authentication
             var abosulteUri = new Uri(uriHelperService.GetAbsoluteUri());
             var responseType = string.Empty;
 
-            latestAuthorizeUrlCodeChallenge = GenerateNonce();
+            latestAuthorizeUrlCodeVerifier = GenerateNonce();
             latestAuthorizeUrlState = GenerateNonce();
             var nonce = GenerateNonce();
 
@@ -108,17 +112,35 @@ namespace Blazor.Auth0.Shared.Authentication
                     break;
             }
 
-            return $"https://{clientSettings.Auth0Domain}/authorize?" +
-                      $"&response_type={responseType}" +
-                      "&code_challenge_method=S256" +
-                      $"code_challenge={latestAuthorizeUrlCodeChallenge}" +
-                      $"&state={latestAuthorizeUrlState}" +
-                      $"&nonce={nonce}" +
-                      $"&client_id={clientSettings.Auth0ClientId}" +
-                      $"&scope={clientSettings.Auth0Scope.Replace(" ", "%20")}" +
-                      (!string.IsNullOrEmpty(clientSettings.Auth0Connection) ? "&connection=" + clientSettings.Auth0Connection : "") +
-                      (!string.IsNullOrEmpty(clientSettings.Auth0Audience) ? "&audience=" + clientSettings.Auth0Audience : "") +
-                      $"&redirect_uri={latestAuthorizeUrRedirectUri}";
+            var host = new Uri($"https://{clientSettings.Auth0Domain}");
+            var customQuery = HttpUtility.ParseQueryString(host.Query);
+
+            var queryParams = new Dictionary<string, string>{
+                {"response_type",responseType},
+                {"code_challenge_method","S256"},
+                {"code_challenge",GetSha256(latestAuthorizeUrlCodeVerifier)},
+                {"state",latestAuthorizeUrlState},
+                {"nonce",nonce},
+                {"client_id",clientSettings.Auth0ClientId},
+                {"scope",clientSettings.Auth0Scope.Replace(" ", "%20")}
+            };
+
+            if (!string.IsNullOrEmpty(clientSettings.Auth0Connection)) queryParams.Add("connection", clientSettings.Auth0Connection);
+            if (!string.IsNullOrEmpty(clientSettings.Auth0Audience)) queryParams.Add("audience", clientSettings.Auth0Audience);
+
+            queryParams.Add("redirect_uri", latestAuthorizeUrRedirectUri);
+
+            var queryString = string.Join("&", queryParams.Select(x => x.Key + "=" + x.Value).ToArray());
+            queryString += customQuery.AllKeys.Length > 0 ? "&" + customQuery.ToString() : string.Empty;
+
+            var usriBuilder = new UriBuilder() {
+                 Scheme = host.Scheme,
+                 Host = host.Host,
+                 Path = GetPath(host),
+                 Query = queryString
+            };
+
+            return usriBuilder.Uri.AbsoluteUri;
 
         }
         public string BuildLogoutUrl()
@@ -161,7 +183,7 @@ namespace Blazor.Auth0.Shared.Authentication
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
 
-                var claims = JsonSerializer.Parse<Dictionary<string, object>>(responseText);
+                var claims = JsonSerializer.Deserialize<Dictionary<string, object>>(responseText);
 
                 return GetUserInfoFromClaims(claims);
 
@@ -294,7 +316,7 @@ namespace Blazor.Auth0.Shared.Authentication
 
                         identity.AddClaim(new Claim("permissions", permissionsClaim));
 
-                        var permisions = JsonSerializer.Parse<List<string>>(permissionsClaim);
+                        var permisions = JsonSerializer.Deserialize<List<string>>(permissionsClaim);
 
                         identity.AddClaims(permisions.Select(x => new Claim($"permission:{x}", "true")));
 
@@ -452,7 +474,7 @@ namespace Blazor.Auth0.Shared.Authentication
             SessionState = SessionStates.Inactive;
             User = null;
             SessionInfo = null;
-            latestAuthorizeUrlCodeChallenge = null;
+            latestAuthorizeUrlCodeVerifier = null;
             latestAuthorizeUrlState = null;
             nextSilentLoginTimer?.Stop();
             nextSilentLoginTimer?.Dispose();
@@ -469,11 +491,11 @@ namespace Blazor.Auth0.Shared.Authentication
         private async Task<SessionInfo> GetAccessToken(string code)
         {
 
-            HttpContent content = new StringContent(JsonSerializer.ToString(new
+            HttpContent content = new StringContent(JsonSerializer.Serialize(new
             {
                 grant_type = "authorization_code",
                 client_id = clientSettings.Auth0ClientId,
-                code_verifier = latestAuthorizeUrlCodeChallenge,
+                code_verifier = latestAuthorizeUrlCodeVerifier,
                 code,
                 redirect_uri = latestAuthorizeUrRedirectUri
             }), Encoding.UTF8, "application/json");
@@ -486,7 +508,7 @@ namespace Blazor.Auth0.Shared.Authentication
             if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
             {
 
-                var sessionInfo = JsonSerializer.Parse<Auth0GetAccessTokenResponseDto>(responseText);
+                var sessionInfo = JsonSerializer.Deserialize<Auth0GetAccessTokenResponseDto>(responseText);
 
                 return new SessionInfo()
                 {
@@ -520,7 +542,7 @@ namespace Blazor.Auth0.Shared.Authentication
             var bytesArray = Convert.FromBase64String(tokenPayload);
             var decodedString = Encoding.UTF8.GetString(bytesArray, 0, bytesArray.Count());
 
-            var claims = JsonSerializer.Parse<Dictionary<string, object>>(decodedString);
+            var claims = JsonSerializer.Deserialize<Dictionary<string, object>>(decodedString);
 
             return GetUserInfoFromClaims(claims);
 
@@ -642,7 +664,7 @@ namespace Blazor.Auth0.Shared.Authentication
             {
                 byte[] tokenData = new byte[32];
                 rng.GetBytes(tokenData);
-                result = Convert.ToBase64String(tokenData);
+                result = Convert.ToBase64String(tokenData).TrimEnd('=').Replace('+', '-').Replace('/', '_');
             }
 
             return result;
@@ -673,7 +695,6 @@ namespace Blazor.Auth0.Shared.Authentication
 
                 using (SHA256 mySHA256 = SHA256.Create())
                 {
-
                     byte[] hashValue = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(accessToken));
                     var base64Encoded = Convert.ToBase64String(hashValue.Take(16).ToArray());
                     accessTokenHash = Convert.ToBase64String(hashValue.Take(16).ToArray()).TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -693,6 +714,16 @@ namespace Blazor.Auth0.Shared.Authentication
 
                 return true;
 
+            }
+
+        }
+
+        private string GetSha256(string value) {
+
+            using (SHA256 mySHA256 = SHA256.Create())
+            {
+                byte[] hashValue = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(value));
+                return Convert.ToBase64String(hashValue).TrimEnd('=').Replace('+', '-').Replace('/', '_');
             }
 
         }
@@ -776,6 +807,50 @@ namespace Blazor.Auth0.Shared.Authentication
             {
                 injectJavascriptTimer.Start();
             }
+
+        }
+            
+        internal static void AddQuery(UriBuilder uriBuilder, string key, string value)
+        {
+
+            if (uriBuilder == null)
+            {
+                throw new ArgumentNullException("uriBuilder");
+            }
+
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            if (uriBuilder.Query?[0] != '?') {
+                uriBuilder.Query = '?' + uriBuilder.Query ?? string.Empty;
+            }
+
+            if (uriBuilder.Query.Last() != '&')
+            {
+                uriBuilder.Query = uriBuilder.Query + '&';
+            }
+
+            uriBuilder.Query += $"{key}={value}";
+
+        }
+
+        internal static string GetPath(Uri host) {
+
+            if (host == null) throw new ArgumentNullException("host");
+
+            var path = (host.LocalPath ?? "/");
+            path += !path.EndsWith("/") ? "/" : "";
+            path += "authorize";
+            path = HttpUtility.UrlPathEncode(path);
+
+            return path;
 
         }
 

@@ -23,9 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthComponent Examples", "A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Built-in Blazor Authentication and Authorization Examples", "Built-in Blazor Authentication and Authorization Examples", "{2333016E-2CB4-4501-B2EB-50870CEFB1CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Auth0.Examples.BuiltInAuth.ServerSide", "Blazor.Auth0.Examples.BuiltInAuth.ServerSide\Blazor.Auth0.Examples.BuiltInAuth.ServerSide.csproj", "{88573A35-8850-49D7-9BB3-C4585A5F883E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.BuiltInAuth.ServerSide", "Blazor.Auth0.Examples.BuiltInAuth.ServerSide\Blazor.Auth0.Examples.BuiltInAuth.ServerSide.csproj", "{88573A35-8850-49D7-9BB3-C4585A5F883E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Auth0.Examples.BuiltInAuth.ClientSide", "Blazor.Auth0.Examples.BuiltInAuth.ClientSide\Blazor.Auth0.Examples.BuiltInAuth.ClientSide.csproj", "{B397BF18-F483-43F1-887F-99ECAA79F9C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.BuiltInAuth.ClientSide", "Blazor.Auth0.Examples.BuiltInAuth.ClientSide\Blazor.Auth0.Examples.BuiltInAuth.ClientSide.csproj", "{B397BF18-F483-43F1-887F-99ECAA79F9C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <PackageId>Blazor-Auth0-ServerSide</PackageId>
-    <Version>0.4.0-beta.1</Version>
+    <Version>0.4.2-beta.2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Company>Henry Alberto Rodriguez Rodriguez</Company>
     <Description>Library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login</Description>
@@ -15,11 +15,9 @@
     <RepositoryUrl>https://github.com/Pegazux/Blazor.Auth0</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
-    <PackageReleaseNotes>Added support for built-in Blazor Authentication and Authorization
+    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 7
 
-Break Fix:
-
-AuthComponent RenderFragments renamed to better fit built-in Blazor Authentication and Authorization</PackageReleaseNotes>
+Bugs Fixed: https://github.com/Pegazux/Blazor.Auth0/issues/12, Fixed error in code_challenge and code_validator generation</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>    
   </PropertyGroup>
 
@@ -28,7 +26,7 @@ AuthComponent RenderFragments renamed to better fit built-in Blazor Authenticati
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="0.4.0-beta.1" />
+    <PackageReference Include="Blazor-Auth0-Shared" Version="0.4.2-beta.2" />
   </ItemGroup>
 
 </Project>

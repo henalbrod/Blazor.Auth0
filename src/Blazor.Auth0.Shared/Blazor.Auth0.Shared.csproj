@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Blazor-Auth0-Shared</PackageId>
-    <Version>0.4.0-beta.1</Version>
+    <Version>0.4.2-beta.2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -13,15 +13,13 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Added support for built-in Blazor Authentication and Authorization
+    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 7
 
-Break Fix:
-
-AuthComponent RenderFragment renamed to better fit built-in Blazor Authentication and Authorization</PackageReleaseNotes>
+Bugs Fixed: https://github.com/Pegazux/Blazor.Auth0/issues/12, Fixed error in code_challenge and code_validator generation</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview6.19307.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview7.19365.7" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
