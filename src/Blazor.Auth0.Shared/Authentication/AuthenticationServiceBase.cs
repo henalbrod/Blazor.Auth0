@@ -111,7 +111,7 @@ namespace Blazor.Auth0.Shared.Authentication
             return $"https://{clientSettings.Auth0Domain}/authorize?" +
                       $"&response_type={responseType}" +
                       "&code_challenge_method=S256" +
-                      $"code_challenge={latestAuthorizeUrlCodeChallenge}" +
+                      $"&code_challenge={latestAuthorizeUrlCodeChallenge}" +
                       $"&state={latestAuthorizeUrlState}" +
                       $"&nonce={nonce}" +
                       $"&client_id={clientSettings.Auth0ClientId}" +
