@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  Examples:
+    build:
+      docker:
+        - image: microsoft/aspnetcore-build:2.0
+      steps:
+        - checkout
+        - run: find .
+        - run: build examples
+  Source:
+    build:
+      docker:
+        - image: microsoft/aspnetcore-build:2.0
+      steps:
+        - checkout
+        - run: find .
+        - run: build src
