@@ -5,6 +5,7 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
     steps:
       - checkout
+      - run: ls
       - run: cd examples
       - run: ls
       - run: dotnet build
