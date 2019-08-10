@@ -1,22 +1,10 @@
 version: 2
 jobs:
-  Examples:
+  build:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
     steps:
       - checkout
-      - run: find .
       - run: dotnet build examples
-  Source:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
-    steps:
-      - checkout
-      - run: find .
       - run: dotnet build src
-workflows:
-  version: 2
-  BuildBlazorAuthProject:
-    jobs:
-      - Examples
-      - Source
+      
