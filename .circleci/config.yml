@@ -6,4 +6,5 @@ jobs:
     steps:
       - checkout
       - run: cd examples
+      - run: ls
       - run: dotnet build
