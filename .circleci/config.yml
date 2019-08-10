@@ -16,7 +16,7 @@ jobs:
       - run: dotnet build src
 workflows:
   version: 2
-  one_and_two:
+  BuildBlazorAuthProject:
     jobs:
       - Examples
       - Source
