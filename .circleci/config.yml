@@ -6,3 +6,4 @@ jobs:
     steps:
       - checkout
       - run: dotnet build examples
+      - run: dotnet build src
