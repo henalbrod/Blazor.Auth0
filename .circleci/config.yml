@@ -2,18 +2,18 @@ version: 2
 jobs:
   Examples:
     docker:
-      - image: microsoft/aspnetcore-build:2.0
+      - image: microsoft/3.0.100-preview7-alpine3.9
     steps:
       - checkout
       - run: find .
-      - run: build examples
+      - run: dotnet build examples
   Source:
     docker:
       - image: microsoft/aspnetcore-build:2.0
     steps:
       - checkout
       - run: find .
-      - run: build src
+      - run: dotnet build src
 workflows:
   version: 2
   one_and_two:
