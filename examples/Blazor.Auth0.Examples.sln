@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.ClientSide", "Blazor.auth0.Examples.ClientSide\Blazor.Auth0.Examples.ClientSide.csproj", "{DADC3B8F-8BBB-49D6-8CBF-368A5FE56E32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.ClientSide", "Blazor.Auth0.Examples.ClientSide\Blazor.Auth0.Examples.ClientSide.csproj", "{DADC3B8F-8BBB-49D6-8CBF-368A5FE56E32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Examples.CoreHosted.Server", "Blazor.Auth0.Examples.CoreHosted.Server\Blazor.Auth0.Examples.CoreHosted.Server.csproj", "{F88097B5-E7D2-4B8F-BE17-F14028CDC9BC}"
 EndProject
