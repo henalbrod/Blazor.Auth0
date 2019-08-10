@@ -9,7 +9,7 @@ jobs:
       - run: dotnet build examples
   Source:
     docker:
-      - image: microsoft/aspnetcore-build:2.0
+      - image: microsoft/3.0.100-preview7-alpine3.9
     steps:
       - checkout
       - run: find .
