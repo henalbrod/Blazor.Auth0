@@ -2,14 +2,14 @@ version: 2
 jobs:
   Examples:
     docker:
-      - image: microsoft/3.0.100-preview7-alpine3.9
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
     steps:
       - checkout
       - run: find .
       - run: dotnet build examples
   Source:
     docker:
-      - image: microsoft/3.0.100-preview7-alpine3.9
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
     steps:
       - checkout
       - run: find .
