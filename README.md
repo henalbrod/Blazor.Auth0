@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/kiksen1987/Blazor.Auth0.svg?style=svg)](https://circleci.com/gh/kiksen1987/Blazor.Auth0)
 
 ![alt-text](https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png "Blazor.Auth0")
 
