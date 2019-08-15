@@ -5,8 +5,8 @@
 This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview7 client & server side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 [![GitHub license](https://img.shields.io/github/license/Pegazux/Blazor.Auth0?color=blue)](https://github.com/Pegazux/Blazor.Auth0/blob/master/LICENSE)
-![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)
-![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ClientSide?color=green&label=Nuget%3A%20Blazor-Auth0-Clientside)
+[![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
+[![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ClientSide?color=green&label=Nuget%3A%20Blazor-Auth0-Clientside)](https://www.nuget.org/packages/Blazor-Auth0-ClientSide)
 [![CircleCI](https://circleci.com/gh/kiksen1987/Blazor.Auth0.svg?style=svg)](https://circleci.com/gh/kiksen1987/Blazor.Auth0)
 
 # About Auth0
