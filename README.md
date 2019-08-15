@@ -6,6 +6,16 @@
 
 This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview7 client & server side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
+# About Auth0
+
+Auth0 is a platform that provides authentication and authorization as a service. Giving developers and companies the building blocks they need to secure their applications without having to become security experts.
+
+You can connect any application (written in any language or on any stack) to Auth0 and define the identity providers you want to use (how you want your users to log in).
+
+Learn more at:
+
+[<img width="150" height="50" alt="JWT Auth for open source projects" src="https://cdn.auth0.com/oss/badges/a0-badge-dark.png">](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
+
 
 ## Start using it in 3 simple steps!
 
