@@ -19,9 +19,7 @@ jobs:
     - name: Initializacion message
       run: echo Initializatin Blazor.Auth0 build!
       
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v1.1
-
+      
     - name: Build Blazor-Auth0-Shared project.
       run: |        
         dotnet build src/Blazor.Auth0.Shared
