@@ -7,7 +7,7 @@ This is a library for Blazor authentication with OIDC Authorization Code-Grant a
 [![GitHub license](https://img.shields.io/github/license/Pegazux/Blazor.Auth0?color=blue)](https://github.com/Pegazux/Blazor.Auth0/blob/master/LICENSE)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ClientSide?color=green&label=Nuget%3A%20Blazor-Auth0-Clientside)](https://www.nuget.org/packages/Blazor-Auth0-ClientSide)
-[![Github Actions](https://github.com/henalbrod/Blazor.Auth0_private/workflows/Github%20Actions%20CI/badge.svg)](https://github.com/henalbrod/Blazor.Auth0_private/actions)
+[![Github Actions](https://github.com/henalbrod/Blazor.Auth0/workflows/Github%20Actions%20CI/badge.svg)](https://github.com/henalbrod/Blazor.Auth0/actions)
 
 
 # About Auth0
@@ -63,7 +63,7 @@ Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview1
 
 ```C#
 // Import Blazor.Auth0
-using Blazor.Auth0.ServerSide;
+using Blazor.Auth0;
 using Blazor.Auth0.Models;
 // ...
 
