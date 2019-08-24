@@ -1,16 +1,16 @@
+# Blazor.Auth0
 
+<img src="https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png" height="150" alt="Blazor Auth0 Library" align="right"/>
 
-<img src="https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png" height="150" alt="Blazor Auth0 Library"/>
-
-This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview7 client & server side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview8 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 [![GitHub license](https://img.shields.io/github/license/Pegazux/Blazor.Auth0?color=blue)](https://github.com/Pegazux/Blazor.Auth0/blob/master/LICENSE)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ClientSide?color=green&label=Nuget%3A%20Blazor-Auth0-Clientside)](https://www.nuget.org/packages/Blazor-Auth0-ClientSide)
-[![CircleCI](https://circleci.com/gh/kiksen1987/Blazor.Auth0.svg?style=svg)](https://circleci.com/gh/kiksen1987/Blazor.Auth0)
+[![Github Actions](https://github.com/henalbrod/Blazor.Auth0_private/workflows/Github%20Actions%20CI/badge.svg)](https://github.com/henalbrod/Blazor.Auth0_private/actions)
+
 
 # About Auth0
-
 Auth0 is a platform that provides authentication and authorization as a service. Giving developers and companies the building blocks they need to secure their applications without having to become security experts.
 
 You can connect any application (written in any language or on any stack) to Auth0 and define the identity providers you want to use (how you want your users to log in).
@@ -19,149 +19,170 @@ Learn more at:
 
 [<img width="150" height="50" alt="JWT Auth for open source projects" src="https://cdn.auth0.com/oss/badges/a0-badge-dark.png">](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
 
+## Prerequisites
 
-## Start using it in 3 simple steps!
+### Blazor
 
-**Note**: Following example will implement a "An authenticated user is Required" flow, for a "Login/Logout Buttons" flow please refer to [here](https://github.com/Pegazux/Blazor.Auth0/tree/master/examples/Blazor.Auth0.Examples.ServerSide)
+>You'll want to follow the [Getting Started](https://docs.microsoft.com/en-us/aspnet/core/blazor/get-started?view=aspnetcore-3.0&tabs=visual-studio) instructions in [Blazor website](https://blazor.net)
 
-1) Start by adding a reference to Blazor-Auth0-ClientSide.0.7.2-beta.2 for client side and Blazor-Auth0-ServerSide.0.4.2-beta.2 for server side to your Blazor project
+### Auth0
 
-### Client Side
+> Basic knowledge of Auth0 IDaaS platform is assumed, otherwise, visiting [Auth0 docs](https://auth0.com/docs) is highly recommended.
 
-```
-Install-Package Blazor-Auth0-ClientSide -Version 0.7.2-beta.2
+## Installation
+
+Install via [NPM](https://www.nuget.org/).
+
+>Server Side
+```bash
+Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview1
 ````
 
-### Server Side
-
-```
-Install-Package Blazor-Auth0-ServerSide -Version 0.4.2-beta.2
+>Client Side
+```bash
+Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview1
 ````
 
+## Usage
 
-2) In Startup.cs, register the service inside ConfigureServices method
+ **Note**: Following example is for a server-side with require authenticated user implementation, for client-side and core-hosted example implementations please refer to the [examples](https://github.com/henalbrod/Blazor.Auth0/tree/master/examples)
 
+> #### appsettings.json or [Secrets file](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.0&tabs=windows#secret-manager) (recommended)
 
-```C#
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // Uncomment for Server Side implementations
-            // services.AddScoped<HttpClient>();
-
-            services.AddScoped((sp) =>
-            {
-                return new Blazor.Auth0.Shared.Models.ClientSettings()
-                {
-                    Auth0Domain = "[Auth0_Domain]",
-                    Auth0ClientId = "[Auth0_Client_Id]",
-					LoginRequired = true
-                };
-            });
-
-            services.AddScoped<Blazor.Auth0.[ClientSide|ServerSide].Authentication.AuthenticationService>();
-			
-        }
-```
-
-### Other options include:
-
-* **AuthenticationGrant**:  Allows you to choose between authorization_code (recommended) and implicit_grant authentication flows.
-
-* **RedirectAlwaysToHome**: When set to true, forces the redirect_uri param to be the home path, this value overrides *Auth0RedirectUri*
-
-* **LoginRequired**: When set to true, forces a redirection to the login page in case the user is not authenticated.
-
-* **GetUserInfoFromIdToken**: When set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default value is *false*
-
-
-
-3) Replace the content of *App.razor* with the following code
-
-
-```C#
-@using Blazor.Auth0.Shared.Models.Enumerations
-@using Blazor.Auth0.[ClientSide|ServerSide].Components
-@using Blazor.Auth0.[ClientSide|ServerSide].Authentication
-
-@inject AuthenticationService _authService
-
-<AuthComponent ProtectedPaths="protectedPaths">
-
-	@*Will render while determining user's session state*@
-	<AuthorizingContent>
-		Determining session state, please wait...
-	</AuthorizingContent>
-
-	@*Will render after determining session state*@
-	<AuthorizedContent>
-
-		<Router AppAssembly="typeof(Startup).Assembly">
-
-			<NotFoundContent>
-				<p>Sorry, there's nothing at this address.</p>
-			</NotFoundContent>
-
-		</Router>
-
-	</AuthorizedContent>
-
-	<NotAuthorizedContent>
-		ERROR 401: Unauthorized
-	</NotAuthorizedContent>
-
-</AuthComponent>
-
-@code {
-
-    List<string> protectedPaths = new List<string> {
-        "fetchdata"
-    };
-
+```Json
+{
+	"Auth0":{
+		"Domain": "[Your_Auth0_Tenant_Domain]",
+		"ClientId": "[Your_Auth0_Client/Application_Id]",
+		"ClientSecret": "[Your_Auth0_Client/Application_Secret]",
+		"Audience": "[Your_Auth0_Audience/API_Identifier]"
+	}
 }
 ```
-
-### Other options include:
-
-* **ProtectedPaths**:  Allows you to indicate a list of paths that requires an authenticated user, only affects if LoginRequired is set to false.
-* **LoginRequiredOnProtectedPaths**:  Alters the ProtectedPaths behavior. When set to true redirect the user to the login page automatically, otherwise, the content from the UnAuthorizedContent fragment will be rendered.
-
-
-# Using it with the built-in Blazor Authentication and Authorization
-
-Since v0.7.0-beta.1 for client side version and v0.4.0-beta.1 for server side version, you can make use of the new built-in Blazor Authentication and Authorization capabilities.
-
-In Startup.cs, register a new AuthenticationStateProvider service inside ConfigureServices method
+> #### Startup.cs
 
 ```C#
+// Import Blazor.Auth0
+using Blazor.Auth0.ServerSide;
+using Blazor.Auth0.Models;
+// ...
 
-	services.AddScoped<AuthenticationStateProvider, Blazor.Auth0.[ClientSide|ServerSide].Authentication.AuthenticationStateProvider>();		
-	
+public void ConfigureServices(IServiceCollection services)
+{
+	// Other code...
+
+	/// This one-liner will initialize Blazor.Auth0 with all the defaults
+	services.AddDefaultBlazorAuth0Authentication(Configuration.GetSection("Auth0").Get<ClientOptions>());	
+
+	// Other code...
+}
+
+ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+ {
+    // Otrher code...
+
+	app.UseHttpsRedirection();
+	app.UseStaticFiles();
+     
+	// Add Blazor.Auth0 middleware     
+	app.UseBlazorAuth0();
+
+	// Other code...
+ }
 ```
+###
+Create a new Shell.razor file inside the Shared folder with the following code
+> #### Shell.razor
 
-### Server Side Only!
+```HTML
+@inherits LayoutComponentBase
 
-In the Configure method of the same file, instructs the app to use Authentication and Authorization
+<Router AppAssembly="typeof(Startup).Assembly">
+    <NotFoundContent>
+        <p>Sorry, there's nothing at this address.</p>
+    </NotFoundContent>
+    <NotAuthorizedContent>
+        <h1>Sorry</h1>
+        <p>You're not authorized to reach this page. You may need to log in as a different user.</p>
+    </NotAuthorizedContent>
+    <AuthorizingContent>
+        <p>Please wait...</p>
+    </AuthorizingContent>
+</Router>
+``` 
+###
+Replace App.razor content with the following code
+> #### App.razor
 
-```C#
+```HTML
+@inject Blazor.Auth0.IAuthenticationService authService
+@inject Blazor.Auth0.Models.ClientOptions clientOptions
 
-	app.UseAuthentication();
-	app.UseAuthorization();
-	
+<CascadingAuthenticationState>
+
+    <AuthorizeView>
+
+        <Authorized>
+            <Shell></Shell>
+        </Authorized>
+
+        <NotAuthorized>
+            @if (authService.SessionState == SessionStates.Undefined || clientOptions.RequireAuthenticatedUser)
+            {
+                <p>Determining session state, please wait...</p>
+            }
+            else
+            {                
+               <Shell />
+            }
+        </NotAuthorized>
+
+    </AuthorizeView>
+
+</CascadingAuthenticationState>
 ```
+## Support
+If you found a bug, have a consultation or a feature request please feel free to [open an issue](https://github.com/henalbrod/Blazor.Auth0/issues).
 
-### IMPORTANT!
+When opening issues please take in account to:
 
-If you're planning to use built-in Blazor Authorization capabilities like Claims-based and Policy-based authorization, then you will need to indicate an Auth0 audience/api with the "Enable RBAC" and "Add Permissions in the Access Token" settings set to true, here you have some reading about [Auth0's RBAC](https://auth0.com/docs/authorization/concepts/rbac).
+* **Avoid duplication**: Please search for similar issues before.
+* **Be specific**: Please don't put several problems/ideas in the same issue.
+* **Use short descriptive titles**: You'll have the description box to explain yourself.
+* **Include images whenever possible**: A picture is worth a thousand words.
+* **Include reproduction steps for bugs**:  Will be appreciated
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+1.  Fork it ([https://github.com/henalbrod/Blazor.Auth0/fork](https://github.com/henalbrod/Blazor.Auth0/fork))
+2.  Create your feature branch (`git checkout -b feature/fooBar`)
+3.  Commit your changes (`git commit -am 'Add some fooBar'`)
+4.  Push to the branch (`git push origin feature/fooBar`)
+5.  Create a new Pull Request
 
-> The actual mechanism of authenticating the user, i.e., determining their identity using cookies or other information, is the same in Blazor as in any other ASP.NET Core application. So to control and customize any aspect of it, see documentation about authentication in ASP.NET Core.
->> SteveSandersonMS
+## Authors
+**Henry Alberto Rodriguez** - _Initial work_ - [GitHub](https://github.com/henalbrod) -  [Twitter](https://twitter.com/henalbrod)  - [Linkedin](https://www.linkedin.com/in/henalbrod/)
 
-# Following are great sources of how to implement the Authentication and Authorization:
+## License
 
-[ASP.NET Core and Blazor updates in .NET Core 3.0 Preview](https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-6/),
-[SteveSandersonMS/blazor-auth.md](https://gist.github.com/SteveSandersonMS/175a08dcdccb384a52ba760122cd2eda),
-[Policy-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.0),
-[Claims-based authorization in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-3.0)
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE) file for details.
 
+## Acknowledgments
+
+* I started this library based on [this great post](https://auth0.com/blog/oauth2-implicit-grant-and-spa/) from [Vittorio Bertocci](https://twitter.com/vibronet)
+
+* This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
+
+## Release History
+
+**v0.1.0.0-Preview1**
+* Upgraded to .Net Core 3.0.0-preview8
+* Removed AuthComponent
+* New One-Liner instantiation
+* Server Side full rewrite
+	* Better server-side Blazor Authentication compatibility/integration
+	* Cookie-based session (No more silent login iframe in server-side)
+	* Refresh token support (Refreshing and Revoking)
+	* Client secret
+	* Server-side sliding expiration

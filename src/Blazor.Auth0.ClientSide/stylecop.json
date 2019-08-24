@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "companyName": "Henry Alberto Rodriguez Rodriguez",
+      "copyrightText": "Copyright (c) 2019 Henry Alberto Rodriguez Rodriguez",
+      "variables": {
+        "licenseName": "MIT",
+        "licenseFile": "LICENSE"
+      },
+      "documentInterfaces": true,
+      "documentInternalElements": false
+    }
+  }
+}

@@ -1,9 +1,0 @@
-version: 2
-jobs:
-  build:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview7-alpine3.9
-    steps:
-      - checkout
-      - run: dotnet build examples
-      - run: dotnet build src

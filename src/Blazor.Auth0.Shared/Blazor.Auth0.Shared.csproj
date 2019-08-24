@@ -2,25 +2,67 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Blazor-Auth0-Shared</PackageId>
-    <Version>0.4.2-beta.2</Version>
+
+    <Version>1.0.0-Preview1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
-    <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Pegazux/Blazor.Auth0</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Pegazux/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Pegazux/Blazor.Auth0</RepositoryUrl>
+    <Description>Auth0 library for Balzor</Description>
+    <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/henalbrod/Blazor.Auth0</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Blazor, Auth0, Authentication, OIDC, Universal Login, Silent Login, JWT</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Henry Alberto Rodriguez Rodriguez</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Updated to .NET Core 3.0 Preview 7
+    <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
+    <PackageId>Blazor-Auth0-Shared</PackageId>
+    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0-preview8
+Removed AuthComponent
+New One-Liner instantiation
+Server Side full rewrite
+- Better server-side Blazor Authentication compatibility/integration
+- Cookie-based session (No more silent login iframe in server-side)
+- Refresh token support (Refreshing and Revoking)
+- Client secret
+- Server-side sliding expiration	      
+</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-Bugs Fixed: https://github.com/Pegazux/Blazor.Auth0/issues/12, Fixed error in code_challenge and code_validator generation</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview7.19365.7" />
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview8.19405.7" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

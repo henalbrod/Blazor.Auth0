@@ -1,0 +1,82 @@
+name: Github Actions CI
+
+on: [push]
+
+jobs:
+  build:
+    
+    
+    container: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview8-disco
+    
+    
+    runs-on: ubuntu-latest
+    
+    
+    steps:
+    
+    
+    - uses: actions/checkout@v1
+    - name: Initializacion message
+      run: echo Initializatin Blazor.Auth0 build!
+      
+      
+    - name: Build Blazor-Auth0-Shared project.
+      run: |        
+        dotnet build src/Blazor.Auth0.Shared
+        dotnet pack src/Blazor.Auth0.Shared/Blazor.Auth0.Shared.csproj --no-build --output $HOME
+        
+        
+    - name: Build Blazor-Auth0-ClientSide project.   
+      run: |
+        dotnet restore src/Blazor.Auth0.ClientSide -s $HOME -s https://api.nuget.org/v3/index.json
+        dotnet build src/Blazor.Auth0.ClientSide        
+        dotnet pack src/Blazor.Auth0.ClientSide/Blazor.Auth0.ClientSide.csproj --no-build --output $HOME
+        
+        
+    - name: Build Blazor-Auth0-ServerSide project.
+      run: |
+        dotnet restore src/Blazor.Auth0.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
+        dotnet build src/Blazor.Auth0.ServerSide
+        dotnet pack src/Blazor.Auth0.ServerSide/Blazor.Auth0.ServerSide.csproj --no-build --output $HOME
+        
+        
+    - name: Build AspNetCoreHosted Example.
+      run: |        
+        dotnet restore examples/Examples.AspNetCoreHosted/Client -s $HOME -s https://api.nuget.org/v3/index.json
+        dotnet build examples/Examples.AspNetCoreHosted/Server
+        
+        
+    - name: Build ClientSide Example.
+      run: |                
+        dotnet restore examples/Examples.ClientSide -s $HOME -s https://api.nuget.org/v3/index.json
+        dotnet build examples/Examples.ClientSide
+        
+        
+    - name: Build ServerSide Example.
+      run: |                      
+        dotnet restore examples/Examples.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
+        dotnet build examples/Examples.ServerSide
+                
+        
+    - name: Publish Blazor-Auth0-Shared Nuget package.
+      continue-on-error: true
+      env: # Or as an environment variable
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      run: |            
+        dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+        
+        
+    - name: Publish Blazor-Auth0-ClientSide Nuget package.
+      continue-on-error: true
+      env: # Or as an environment variable
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      run: |           
+        dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+        
+        
+    - name: Publish Blazor-Auth0-ServerSide Nuget package.
+      continue-on-error: true
+      env: # Or as an environment variable
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      run: |           
+        dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json          
