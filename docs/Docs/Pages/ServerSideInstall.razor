@@ -1,0 +1,61 @@
+﻿@using Docs.Properties
+
+@page "/server_side_install"
+
+<h1>Server Side Install</h1>
+<br />
+<h3>Installation</h3>
+<br />
+<p>
+    Install via NPM.
+    <pre>
+
+    $ Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview1
+
+    </pre>
+</p>
+<br />
+<h3>Usage</h3>
+<br />
+<p>
+    <strong>Note:</strong>
+    Following example is for a server-side with require authenticated user implementation,
+    for client-side and core-hosted example implementations please refer to Advance
+</p>
+<br />
+<p>
+    <strong>
+        appsettings.json or <a href="https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.0&tabs=windows#secret-manager">Secrets file</a>(recommended)
+    </strong>
+    <pre>@Resources.appsettings_json</pre>
+    <br />
+</p>
+<br />
+<p>
+    <strong>
+        Startup.cs
+    </strong>
+    <pre>@Resources.startup_cs</pre>
+</p>
+<br />
+
+<p>
+    Create a new <code>Shell.razor</code> file inside the Shared folder with the following code.
+</p>
+<p>
+    <strong>
+        Startup.cs
+    </strong>
+    <pre>@Resources.shell_razor</pre>
+</p>
+<br />
+
+<p>
+    Replace <code>App.razor</code> content with the following code
+</p>
+<p>
+    <strong>
+        App.razor
+    </strong>
+    <pre>@Resources.app_razor</pre>
+</p>

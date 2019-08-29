@@ -1,0 +1,14 @@
+﻿.logo {
+    --header-fore-color: #5c2d91;
+}
+
+nav {
+    --nav-border-color: transparent;
+}
+
+#auth0-badge {
+    max-width: 150px;
+    margin-left: 17%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
