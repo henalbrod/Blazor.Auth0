@@ -1,0 +1,25 @@
+﻿@inject Blazor.Auth0.IAuthenticationService authService
+@inject Blazor.Auth0.Models.ClientOptions clientOptions
+
+<CascadingAuthenticationState>
+
+    <AuthorizeView>
+
+        <Authorized>
+            <Shell></Shell>
+        </Authorized>
+
+        <NotAuthorized>
+            @if (authService.SessionState == SessionStates.Undefined || clientOptions.RequireAuthenticatedUser)
+            {
+                <p>Determining session state, please wait...</p>
+            }
+            else
+            {                
+               <Shell />
+            }
+        </NotAuthorized>
+
+    </AuthorizeView>
+
+</CascadingAuthenticationState>

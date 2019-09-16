@@ -1,0 +1,37 @@
+﻿@*@using Microsoft.AspNetCore.Authorization*@
+@*@attribute [Authorize("execute:increment_counter")]*@
+
+@page "/counter"
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    int currentCount = 0;
+
+    async Task IncrementCount()
+    {
+
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            // Since the user is a ClaimsPrincipal, you can also enumerate claims,
+            // evaluate membership in roles, etc.
+            Console.WriteLine($"Hello, {user.Identity.Name}");
+            currentCount++;
+        }
+        else
+        {
+            Console.WriteLine("You're not logged in.");
+        }
+
+    }
+}

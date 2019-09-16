@@ -1,0 +1,10 @@
+@inject Blazor.Auth0.IAuthenticationService authService
+
+<AuthorizeView>
+    <Authorized>        
+        <button @onclick="@(async ()=> await authService.LogOut())" >Log out</button>
+    </Authorized>
+    <NotAuthorized>
+        <button @onclick="authService.Authorize">Log in</button>
+    </NotAuthorized>
+</AuthorizeView>
