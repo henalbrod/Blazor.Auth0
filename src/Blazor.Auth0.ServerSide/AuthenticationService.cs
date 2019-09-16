@@ -17,6 +17,7 @@ namespace Blazor.Auth0
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Timer = System.Timers.Timer;
@@ -25,7 +26,7 @@ namespace Blazor.Auth0
     public class AuthenticationService : IAuthenticationService, IDisposable
     {
         private readonly ClientOptions clientOptions;
-        private readonly IUriHelper uriHelper;
+        private readonly NavigationManager uriHelper;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly HttpClient httpClient;
         private SessionStates sessionState = SessionStates.Undefined;
@@ -70,7 +71,7 @@ namespace Blazor.Auth0
         public AuthenticationService(
             HttpClient httpClient,
             IHttpContextAccessor httpContextAccessor,
-            IUriHelper uriHelper,
+            NavigationManager uriHelper,
             ClientOptions options)
         {
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -160,7 +161,7 @@ namespace Blazor.Auth0
 
             redirectUri ??= this.BuildRedirectUrl();
 
-            Uri abosulteUri = new Uri(this.uriHelper.GetAbsoluteUri());
+            Uri abosulteUri = new Uri(this.uriHelper.Uri);
 
             var path = new PathString(this.clientOptions.RemoteSignOutPath);
             var query = new QueryString();
@@ -200,7 +201,7 @@ namespace Blazor.Auth0
 
         private string BuildRedirectUrl()
         {
-            Uri abosulteUri = new Uri(this.uriHelper.GetAbsoluteUri());
+            Uri abosulteUri = new Uri(this.uriHelper.Uri);
 
             string uri = !string.IsNullOrEmpty(this.clientOptions.RedirectUri) ? this.clientOptions.RedirectUri : this.clientOptions.RedirectAlwaysToHome ? abosulteUri.GetLeftPart(UriPartial.Authority) : abosulteUri.AbsoluteUri;
 

@@ -9,6 +9,7 @@ namespace Blazor.Auth0
     using Blazor.Auth0.Models;
     using Blazor.Auth0.Models.Enumerations;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
 
     /// <summary>
     /// Service for handling the authentication flow.

@@ -94,7 +94,7 @@ namespace Blazor.Auth0
         /// <param name="uriHelper">A <see cref="IUriHelper"/> param.</param>
         /// <param name="authorizeOptions">A <see cref="AuthorizeOptions"/> param.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public static async Task Authorize(IJSRuntime jsRuntime, IUriHelper uriHelper, AuthorizeOptions authorizeOptions)
+        public static async Task Authorize(IJSRuntime jsRuntime, NavigationManager uriHelper, AuthorizeOptions authorizeOptions)
         {
             if (jsRuntime is null)
             {

@@ -7,9 +7,10 @@ namespace Blazor.Auth0
     using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
 
     /// <inheritdoc/>
-    public class AuthenticationStateProvider : Microsoft.AspNetCore.Components.AuthenticationStateProvider
+    public class AuthenticationStateProvider : Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider
     {
         private readonly IAuthenticationService authenticationService;
 
