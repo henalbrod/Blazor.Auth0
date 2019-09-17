@@ -91,19 +91,19 @@ namespace Blazor.Auth0
         /// Initiates the Authorization flow by calling the IDP's /authorize enpoint.
         /// </summary>
         /// <param name="jsRuntime">A <see cref="IJSRuntime"/> param.</param>
-        /// <param name="uriHelper">A <see cref="IUriHelper"/> param.</param>
+        /// <param name="navigationManager">A <see cref="NavigationManager"/> param.</param>
         /// <param name="authorizeOptions">A <see cref="AuthorizeOptions"/> param.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public static async Task Authorize(IJSRuntime jsRuntime, NavigationManager uriHelper, AuthorizeOptions authorizeOptions)
+        public static async Task Authorize(IJSRuntime jsRuntime, NavigationManager navigationManager, AuthorizeOptions authorizeOptions)
         {
             if (jsRuntime is null)
             {
                 throw new ArgumentNullException(nameof(jsRuntime));
             }
 
-            if (uriHelper is null)
+            if (navigationManager is null)
             {
-                throw new ArgumentNullException(nameof(uriHelper));
+                throw new ArgumentNullException(nameof(navigationManager));
             }
 
             if (authorizeOptions is null)
@@ -117,7 +117,7 @@ namespace Blazor.Auth0
 
             string authorizeUrl = BuildAuthorizeUrl(authorizeOptions);
 
-            uriHelper.NavigateTo(authorizeUrl);
+            navigationManager.NavigateTo(authorizeUrl);
         }
 
         /// <summary>

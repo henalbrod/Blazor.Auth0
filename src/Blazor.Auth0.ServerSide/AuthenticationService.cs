@@ -26,7 +26,7 @@ namespace Blazor.Auth0
     public class AuthenticationService : IAuthenticationService, IDisposable
     {
         private readonly ClientOptions clientOptions;
-        private readonly NavigationManager uriHelper;
+        private readonly NavigationManager navigationManager;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly HttpClient httpClient;
         private SessionStates sessionState = SessionStates.Undefined;
@@ -64,19 +64,18 @@ namespace Blazor.Auth0
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> instance.</param>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
-        /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/> instance.</param>
-        /// <param name="uriHelper">The <see cref="IUriHelper"/> instance.</param>
+        /// <param name="navigationManager">The <see cref="NavigationManager"/> instance.</param>
         /// <param name="options">The <see cref="ClientOptions"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "I like it best ;)")]
         public AuthenticationService(
             HttpClient httpClient,
             IHttpContextAccessor httpContextAccessor,
-            NavigationManager uriHelper,
+            NavigationManager navigationManager,
             ClientOptions options)
         {
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            this.uriHelper = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper));
+            this.navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
             this.clientOptions = options ?? throw new ArgumentNullException(nameof(options));
 
             this.claimsPrincipal = this.httpContextAccessor.HttpContext.User;
@@ -149,7 +148,7 @@ namespace Blazor.Auth0
         /// <inheritdoc/>
         public Task Authorize()
         {
-            this.uriHelper.NavigateTo(this.clientOptions.AuthorizePath, true);
+            this.navigationManager.NavigateTo(this.clientOptions.AuthorizePath, true);
 
             return Task.CompletedTask;
         }
@@ -161,7 +160,7 @@ namespace Blazor.Auth0
 
             redirectUri ??= this.BuildRedirectUrl();
 
-            Uri abosulteUri = new Uri(this.uriHelper.Uri);
+            Uri abosulteUri = new Uri(this.navigationManager.Uri);
 
             var path = new PathString(this.clientOptions.RemoteSignOutPath);
             var query = new QueryString();
@@ -177,7 +176,7 @@ namespace Blazor.Auth0
                 Query = query.ToUriComponent(),
             };
 
-            this.uriHelper.NavigateTo(uri.Uri.AbsoluteUri, true);
+            this.navigationManager.NavigateTo(uri.Uri.AbsoluteUri, true);
 
         }
 
@@ -201,7 +200,7 @@ namespace Blazor.Auth0
 
         private string BuildRedirectUrl()
         {
-            Uri abosulteUri = new Uri(this.uriHelper.Uri);
+            Uri abosulteUri = new Uri(this.navigationManager.Uri);
 
             string uri = !string.IsNullOrEmpty(this.clientOptions.RedirectUri) ? this.clientOptions.RedirectUri : this.clientOptions.RedirectAlwaysToHome ? abosulteUri.GetLeftPart(UriPartial.Authority) : abosulteUri.AbsoluteUri;
 
