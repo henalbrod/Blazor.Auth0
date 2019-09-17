@@ -1,25 +1,16 @@
-﻿@inject Blazor.Auth0.IAuthenticationService authService
-@inject Blazor.Auth0.Models.ClientOptions clientOptions
-
-<CascadingAuthenticationState>
-
-    <AuthorizeView>
-
-        <Authorized>
-            <Shell></Shell>
-        </Authorized>
-
-        <NotAuthorized>
-            @if (authService.SessionState == SessionStates.Undefined || clientOptions.RequireAuthenticatedUser)
-            {
-                <p>Determining session state, please wait...</p>
-            }
-            else
-            {
-                <Shell></Shell>
-            }
-        </NotAuthorized>
-
-    </AuthorizeView>
-
-</CascadingAuthenticationState>
+﻿<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                <p>>Determining session state, please wait...</p>
+            </Authorizing>
+            <NotAuthorized>
+                <h1>Sorry</h1>
+                <p>You're not authorized to reach this page. You may need to log in as a different user.</p>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+    </Found>
+    <NotFound>
+        <p>Sorry, there's nothing at this address.</p>
+    </NotFound>
+</Router>

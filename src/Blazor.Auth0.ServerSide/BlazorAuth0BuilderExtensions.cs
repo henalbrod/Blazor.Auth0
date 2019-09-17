@@ -274,7 +274,7 @@ namespace Blazor.Auth0
 
             services.AddSingleton<HttpClient>();
             services.AddScoped<Blazor.Auth0.IAuthenticationService, Blazor.Auth0.AuthenticationService>();
-            services.AddScoped<Microsoft.AspNetCore.Components.AuthenticationStateProvider, Blazor.Auth0.AuthenticationStateProvider>();
+            services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, Blazor.Auth0.AuthenticationStateProvider>();
 
             return services;
         }
