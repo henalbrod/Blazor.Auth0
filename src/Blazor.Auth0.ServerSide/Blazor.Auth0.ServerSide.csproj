@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     
-    <Version>1.0.0-Preview1</Version>
+    <Version>1.0.0-Preview2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Auth0 library for Balzor</Description>
     <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
@@ -36,6 +36,7 @@ Server Side full rewrite
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor-Auth0-Shared" Version="1.0.0-Preview2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0-rc1.19457.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.0.0-rc1.19457.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.5-beta1.final">
@@ -46,10 +47,6 @@ Server Side full rewrite
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
   </ItemGroup>
 
 </Project>
