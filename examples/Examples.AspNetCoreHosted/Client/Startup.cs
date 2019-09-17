@@ -11,13 +11,13 @@ namespace Examples.AspNetCoreHosted.Client
             services.AddBlazorAuth0(options =>
             {
                 // Required
-                options.Domain = "[Auth0_Tenant_Domain]";
+                options.Domain = "blazor-auth0.auth0.com";
 
                 // Required
-                options.ClientId = "[Auth0_Client_Id]";
+                options.ClientId = "W6zJ2E5noUKYdnNblZh0M8imCCM5WT0z";
 
                 //// Required if you want to make use of Auth0's RBAC
-                options.Audience = "[Auth0_Audience]";
+                options.Audience = "https://blazor-auth0-serverside.com";
 
                 // PLEASE! PLEASE! PLEASE! DO NOT USE SECRETS IN CLIENT-SIDE APPS... https://medium.com/chingu/protect-application-assets-how-to-secure-your-secrets-a4165550c5fb
                 // options.ClientSecret = "NEVER!!";
