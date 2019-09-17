@@ -61,7 +61,7 @@ jobs:
     - name: Publish Blazor-Auth0-Shared Nuget package.
       continue-on-error: true
       env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
       run: |            
         dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
         
@@ -69,7 +69,7 @@ jobs:
     - name: Publish Blazor-Auth0-ClientSide Nuget package.
       continue-on-error: true
       env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
       run: |           
         dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
         
@@ -77,6 +77,6 @@ jobs:
     - name: Publish Blazor-Auth0-ServerSide Nuget package.
       continue-on-error: true
       env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
       run: |           
         dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json          
