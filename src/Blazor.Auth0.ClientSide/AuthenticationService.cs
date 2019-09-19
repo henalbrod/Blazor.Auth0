@@ -461,7 +461,7 @@ namespace Blazor.Auth0
             CodeChallengeMethods codeChallengeMethod = !isUsingSecret && responseType == ResponseTypes.Code ? CodeChallengeMethods.S256 : CodeChallengeMethods.None;
             string codeVerifier = codeChallengeMethod != CodeChallengeMethods.None ? CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength) : null;
             string codeChallenge = codeChallengeMethod != CodeChallengeMethods.None ? Utils.GetSha256(codeVerifier) : null;
-            string nonce = this.RequiresNonce ? CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength) : string.Empty;
+            string nonce = CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength);
 
             return new AuthorizeOptions
             {

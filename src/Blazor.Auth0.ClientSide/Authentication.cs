@@ -314,6 +314,11 @@ namespace Blazor.Auth0
                     errorDescription = "Login Required";
 
                     break;
+                    case "consent_required":
+
+                    errorDescription = "Consent Required";
+
+                    break;
                     default:
                     errorDescription = authorizationResponse.ErrorDescription;
                     break;

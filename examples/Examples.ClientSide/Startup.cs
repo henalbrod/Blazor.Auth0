@@ -13,13 +13,13 @@ namespace Examples.ClientSide
             services.AddBlazorAuth0(options =>
             {
                 // Required
-                options.Domain = "blazor-auth0.auth0.com";
+                options.Domain = "[Auth0_Domain]";
 
                 // Required
-                options.ClientId = "Psu6c0Sa4MC1QvdK2OJPONlON8JvaSQt";
+                options.ClientId = "[Auth0_client_Id]";
 
                 //// Required if you want to make use of Auth0's RBAC
-                options.Audience = "https://blazor-auth0-serverside.com";
+                options.Audience = "[Auth0_Audience]";
 
                 // PLEASE! PLEASE! PLEASE! DO NOT USE SECRETS IN CLIENT-SIDE APPS... https://medium.com/chingu/protect-application-assets-how-to-secure-your-secrets-a4165550c5fb
                 // options.ClientSecret = "NEVER!!";

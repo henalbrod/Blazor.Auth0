@@ -15,15 +15,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ServerSide</PackageId>
-    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0-preview8
-Removed AuthComponent
-New One-Liner instantiation
-Server Side full rewrite
-      - Better server-side Blazor Authentication compatibility/integration
-      - Cookie-based session (No more silent login iframe in server-side)
-      - Refresh token support (Refreshing and Revoking)
-      - Client secret
-      - Server-side sliding expiration</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0-RC1</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
