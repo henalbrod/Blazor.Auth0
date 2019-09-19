@@ -51,31 +51,3 @@ jobs:
       run: |                      
         dotnet restore examples/Examples.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
         dotnet build examples/Examples.ServerSide
-                
-        
-
-    - name: Setup Nuget.exe
-      uses: warrenbuckley/Setup-Nuget@v1
-      
-    - name: Add GPR Source
-      env: # Or as an environment variable
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/henalbrod/index.json -Username henalbrod -Password $GITHUB_TOKEN
-      
-      
-    - name: Publish Blazor-Auth0-Shared Nuget package.
-      continue-on-error: true
-      run: |            
-        nuget push $HOME/Blazor-Auth0-Shared*.nupkg -Source "GPR" -SkipDuplicate
-        
-        
-    - name: Publish Blazor-Auth0-ClientSide Nuget package.
-      continue-on-error: true
-      run: |           
-        nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -Source "GPR" -SkipDuplicate
-        
-        
-    - name: Publish Blazor-Auth0-ServerSide Nuget package.
-      continue-on-error: true   
-      run: |           
-        nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -Source "GPR" -SkipDuplicate
