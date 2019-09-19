@@ -11,10 +11,10 @@ namespace Examples.AspNetCoreHosted.Client
             services.AddBlazorAuth0(options =>
             {
                 // Required
-                options.Domain = "[Auth0_Tenant_Domain]";
+                options.Domain = "[Auth0_Domain]";
 
                 // Required
-                options.ClientId = "[Auth0_Client_Id]";
+                options.ClientId = "[Auth0_client_Id]";
 
                 //// Required if you want to make use of Auth0's RBAC
                 options.Audience = "[Auth0_Audience]";

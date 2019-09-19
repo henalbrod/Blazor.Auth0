@@ -17,6 +17,7 @@ namespace Blazor.Auth0
     using Blazor.Auth0.Models;
     using Blazor.Auth0.Models.Enumerations;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.Extensions.Logging;
     using Microsoft.JSInterop;
     using Timer = System.Timers.Timer;
@@ -25,13 +26,12 @@ namespace Blazor.Auth0
     public class AuthenticationService : IAuthenticationService, IDisposable
     {
         private readonly ClientOptions clientOptions;
-        private readonly IUriHelper uriHelper;
+        private readonly NavigationManager navigationManager;
         private readonly HttpClient httpClient;
         private readonly IJSRuntime jsRuntime;
 
         private readonly ILogger logger;
-        private readonly IComponentContext componentContext;
-        private readonly DotNetObjectRef<AuthenticationService> dotnetObjectRef;
+        private readonly DotNetObjectReference<AuthenticationService> dotnetObjectRef;
 
         private SessionAuthorizationTransaction sessionAuthorizationTransaction;
         private Timer logOutTimer;
@@ -74,19 +74,18 @@ namespace Blazor.Auth0
         /// <param name="componentContext">A <see cref="IComponentContext"/> param.</param>
         /// <param name="httpClient">A <see cref="HttpClient"/> param.</param>
         /// <param name="jsRuntime">A <see cref="IJSRuntime"/> param.</param>
-        /// <param name="uriHelper">A <see cref="IUriHelper"/> param.</param>
+        /// <param name="navigationManager">A <see cref="NavigationManager"/> param.</param>
         /// <param name="options">A <see cref="ClientOptions"/> param.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "I like this best ;)")]
-        public AuthenticationService(ILogger<AuthenticationService> logger, IComponentContext componentContext, HttpClient httpClient, IJSRuntime jsRuntime, IUriHelper uriHelper, ClientOptions options)
+        public AuthenticationService(ILogger<AuthenticationService> logger,  HttpClient httpClient, IJSRuntime jsRuntime, NavigationManager navigationManager, ClientOptions options)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.componentContext = componentContext ?? throw new ArgumentNullException(nameof(componentContext));
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
-            this.uriHelper = uriHelper ?? throw new ArgumentNullException(nameof(uriHelper));
+            this.navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
             this.clientOptions = options ?? throw new ArgumentNullException(nameof(options));
 
-            this.dotnetObjectRef = DotNetObjectRef.Create(this);
+            this.dotnetObjectRef = DotNetObjectReference.Create(this);
 
             Task.Run(async () => await this.ValidateSession().ConfigureAwait(false));
         }
@@ -104,7 +103,7 @@ namespace Blazor.Auth0
         {
             AuthorizeOptions options = this.BuildAuthorizeOptions();
 
-            await Authentication.Authorize(this.jsRuntime, this.uriHelper, options).ConfigureAwait(false);
+            await Authentication.Authorize(this.jsRuntime, this.navigationManager, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -116,7 +115,7 @@ namespace Blazor.Auth0
 
             if (!string.IsNullOrEmpty(redirectUri))
             {
-                this.uriHelper.NavigateTo(redirectUri);
+                this.navigationManager.NavigateTo(redirectUri);
             }
             else if (this.clientOptions.RequireAuthenticatedUser)
             {
@@ -253,7 +252,7 @@ namespace Blazor.Auth0
         public async Task ValidateSession()
         {
             // Let's validate the hash
-            Uri absoluteUri = this.uriHelper.ToAbsoluteUri(this.uriHelper.GetAbsoluteUri());
+            Uri absoluteUri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
 
             ParsedHash parsedHash = Authentication.ParseHash(new ParseHashOptions
             {
@@ -332,12 +331,12 @@ namespace Blazor.Auth0
 
         private void RedirectToHome()
         {
-            Uri abosulteUri = new Uri(this.uriHelper.GetAbsoluteUri());
+            Uri abosulteUri = new Uri(this.navigationManager.Uri);
 
             this.sessionAuthorizationTransaction = null;
 
             // Redirect to home (removing the hash)
-            this.uriHelper.NavigateTo(abosulteUri.GetLeftPart(UriPartial.Path));
+            this.navigationManager.NavigateTo(abosulteUri.GetLeftPart(UriPartial.Path));
         }
 
         private async Task<SessionInfo> GetSessionInfoAsync(AuthorizationResponse authorizationResponse)
@@ -449,7 +448,7 @@ namespace Blazor.Auth0
                 {
                     await this.Authorize().ConfigureAwait(false);
                     System.Threading.Thread.Sleep(30000);
-                    this.uriHelper.NavigateTo("/");
+                    this.navigationManager.NavigateTo("/");
                 }
             }
         }
@@ -462,7 +461,7 @@ namespace Blazor.Auth0
             CodeChallengeMethods codeChallengeMethod = !isUsingSecret && responseType == ResponseTypes.Code ? CodeChallengeMethods.S256 : CodeChallengeMethods.None;
             string codeVerifier = codeChallengeMethod != CodeChallengeMethods.None ? CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength) : null;
             string codeChallenge = codeChallengeMethod != CodeChallengeMethods.None ? Utils.GetSha256(codeVerifier) : null;
-            string nonce = this.RequiresNonce ? CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength) : string.Empty;
+            string nonce = CommonAuthentication.GenerateNonce(this.clientOptions.KeyLength);
 
             return new AuthorizeOptions
             {
@@ -540,7 +539,7 @@ namespace Blazor.Auth0
 
         private string BuildRedirectUrl()
         {
-            Uri abosulteUri = new Uri(this.uriHelper.GetAbsoluteUri());
+            Uri abosulteUri = new Uri(this.navigationManager.Uri);
             string uri = !string.IsNullOrEmpty(this.clientOptions.RedirectUri) ? this.clientOptions.RedirectUri : this.clientOptions.RedirectAlwaysToHome ? abosulteUri.GetLeftPart(UriPartial.Authority) : abosulteUri.AbsoluteUri;
 
             return !string.IsNullOrEmpty(this.clientOptions.RedirectUri) && !this.clientOptions.RedirectAlwaysToHome ? this.clientOptions.RedirectUri : uri;
