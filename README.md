@@ -35,12 +35,12 @@ Install via [NPM](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -1.0.0-Preview2
+Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview2
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -1.0.0-Preview2
+Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview2
 ````
 
 ## Usage
