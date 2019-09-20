@@ -9,11 +9,13 @@ namespace Blazor.Auth0
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Principal;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using System.Timers;
     using System.Web;
     using Blazor.Auth0.Models;
     using Blazor.Auth0.Models.Enumerations;
+    using Blazor.Auth0.Shared.Models;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Components;
@@ -220,7 +222,7 @@ namespace Blazor.Auth0
 
                     if (this.clientOptions.SlidingExpiration)
                     {
-                        AuthorizationResponse refreshTokenResult = await Authentication.RefreshToken(this.httpClient, this.clientOptions.Domain, this.clientOptions.Audience, this.clientOptions.ClientId, this.clientOptions.ClientSecret, this.SessionInfo.RefreshToken).ConfigureAwait(false);
+                        AuthorizationResponse refreshTokenResult = await Authentication.RefreshToken(this.httpClient, this.clientOptions.TokenEndpoint.AbsoluteUri, this.clientOptions.Audience, this.clientOptions.ClientId, this.clientOptions.ClientSecret, this.SessionInfo.RefreshToken).ConfigureAwait(false);
 
                         if (string.IsNullOrEmpty(refreshTokenResult.Error))
                         {
@@ -242,6 +244,41 @@ namespace Blazor.Auth0
 
             this.logOutTimer.Start();
         }
+
+        private async Task ConfigureEndpoints(ClientOptions clientOptions)
+        {
+            OpenidConfiguration response = null;
+            using (var httpClient = new HttpClient())
+            {
+
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($@"https://{clientOptions.Domain}/.well-known/openid-configuration").ConfigureAwait(false);
+
+                var responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response = JsonSerializer.Deserialize<OpenidConfiguration>(responseText);
+                }
+                else
+                {
+                    clientOptions.AuthorizeEndpoint = new Uri($@"https://{clientOptions.Domain}/authorize");
+                    clientOptions.TokenEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/token");
+                    clientOptions.UserInfoEnpoint = new Uri($@"https://{clientOptions.Domain}/oauth/userinfo");
+                    clientOptions.DeviceAuthorizationEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/deviceauthorization");
+                    clientOptions.IntrospectionEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/introspect");
+                    clientOptions.RevocationEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/revoke");
+                    clientOptions.EndSessionEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/endsession");
+                }
+            }
+            clientOptions.AuthorizeEndpoint = response.AuthorizationEndpoint;
+            clientOptions.TokenEndpoint = response.TokenEndpoint;
+            clientOptions.UserInfoEnpoint = response.UserinfoEndpoint;
+            clientOptions.DeviceAuthorizationEndpoint = response.DeviceAuthorizationEndpoint;
+            clientOptions.IntrospectionEndpoint = response.IntrospectionEndpoint;
+            clientOptions.RevocationEndpoint = response.RevocationEndpoint;
+            clientOptions.EndSessionEndpoint = response.EndSessionEndpoint;
+        }
+
 
         private void ClearSession()
         {

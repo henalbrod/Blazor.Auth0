@@ -4,6 +4,7 @@
 
 namespace Blazor.Auth0.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Blazor.Auth0.Models.Enumerations;
@@ -18,6 +19,11 @@ namespace Blazor.Auth0.Models
         /// </summary>
         [Required(ErrorMessage = "{0} option is required")]
         public string Domain { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Authorize Endpoint.
+        /// </summary>
+        public Uri AuthorizeEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the Auth0's tenant client id used in the authentication flow.

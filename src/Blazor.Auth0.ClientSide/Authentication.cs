@@ -8,6 +8,7 @@ namespace Blazor.Auth0
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.Json;
@@ -16,6 +17,7 @@ namespace Blazor.Auth0
     using Blazor.Auth0.ClientSide.Properties;
     using Blazor.Auth0.Models;
     using Blazor.Auth0.Models.Enumerations;
+    using Blazor.Auth0.Shared.Models;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Http;
     using Microsoft.JSInterop;
@@ -42,14 +44,13 @@ namespace Blazor.Auth0
             var responseType = CommonAuthentication.ParseResponseType(buildAuthorizedUrlOptions.ResponseType);
             var responseMode = CommonAuthentication.ParseResponseMode(buildAuthorizedUrlOptions.ResponseMode);
 
-            var path = new PathString("/authorize");
             var query = new QueryString();
 
             query = query.Add("response_type", responseType);
             query = query.Add("state", buildAuthorizedUrlOptions.State);
             query = query.Add("nonce", buildAuthorizedUrlOptions.Nonce);
             query = query.Add("client_id", buildAuthorizedUrlOptions.ClientID);
-            query = query.Add("scope", buildAuthorizedUrlOptions.Scope);            
+            query = query.Add("scope", buildAuthorizedUrlOptions.Scope);
 
             if (buildAuthorizedUrlOptions.CodeChallengeMethod != CodeChallengeMethods.None)
             {
@@ -78,9 +79,9 @@ namespace Blazor.Auth0
 
             UriBuilder uriBuilder = new UriBuilder()
             {
-                Scheme = "https",
-                Host = buildAuthorizedUrlOptions.Domain,
-                Path = path,
+                Scheme = buildAuthorizedUrlOptions.AuthorizeEndpoint.Scheme,
+                Host = buildAuthorizedUrlOptions.AuthorizeEndpoint.Host,
+                Path = buildAuthorizedUrlOptions.AuthorizeEndpoint.PathAndQuery,
                 Query = query.ToUriComponent(),
             };
 
@@ -124,7 +125,7 @@ namespace Blazor.Auth0
         /// Get an Access Token in order to call an API.
         /// </summary>
         /// <param name="httpClient">A <see cref="HttpClient"/> param.</param>
-        /// <param name="auth0domain">The Auth0's tenant domain.</param>
+        /// <param name="endpoint">The Auth0's tenant domain.</param>
         /// <param name="auth0ClientId">The Auth0's client id.</param>
         /// <param name="code">The code received from Auth0.</param>
         /// <param name="audience">The Auth0's audience domain.</param>
@@ -134,22 +135,24 @@ namespace Blazor.Auth0
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public static async Task<SessionInfo> GetAccessToken(
             HttpClient httpClient,
-            string auth0domain,
+            string endpoint,
             string auth0ClientId,
             string code,
             string audience = null,
             string codeVerifier = null,
             string redirectUri = null,
-            string secret = null)
+            string secret = null,
+            RequestModes requestMode = RequestModes.Json
+            )
         {
             if (httpClient is null)
             {
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-            if (string.IsNullOrEmpty(auth0domain))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentException(Resources.NullArgumentExceptionError, nameof(auth0domain));
+                throw new ArgumentException(Resources.NullArgumentExceptionError, nameof(endpoint));
             }
 
             if (string.IsNullOrEmpty(auth0ClientId))
@@ -169,28 +172,52 @@ namespace Blazor.Auth0
 
             SessionInfo response = null;
 
-            using (HttpContent content = new StringContent(
-                JsonSerializer.Serialize(
-                    new
-                    {
-                        grant_type = "authorization_code",
-                        client_id = auth0ClientId,
-                        audience,
-                        code,
-                        code_verifier = codeVerifier,
-                        redirect_uri = redirectUri,
-                        client_secret = secret,
-                    },
-                    new JsonSerializerOptions
-                    {
-                        IgnoreNullValues = true,
-                    }), Encoding.UTF8,
-                        Resources.ApplicationJsonMediaType
-                    )
-                )
+            if (RequestModes.Json == requestMode)
             {
-                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"https://{auth0domain}/oauth/token", content).ConfigureAwait(false);
+                using (HttpContent content = new StringContent(
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            grant_type = "authorization_code",
+                            client_id = auth0ClientId,
+                            audience,
+                            code,
+                            code_verifier = codeVerifier,
+                            redirect_uri = redirectUri,
+                            client_secret = secret,
+                        },
+                        new JsonSerializerOptions
+                        {
+                            IgnoreNullValues = true,
+                        }), Encoding.UTF8,
+                            Resources.ApplicationJsonMediaType
+                        )
+                    )
+                {
+                    HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"{endpoint}", content).ConfigureAwait(false);
 
+                    string responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        response = JsonSerializer.Deserialize<SessionInfo>(responseText);
+                    }
+                }
+            }
+            else
+            {
+                var formContent = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                    new KeyValuePair<string, string>("client_id", auth0ClientId),
+                    new KeyValuePair<string, string>("audience", audience),
+                    new KeyValuePair<string, string>("code", code),
+                    new KeyValuePair<string, string>("code_verifier", codeVerifier),
+                    new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                    new KeyValuePair<string, string>("client_secret", secret),
+                });
+                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"{endpoint}", formContent).ConfigureAwait(false);
+                formContent.Dispose();
                 string responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
@@ -198,6 +225,7 @@ namespace Blazor.Auth0
                     response = JsonSerializer.Deserialize<SessionInfo>(responseText);
                 }
             }
+
 
             return response;
         }
@@ -361,5 +389,7 @@ namespace Blazor.Auth0
 
             return false;
         }
+
+        
     }
 }

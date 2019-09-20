@@ -65,19 +65,19 @@ namespace Blazor.Auth0
         /// Makes a call to the /userinfo endpoint and returns the user profile.
         /// </summary>
         /// <param name="httpClient">A <see cref="HttpClient"/> instance.</param>
-        /// <param name="auth0Domain">The Auth0's tenant domain.</param>
+        /// <param name="endpoint">The Auth0's tenant domain.</param>
         /// <param name="accessToken">The access_token received after the user authentication flow.</param>
         /// <returns>A <see cref="UserInfo"/>.</returns>
-        public static async Task<UserInfo> UserInfo(HttpClient httpClient, string auth0Domain, string accessToken)
+        public static async Task<UserInfo> UserInfo(HttpClient httpClient, string endpoint, string accessToken)
         {
             if (httpClient is null)
             {
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-            if (string.IsNullOrEmpty(auth0Domain))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentException(Resources.NullArgumentExceptionError, nameof(auth0Domain));
+                throw new ArgumentException(Resources.NullArgumentExceptionError, nameof(endpoint));
             }
 
             if (string.IsNullOrEmpty(accessToken))
@@ -87,7 +87,7 @@ namespace Blazor.Auth0
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            HttpResponseMessage response = await httpClient.GetAsync($@"https://{auth0Domain}/userinfo").ConfigureAwait(false);
+            HttpResponseMessage response = await httpClient.GetAsync($@"{endpoint}").ConfigureAwait(false);
 
             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 

@@ -4,6 +4,17 @@
 
 namespace Blazor.Auth0.Models.Enumerations
 {
+    public enum Endpoint
+    {
+        Authorize = 0,
+        Token = 1,
+        UserInfo = 2,
+        Device_Authorization = 3,
+        Introspection = 4,
+        Revocation = 5,
+        End_Session = 6
+    }
+
     public enum SessionStates
     {
         Undefined = 0,
@@ -49,6 +60,12 @@ namespace Blazor.Auth0.Models.Enumerations
         Query,
         Fragment,
         Form_Post,
+    }
+
+    public enum RequestModes
+    {
+        Json = 0,
+        Form_Post
     }
 
     public enum CodeChallengeMethods

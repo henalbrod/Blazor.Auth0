@@ -4,6 +4,7 @@
 
 namespace Blazor.Auth0.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using Blazor.Auth0.Models.Enumerations;
@@ -32,6 +33,51 @@ namespace Blazor.Auth0.Models
         public string Connection { get; set; }
 
         /// <summary>
+        /// Gets or sets the Authorize Endpoint.
+        /// </summary>
+        public Uri AuthorizeEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Token Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration.
+        /// </summary>
+        public Uri TokenEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserInfo Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration.
+        /// Currently not used.
+        /// </summary>
+        public Uri UserInfoEnpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Device Authorization Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration.
+        /// </summary>
+        public Uri DeviceAuthorizationEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Introspection Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration.
+        /// Currently not used.
+        /// </summary>
+        public Uri IntrospectionEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets Revocation Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration./// 
+        /// </summary>
+        public Uri RevocationEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets End Session Endpoint.
+        /// Do not configure if your Auth server has a .well-known/openid-configuration.
+        /// Currently not used.
+        /// </summary>
+        public Uri EndSessionEndpoint { get; set; }
+
+
+        /// <summary>
         /// Gets or sets url that the Auth0 will redirect to after user authentication. Defaults to an empty string (none). This value overrides RedirectAlwaysToHome.
         /// </summary>
         public string RedirectUri { get; set; }
@@ -51,6 +97,11 @@ namespace Blazor.Auth0.Models
         /// Gets or sets row the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`.
         /// </summary>
         public ResponseModes ResponseMode { get; set; } = ResponseModes.Query;
+
+        /// <summary>
+        /// Gets or sets row the Auth request is encoded  Supported values are `json`, and `form_post`.
+        /// </summary>
+        public RequestModes RequestMode { get; set; } = RequestModes.Json;
 
         /// <summary>
         /// Gets or sets the default scope(s) used by the application. Using scopes can allow you to return specific claims for specific fields in your request. You should read our [documentation on scopes][https://auth0.com/docs/scopes] for further details, default = openid profile email.

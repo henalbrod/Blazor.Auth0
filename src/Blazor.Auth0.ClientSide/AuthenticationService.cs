@@ -8,14 +8,17 @@ namespace Blazor.Auth0
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Timers;
     using Blazor.Auth0.ClientSide.Properties;
     using Blazor.Auth0.Models;
     using Blazor.Auth0.Models.Enumerations;
+    using Blazor.Auth0.Shared.Models;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.Extensions.Logging;
@@ -84,6 +87,8 @@ namespace Blazor.Auth0
             this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
             this.navigationManager = navigationManager ?? throw new ArgumentNullException(nameof(navigationManager));
             this.clientOptions = options ?? throw new ArgumentNullException(nameof(options));
+
+            Task.Run(async () => await this.ConfigureEndpoints(options).ConfigureAwait(false));
 
             this.dotnetObjectRef = DotNetObjectReference.Create(this);
 
@@ -370,13 +375,14 @@ namespace Blazor.Auth0
 
             return await Authentication.GetAccessToken(
                     this.httpClient,
-                    this.clientOptions.Domain,
+                    this.clientOptions.TokenEndpoint.AbsoluteUri,
                     this.clientOptions.ClientId,
                     code,
                     audience: this.clientOptions.Audience,
                     codeVerifier: this.sessionAuthorizationTransaction?.CodeVerifier,
                     secret: this.clientOptions.ClientSecret,
-                    redirectUri: this.sessionAuthorizationTransaction?.RedirectUri)
+                    redirectUri: this.sessionAuthorizationTransaction?.RedirectUri,
+                    requestMode: this.clientOptions.RequestMode)
                 .ConfigureAwait(false);
         }
 
@@ -389,7 +395,7 @@ namespace Blazor.Auth0
             else
             {
                 // In case we're not getting the id_token from the message response or GetUserInfoFromIdToken is set to false try to get it from Auth0's API
-                return await CommonAuthentication.UserInfo(this.httpClient, this.clientOptions.Domain, accessToken).ConfigureAwait(false);
+                return await CommonAuthentication.UserInfo(this.httpClient, this.clientOptions.UserInfoEnpoint.AbsoluteUri, accessToken).ConfigureAwait(false);
             }
         }
 
@@ -467,6 +473,7 @@ namespace Blazor.Auth0
             {
                 Audience = this.clientOptions.Audience,
                 ClientID = this.clientOptions.ClientId,
+                AuthorizeEndpoint = this.clientOptions.AuthorizeEndpoint,
                 CodeChallengeMethod = codeChallengeMethod,
                 CodeVerifier = codeVerifier,
                 CodeChallenge = codeChallenge,
@@ -537,6 +544,40 @@ namespace Blazor.Auth0
             this.logOutTimer.Start();
         }
 
+        private async Task ConfigureEndpoints(ClientOptions clientOptions)
+        {
+            OpenidConfiguration response = null;
+            using (var httpClient = new HttpClient())
+            {
+
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($@"https://{clientOptions.Domain}/.well-known/openid-configuration").ConfigureAwait(false);
+
+                var responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response = JsonSerializer.Deserialize<OpenidConfiguration>(responseText);
+                }
+                else
+                {
+                    clientOptions.AuthorizeEndpoint = new Uri($@"https://{clientOptions.Domain}/authorize");
+                    clientOptions.TokenEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/token");
+                    clientOptions.UserInfoEnpoint = new Uri($@"https://{clientOptions.Domain}/oauth/userinfo");
+                    clientOptions.DeviceAuthorizationEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/deviceauthorization");
+                    clientOptions.IntrospectionEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/introspect");
+                    clientOptions.RevocationEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/revoke");
+                    clientOptions.EndSessionEndpoint = new Uri($@"https://{clientOptions.Domain}/oauth/endsession");
+                }
+            }
+            clientOptions.AuthorizeEndpoint = response.AuthorizationEndpoint;
+            clientOptions.TokenEndpoint = response.TokenEndpoint;
+            clientOptions.UserInfoEnpoint = response.UserinfoEndpoint;
+            clientOptions.DeviceAuthorizationEndpoint = response.DeviceAuthorizationEndpoint;
+            clientOptions.IntrospectionEndpoint = response.IntrospectionEndpoint;
+            clientOptions.RevocationEndpoint = response.RevocationEndpoint;
+            clientOptions.EndSessionEndpoint = response.EndSessionEndpoint;
+        }
+
         private string BuildRedirectUrl()
         {
             Uri abosulteUri = new Uri(this.navigationManager.Uri);
@@ -558,7 +599,7 @@ namespace Blazor.Auth0
 
                     this.dotnetObjectRef.Dispose();
                     this.httpClient.Dispose();
-                    ((IDisposable)this.logOutTimer).Dispose();
+                    ((IDisposable)this.logOutTimer)?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

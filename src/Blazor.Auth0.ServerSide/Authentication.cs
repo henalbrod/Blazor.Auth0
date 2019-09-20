@@ -29,22 +29,22 @@ namespace Blazor.Auth0
         /// Gets a new access_token and id_token from exchanging a refresh token.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
-        /// <param name="auth0domain">The Auth0's tenant domain.</param>
+        /// <param name="endpoint">The Auth0's tenant domain.</param>
         /// <param name="audience">The Auth0's audience.</param>
         /// <param name="clientId">The Auth0's client id.</param>
         /// <param name="clientSecret">The Auth0's client secret.</param>
         /// <param name="refreshToken">The Auth0's slient secret.</param>
         /// <returns>A <see cref="AuthenticationResponse"/> instance.</returns>
-        public static async Task<AuthorizationResponse> RefreshToken(HttpClient httpClient, string auth0domain, string audience, string clientId, string clientSecret, string refreshToken)
+        public static async Task<AuthorizationResponse> RefreshToken(HttpClient httpClient, string endpoint, string audience, string clientId, string clientSecret, string refreshToken, RequestModes requestMode = RequestModes.Json)
         {
             if (httpClient is null)
             {
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-            if (string.IsNullOrEmpty(auth0domain))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentException(nameof(auth0domain));
+                throw new ArgumentException(nameof(endpoint));
             }
 
             if (string.IsNullOrEmpty(audience))
@@ -67,9 +67,10 @@ namespace Blazor.Auth0
                 throw new ArgumentException(nameof(refreshToken));
             }
 
-            AuthorizationResponse response;
-
-            using (HttpContent content = new StringContent(
+            AuthorizationResponse response = null;
+            if (RequestModes.Json == requestMode)
+            {
+                using (HttpContent content = new StringContent(
                 JsonSerializer.Serialize(
                     new
                     {
@@ -83,13 +84,35 @@ namespace Blazor.Auth0
                     {
                         IgnoreNullValues = true,
                     }), Encoding.UTF8, "application/json"))
-            {
-                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"https://{auth0domain}/oauth/token", content).ConfigureAwait(false);
+                {
+                    HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"{endpoint}", content).ConfigureAwait(false);
 
+                    string responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        response = JsonSerializer.Deserialize<AuthorizationResponse>(responseText);
+                    }
+                }
+            }
+            else
+            {
+                var formContent = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("grant_type", "refresh_token"),
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string, string>("audience", audience),
+                    new KeyValuePair<string, string>("refresh_token", refreshToken),
+                    new KeyValuePair<string, string>("client_secret", clientSecret),
+                });
+                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"{endpoint}", formContent).ConfigureAwait(false);
+                formContent.Dispose();
                 string responseText = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                response = JsonSerializer.Deserialize<AuthorizationResponse>(responseText);
-
+                if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response = JsonSerializer.Deserialize<AuthorizationResponse>(responseText);
+                }
             }
 
             return response;
@@ -99,22 +122,22 @@ namespace Blazor.Auth0
         /// Revokes a refresh token.
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
-        /// <param name="auth0domain">The Auth0's tenant domain.</param>
+        /// <param name="endpoint">The Auth0's tenant domain.</param>
         /// <param name="audience">The Auth0's audience.</param>
         /// <param name="clientId">The Auth0's client id.</param>
         /// <param name="clientSecret">The Auth0's client secret.</param>
         /// <param name="refreshToken">The Auth0's slient secret.</param>
         /// <returns>A <see cref="string"/> representing the action result.</returns>
-        public static async Task<string> RevokeRefreshToken(HttpClient httpClient, string auth0domain, string audience, string clientId, string clientSecret, string refreshToken)
+        public static async Task<string> RevokeRefreshToken(HttpClient httpClient, string endpoint, string audience, string clientId, string clientSecret, string refreshToken)
         {
             if (httpClient is null)
             {
                 throw new ArgumentNullException(nameof(httpClient));
             }
 
-            if (string.IsNullOrEmpty(auth0domain))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentException(nameof(auth0domain));
+                throw new ArgumentException(nameof(endpoint));
             }
 
             if (string.IsNullOrEmpty(audience))
@@ -153,14 +176,13 @@ namespace Blazor.Auth0
                         IgnoreNullValues = true,
                     }), Encoding.UTF8, "application/json"))
             {
-                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"https://{auth0domain}/oauth/revoke", content).ConfigureAwait(false);
+                HttpResponseMessage httpResponseMessage = await httpClient.PostAsync($@"{endpoint}", content).ConfigureAwait(false);
 
                 response = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             }
 
             return response;
-
         }
 
         /// <summary>
