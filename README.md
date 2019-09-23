@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png" height="150" alt="Blazor Auth0 Library" align="right"/>
 
-This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-RC1 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 [![GitHub license](https://img.shields.io/github/license/henalbrod/Blazor.Auth0?color=blue)](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
@@ -35,12 +35,12 @@ Install via [NPM](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview2
+Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview3
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview2
+Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview3
 ````
 
 ## Usage
@@ -152,6 +152,9 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v1.0.0-Preview3**
+* Overall upgrade to .Net Core 3.0
 
 **v1.0.0-Preview2**
 * Overall upgrade to .Net Core 3.0 RC1
