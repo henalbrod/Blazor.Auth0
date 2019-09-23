@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:    
     
-    container: mcr.microsoft.com/dotnet/core/sdk:3.0.100-rc1-disco   
+    container: mcr.microsoft.com/dotnet/core/sdk:3.0.100-disco 
     
     runs-on: ubuntu-latest    
     
