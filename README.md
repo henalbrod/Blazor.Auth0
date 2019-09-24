@@ -31,7 +31,7 @@ Learn more at:
 
 ## Installation
 
-Install via [NPM](https://www.nuget.org/).
+Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
@@ -143,7 +143,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE) file for details.
 
 ## Acknowledgments
 
