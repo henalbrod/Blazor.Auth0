@@ -55,18 +55,21 @@ jobs:
        
        
     - name: Publish Blazor-Auth0-Shared Nuget package.
-      continue-on-error: true    
+      if: github.event == 'release'
+      continue-on-error: true          
       run: |            
         dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
         
         
     - name: Publish Blazor-Auth0-ClientSide Nuget package.
+      if: github.event == 'release'    
       continue-on-error: true   
       run: |           
         dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
         
         
     - name: Publish Blazor-Auth0-ServerSide Nuget package.
+      if: github.event == 'release'    
       continue-on-error: true    
       run: |           
         dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  
