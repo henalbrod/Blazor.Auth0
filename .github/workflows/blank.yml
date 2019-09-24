@@ -15,6 +15,7 @@ jobs:
     - name: Initializacion message
       run: echo Initializatin Blazor.Auth0 build!    
       
+      
     - name: Build Blazor-Auth0-Shared project.
       run: |        
         dotnet build src/Blazor.Auth0.Shared
