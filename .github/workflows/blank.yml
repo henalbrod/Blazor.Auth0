@@ -51,3 +51,21 @@ jobs:
       run: |                      
         dotnet restore examples/Examples.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
         dotnet build examples/Examples.ServerSide
+       
+       
+    - name: Publish Blazor-Auth0-Shared Nuget package.
+      continue-on-error: true    
+      run: |            
+        dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k oy2puph24ozdnedk46dqpyewlh3nnyhujc2pogrnsd7qty -s https://api.nuget.org/v3/index.json
+        
+        
+    - name: Publish Blazor-Auth0-ClientSide Nuget package.
+      continue-on-error: true   
+      run: |           
+        dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k oy2puph24ozdnedk46dqpyewlh3nnyhujc2pogrnsd7qty -s https://api.nuget.org/v3/index.json
+        
+        
+    - name: Publish Blazor-Auth0-ServerSide Nuget package.
+      continue-on-error: true    
+      run: |           
+        dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k oy2puph24ozdnedk46dqpyewlh3nnyhujc2pogrnsd7qty -s https://api.nuget.org/v3/index.json  
