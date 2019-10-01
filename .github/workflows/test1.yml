@@ -6,7 +6,7 @@ jobs:
   build:
 
     container: 
-      image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-disco
+      image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-rc1-disco
 
     runs-on: ubuntu-latest
     
