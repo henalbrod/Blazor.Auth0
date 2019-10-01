@@ -118,7 +118,7 @@ namespace Blazor.Auth0
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
-                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/roles",
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
                     RequireSignedTokens = true,
                     RequireExpirationTime = true,
                     ValidateTokenReplay = true,
