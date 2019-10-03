@@ -2,9 +2,14 @@
 
 <AuthorizeView>
     <Authorized>        
-        <button @onclick="@(async ()=> await authService.LogOut())" >Log out</button>
+        <NavLink  class="nav-link" href="" @onclick="@(async ()=> await authService.LogOut())">
+            <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+        </NavLink>
+
     </Authorized>
     <NotAuthorized>
-        <button @onclick="authService.Authorize">Log in</button>
+         <NavLink class="nav-link" href="" @onclick="authService.Authorize">
+            <span class="oi oi-account-login" aria-hidden="true"></span>  Login
+        </NavLink>
     </NotAuthorized>
 </AuthorizeView>
