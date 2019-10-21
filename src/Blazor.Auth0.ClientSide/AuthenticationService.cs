@@ -109,7 +109,7 @@ namespace Blazor.Auth0
         /// <inheritdoc/>
         public async Task LogOut(string redirectUri = null)
         {
-            string logoutUrl = CommonAuthentication.BuildLogoutUrl(this.clientOptions.Domain, this.clientOptions.ClientId);
+            string logoutUrl = CommonAuthentication.BuildLogoutUrl(this.clientOptions.Domain, this.clientOptions.ClientId, redirectUri);
 
             await this.jsRuntime.InvokeAsync<object>($"{Resources.InteropElementName}.logOut", logoutUrl).ConfigureAwait(false);
 
