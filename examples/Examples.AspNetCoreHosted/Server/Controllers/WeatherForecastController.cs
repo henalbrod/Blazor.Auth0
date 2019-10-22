@@ -18,13 +18,6 @@ namespace Examples.AspNetCoreHosted.Server.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            this.logger = logger;
-        }
-
         [HttpGet]
         [Authorize("read:weather_forecast")]
         public IEnumerable<WeatherForecast> Get()

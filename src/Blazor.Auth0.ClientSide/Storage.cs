@@ -20,9 +20,21 @@ namespace Blazor.Auth0
         /// <param name="jsRuntime">The <see cref="IJSRuntime"/> instance.</param>
         /// <param name="key">The identifier.</param>
         /// <param name="value">The value.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        public static async Task SetItem(IJSRuntime jsRuntime, string key, object value)
+        {
+            await SetItem(jsRuntime, key, value, 1800).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sets a value in localstorage.
+        /// </summary>
+        /// <param name="jsRuntime">The <see cref="IJSRuntime"/> instance.</param>
+        /// <param name="key">The identifier.</param>
+        /// <param name="value">The value.</param>
         /// <param name="expiresInSeconds">The value expiration time in seconds.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public static async Task SetItem(IJSRuntime jsRuntime, string key, object value, int expiresInSeconds = 1800)
+        public static async Task SetItem(IJSRuntime jsRuntime, string key, object value, int expiresInSeconds)
         {
             if (jsRuntime is null)
             {

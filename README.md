@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png" height="150" alt="Blazor Auth0 Library" align="right"/>
 
-This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0-preview8 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 [![GitHub license](https://img.shields.io/github/license/henalbrod/Blazor.Auth0?color=blue)](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
@@ -31,16 +31,16 @@ Learn more at:
 
 ## Installation
 
-Install via [NPM](https://www.nuget.org/).
+Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview1
+Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview3
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview1
+Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview3
 ````
 
 ## Usage
@@ -90,56 +90,28 @@ public void ConfigureServices(IServiceCollection services)
 	// Other code...
  }
 ```
-###
-Create a new Shell.razor file inside the Shared folder with the following code
-> #### Shell.razor
 
-```HTML
-@inherits LayoutComponentBase
-
-<Router AppAssembly="typeof(Startup).Assembly">
-    <NotFoundContent>
-        <p>Sorry, there's nothing at this address.</p>
-    </NotFoundContent>
-    <NotAuthorizedContent>
-        <h1>Sorry</h1>
-        <p>You're not authorized to reach this page. You may need to log in as a different user.</p>
-    </NotAuthorizedContent>
-    <AuthorizingContent>
-        <p>Please wait...</p>
-    </AuthorizingContent>
-</Router>
-``` 
 ###
 Replace App.razor content with the following code
 > #### App.razor
 
 ```HTML
-@inject Blazor.Auth0.IAuthenticationService authService
-@inject Blazor.Auth0.Models.ClientOptions clientOptions
-
-<CascadingAuthenticationState>
-
-    <AuthorizeView>
-
-        <Authorized>
-            <Shell></Shell>
-        </Authorized>
-
-        <NotAuthorized>
-            @if (authService.SessionState == SessionStates.Undefined || clientOptions.RequireAuthenticatedUser)
-            {
-                <p>Determining session state, please wait...</p>
-            }
-            else
-            {                
-               <Shell />
-            }
-        </NotAuthorized>
-
-    </AuthorizeView>
-
-</CascadingAuthenticationState>
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                <p>>Determining session state, please wait...</p>
+            </Authorizing>
+            <NotAuthorized>
+                <h1>Sorry</h1>
+                <p>You're not authorized to reach this page. You may need to log in as a different user.</p>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+    </Found>
+    <NotFound>        
+        <p>Sorry, there's nothing at this address.</p>        
+    </NotFound>
+</Router>
 ```
 ## Support
 If you found a bug, have a consultation or a feature request please feel free to [open an issue](https://github.com/henalbrod/Blazor.Auth0/issues).
@@ -164,9 +136,14 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## Authors
 **Henry Alberto Rodriguez** - _Initial work_ - [GitHub](https://github.com/henalbrod) -  [Twitter](https://twitter.com/henalbrod)  - [Linkedin](https://www.linkedin.com/in/henalbrod/)
 
+* Especial thanks for its contributions to:
+
+**jbomhold3** [GitHub](https://github.com/jbomhold3)
+**TopSwagCode** [GitHub](https://github.com/TopSwagCode)
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/henalbrod/Blazor.Auth0/blob/master/LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -175,6 +152,15 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v1.0.0-Preview3**
+* Overall upgrade to .Net Core 3.0
+
+**v1.0.0-Preview2**
+* Overall upgrade to .Net Core 3.0 RC1
+* Removed Shell.razor in Example projects
+* Simplified App.razor in Example projects
+* Removed local _imports.razor in Example projects
 
 **v0.1.0.0-Preview1**
 * Upgraded to .Net Core 3.0.0-preview8

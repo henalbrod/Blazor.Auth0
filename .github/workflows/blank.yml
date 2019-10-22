@@ -3,21 +3,18 @@ name: Github Actions CI
 on: [push]
 
 jobs:
-  build:
+  build:    
     
+    container: 
+      image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-disco
     
-    container: mcr.microsoft.com/dotnet/core/sdk:3.0.100-rc1-disco
+    runs-on: ubuntu-16.04    
     
-    
-    runs-on: ubuntu-latest
-    
-    
-    steps:
-    
+    steps:    
     
     - uses: actions/checkout@v1
     - name: Initializacion message
-      run: echo Initializatin Blazor.Auth0 build!
+      run: echo Initializatin Blazor.Auth0 build!    
       
       
     - name: Build Blazor-Auth0-Shared project.
@@ -56,27 +53,24 @@ jobs:
       run: |                      
         dotnet restore examples/Examples.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
         dotnet build examples/Examples.ServerSide
-                
-        
+       
+       
     - name: Publish Blazor-Auth0-Shared Nuget package.
-      continue-on-error: true
-      env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      if: github.event == 'release'
+      continue-on-error: true          
       run: |            
-        dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+        dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
         
         
     - name: Publish Blazor-Auth0-ClientSide Nuget package.
-      continue-on-error: true
-      env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      if: github.event == 'release'    
+      continue-on-error: true   
       run: |           
-        dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+        dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
         
         
     - name: Publish Blazor-Auth0-ServerSide Nuget package.
-      continue-on-error: true
-      env: # Or as an environment variable
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}      
+      if: github.event == 'release'    
+      continue-on-error: true    
       run: |           
-        dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json          
+        dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  

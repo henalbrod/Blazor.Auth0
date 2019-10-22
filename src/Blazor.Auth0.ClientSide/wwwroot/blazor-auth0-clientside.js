@@ -1,32 +1,29 @@
-﻿'use strict';
+﻿"use strict";
 
-var interopElementName = '___blazor_auth0';
-
-window[interopElementName] = {
+window.___blazor_auth0 = {
     logOut: (src) => {
-        'use strict';
-        return new Promise(resolve => {
-            let iframe = document.createElement('iframe');
-            iframe.setAttribute('src', src);
-            iframe.style.display = 'none';
+        "use strict";
+        return new Promise((resolve) => {
+            let iframe = document.createElement("iframe");
+            iframe.setAttribute("src", src);
+            iframe.style.display = "none";
             document.body.appendChild(iframe);
-            iframe.onload = () => {
-                console.log('Successful Log off');
+            iframe.onload = () => {                
                 document.body.removeChild(iframe);
                 resolve();
             };
         });
     },
     drawIframe: (instance, src) => {
-        'use strict';
-        let iframe = document.createElement('iframe');
-        iframe.setAttribute('src', src);
-        iframe.style.display = 'none';
+        "use strict";
+        let iframe = document.createElement("iframe");
+        iframe.setAttribute("src", src);
+        iframe.style.display = "none";
         document.body.appendChild(iframe);
         var messageListener = (msg) => {
-            if (msg.data.type === 'authorization_response') {
-                window.removeEventListener('message', messageListener);
-                instance.invokeMethodAsync('HandleAuthorizationResponseAsync', {
+            if (msg.data.type === "authorization_response") {
+                window.removeEventListener("message", messageListener);
+                instance.invokeMethodAsync("HandleAuthorizationResponseAsync", {
                     isTrusted: msg.isTrusted,
                     origin: msg.origin,
                     type: msg.data.type,
@@ -44,6 +41,6 @@ window[interopElementName] = {
                 }).then((r) => { document.body.removeChild(iframe); });
             }
         };
-        window.addEventListener('message', messageListener);
+        window.addEventListener("message", messageListener);
     }
 };

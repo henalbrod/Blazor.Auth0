@@ -58,11 +58,6 @@ namespace Blazor.Auth0.Models
         [Required(ErrorMessage = "{0} option is required")]
         public string Scope { get; set; } = "openid profile email";
 
-        ///// <summary>
-        ///// Specifies the connection to use rather than presenting all connections available to the application.
-        ///// </summary>
-        // public string Auth0Connection { get; set; }
-
         /// <summary>
         /// Gets or sets identifier of the resource server who will consume the access token issued after Auth.
         /// </summary>
@@ -80,12 +75,12 @@ namespace Blazor.Auth0.Models
         /// </summary>
         public bool RedirectAlwaysToHome { get; set; } = true;
 
-        public bool SlidingExpiration { get; set; } = false;
+        public bool SlidingExpiration { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether when set to true, the serivce will use the id_token payload to build the user info, this is good in case all the user info you require is present in the id_token payload and you want avoid doing an extra call to Auth0, in case that tere's no id_token present in the authentication response the service will fall back gracefully to try to get the user info from an API call to auth0, default = false.
         /// </summary>
-        public bool GetUserInfoFromIdToken { get; set; } = false;
+        public bool GetUserInfoFromIdToken { get; set; }
 
         public string Namespace { get; set; } = "com.auth0.auth.";
 

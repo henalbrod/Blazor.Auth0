@@ -26,10 +26,31 @@ namespace Blazor.Auth0
         /// Builds a log out URI.
         /// </summary>
         /// <param name="auth0Domain">The Auth0's tenant domain.</param>
+        /// <returns>A <see cref="string"/> representing the log out url.</returns>
+        public static string BuildLogoutUrl(string auth0Domain)
+        {
+            return BuildLogoutUrl(auth0Domain, null, null);
+        }
+
+        /// <summary>
+        /// Builds a log out URI.
+        /// </summary>
+        /// <param name="auth0Domain">The Auth0's tenant domain.</param>
+        /// <param name="auth0ClientId">The Auth0's client id.</param>
+        /// <returns>A <see cref="string"/> representing the log out url.</returns>
+        public static string BuildLogoutUrl(string auth0Domain, string auth0ClientId)
+        {
+            return BuildLogoutUrl(auth0Domain, auth0ClientId, null);
+        }
+
+        /// <summary>
+        /// Builds a log out URI.
+        /// </summary>
+        /// <param name="auth0Domain">The Auth0's tenant domain.</param>
         /// <param name="auth0ClientId">The Auth0's client id.</param>
         /// <param name="redirectUri">The URI to redirect the user after the logout.</param>
         /// <returns>A <see cref="string"/> representing the log out url.</returns>
-        public static string BuildLogoutUrl(string auth0Domain, string auth0ClientId = null, string redirectUri = null)
+        public static string BuildLogoutUrl(string auth0Domain, string auth0ClientId, string redirectUri)
         {
             if (string.IsNullOrEmpty(auth0Domain))
             {
@@ -49,7 +70,7 @@ namespace Blazor.Auth0
                 query = query.Add("returnTo", redirectUri);
             }
 
-            var uri = new UriBuilder()
+            var uri = new UriBuilder
             {
                 Scheme = "https",
                 Host = auth0Domain,
@@ -188,11 +209,9 @@ namespace Blazor.Auth0
         {
             string result = string.Empty;
 
-            switch (codeChallengeMethod)
+            if (codeChallengeMethod == CodeChallengeMethods.S256)
             {
-                case CodeChallengeMethods.S256:
                 result = "S256";
-                break;
             }
 
             return result;

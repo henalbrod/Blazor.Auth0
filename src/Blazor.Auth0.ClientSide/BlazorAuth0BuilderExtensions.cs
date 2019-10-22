@@ -20,7 +20,7 @@ namespace Blazor.Auth0
         /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
         /// <param name="options">The <see cref="Action"/> containing a <see cref="ClientOptions"/> instance.</param>
         /// <returns>A <see cref="IServiceCollection"/> instance.</returns>
-        public static IServiceCollection AddBlazorAuth0(this IServiceCollection services, Action<ClientOptions> options = null)
+        public static IServiceCollection AddBlazorAuth0(this IServiceCollection services, Action<ClientOptions> options)
         {
             services.AddBlazorAuth0ClientOptions(options);
 
@@ -65,6 +65,5 @@ namespace Blazor.Auth0
             services.AddSingleton(resolver => options ?? resolver.GetRequiredService<IOptions<ClientOptions>>().Value);
             return services;
         }
-
     }
 }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     
-    <Version>1.0.0-Preview2</Version>
+    <Version>1.0.0-Preview3</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Auth0 library for Balzor</Description>
     <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
@@ -15,15 +15,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ServerSide</PackageId>
-    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0-preview8
-Removed AuthComponent
-New One-Liner instantiation
-Server Side full rewrite
-      - Better server-side Blazor Authentication compatibility/integration
-      - Cookie-based session (No more silent login iframe in server-side)
-      - Refresh token support (Refreshing and Revoking)
-      - Client secret
-      - Server-side sliding expiration</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -36,9 +28,8 @@ Server Side full rewrite
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-Shared" Version="1.0.0-Preview2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0-rc1.19457.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.0.0-rc1.19457.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.5-beta1.final">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -47,6 +38,10 @@ Server Side full rewrite
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ namespace Blazor.Auth0
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Security.Authentication;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.Json;
@@ -49,7 +50,7 @@ namespace Blazor.Auth0
             query = query.Add("state", buildAuthorizedUrlOptions.State);
             query = query.Add("nonce", buildAuthorizedUrlOptions.Nonce);
             query = query.Add("client_id", buildAuthorizedUrlOptions.ClientID);
-            query = query.Add("scope", buildAuthorizedUrlOptions.Scope);            
+            query = query.Add("scope", buildAuthorizedUrlOptions.Scope);
 
             if (buildAuthorizedUrlOptions.CodeChallengeMethod != CodeChallengeMethods.None)
             {
@@ -76,7 +77,7 @@ namespace Blazor.Auth0
 
             query = query.Add("redirect_uri", buildAuthorizedUrlOptions.RedirectUri);
 
-            UriBuilder uriBuilder = new UriBuilder()
+            UriBuilder uriBuilder = new UriBuilder
             {
                 Scheme = "https",
                 Host = buildAuthorizedUrlOptions.Domain,
@@ -218,23 +219,20 @@ namespace Blazor.Auth0
 
             Uri absoluteUri = parseHashOptions.AbsoluteUri;
             string hash;
-            switch (parseHashOptions.ResponseType)
+            if (parseHashOptions.ResponseType == ResponseTypes.Code)
             {
-                case ResponseTypes.Code:
                 hash = !string.IsNullOrEmpty(absoluteUri.Query) ? absoluteUri.Query.Remove(0, 1) : null;
-                break;
-                default:
+            }
+            else
+            {
+                string[] fragments = absoluteUri.AbsoluteUri.Split('#');
+
+                if (fragments.Length < 2)
                 {
-                    string[] fragments = absoluteUri.AbsoluteUri.Split('#');
-
-                    if (fragments.Length < 2)
-                    {
-                        return null;
-                    }
-
-                    hash = fragments[1];
-                    break;
+                    return null;
                 }
+
+                hash = fragments[1];
             }
 
             if (string.IsNullOrEmpty(hash))
@@ -252,7 +250,7 @@ namespace Blazor.Auth0
 
                 error += !string.IsNullOrEmpty(result.State) ? $"; state: {result.State}" : string.Empty;
 
-                throw new Exception(error);
+                throw new AuthenticationException(error);
             }
 
             if (
@@ -266,12 +264,12 @@ namespace Blazor.Auth0
 
             if ((parseHashOptions.ResponseType == ResponseTypes.Token || parseHashOptions.ResponseType == ResponseTypes.TokenAndIdToken) && string.IsNullOrEmpty(result.AccessToken))
             {
-                throw new Exception(Resources.InvalidHashMissingAccessTokenError);
+                throw new AuthenticationException(Resources.InvalidHashMissingAccessTokenError);
             }
 
             if ((parseHashOptions.ResponseType == ResponseTypes.Token || parseHashOptions.ResponseType == ResponseTypes.TokenAndIdToken) && string.IsNullOrEmpty(result.IdToken))
             {
-                throw new Exception(Resources.InvalidHashMissingIdTokenError);
+                throw new AuthenticationException(Resources.InvalidHashMissingIdTokenError);
             }
 
             return result;
@@ -307,11 +305,16 @@ namespace Blazor.Auth0
             // Validate Error
             if (errorDescription == null && !string.IsNullOrEmpty(authorizationResponse.Error))
             {
-                switch (authorizationResponse.Error.ToLower())
+                switch (authorizationResponse.Error.ToLowerInvariant())
                 {
                     case "login_required":
 
                     errorDescription = "Login Required";
+
+                    break;
+                    case "consent_required":
+
+                    errorDescription = "Consent Required";
 
                     break;
                     default:
@@ -328,7 +331,7 @@ namespace Blazor.Auth0
 
             if (!string.IsNullOrEmpty(errorDescription))
             {
-                throw new ApplicationException(errorDescription);
+                throw new AuthenticationException(errorDescription);
             }
         }
 
@@ -348,7 +351,7 @@ namespace Blazor.Auth0
                 {
                     byte[] hashValue = mySHA256.ComputeHash(Encoding.ASCII.GetBytes(accessToken));
                     string base64Encoded = Convert.ToBase64String(hashValue.Take(16).ToArray());
-                    accessTokenHash = Convert.ToBase64String(hashValue.Take(16).ToArray()).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+                    accessTokenHash = base64Encoded.TrimEnd('=').Replace('+', '-').Replace('/', '_');
                 }
 
                 return accessTokenHash.Equals(atHash);

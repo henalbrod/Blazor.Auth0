@@ -76,7 +76,7 @@ namespace Blazor.Auth0
             authorizeOptions.State = string.IsNullOrEmpty(authorizeOptions.State) ? CommonAuthentication.GenerateNonce(authorizeOptions.KeyLength) : authorizeOptions.State;
             string nonce = responseTypeIncludesIdToken ? string.IsNullOrEmpty(authorizeOptions.Nonce) ? CommonAuthentication.GenerateNonce(authorizeOptions.KeyLength) : authorizeOptions.Nonce : null;
 
-            SessionAuthorizationTransaction transaction = new SessionAuthorizationTransaction()
+            SessionAuthorizationTransaction transaction = new SessionAuthorizationTransaction
             {
                 Nonce = nonce,
                 AppState = appState,

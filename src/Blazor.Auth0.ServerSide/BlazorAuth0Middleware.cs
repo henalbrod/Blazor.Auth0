@@ -44,7 +44,7 @@ namespace Blazor.Auth0
 
             if (!context.User.Identity.IsAuthenticated && (clientOptions.RequireAuthenticatedUser || context.Request.Path == new PathString("/account/authorize")))
             {
-                AuthenticationProperties authenticationProperties = new AuthenticationProperties() { RedirectUri = !string.IsNullOrEmpty(clientOptions.RedirectUri) ? clientOptions.RedirectUri : "/" };
+                AuthenticationProperties authenticationProperties = new AuthenticationProperties { RedirectUri = !string.IsNullOrEmpty(clientOptions.RedirectUri) ? clientOptions.RedirectUri : "/" };
                 Authentication.ClearAspNetCookies(context);
                 await context.ChallengeAsync(clientOptions.ClaimsIssuer, authenticationProperties).ConfigureAwait(false);
             }

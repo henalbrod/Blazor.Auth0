@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+
+    
     <UserSecretsId>6c2330d9-84c7-4bf5-80a9-6b48c017bbab</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-ServerSide" Version="1.0.0-Preview2" />
+    <PackageReference Include="Blazor-Auth0-ServerSide" Version="1.0.0-Preview3" />
   </ItemGroup>
 
   <ItemGroup>

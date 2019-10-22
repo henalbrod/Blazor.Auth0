@@ -33,9 +33,9 @@ namespace Blazor.Auth0
         /// <param name="audience">The Auth0's audience.</param>
         /// <param name="clientId">The Auth0's client id.</param>
         /// <param name="clientSecret">The Auth0's client secret.</param>
-        /// <param name="refreshToken">The Auth0's slient secret.</param>
+        /// <param name="token">The refresh token.</param>
         /// <returns>A <see cref="AuthenticationResponse"/> instance.</returns>
-        public static async Task<AuthorizationResponse> RefreshToken(HttpClient httpClient, string auth0domain, string audience, string clientId, string clientSecret, string refreshToken)
+        public static async Task<AuthorizationResponse> RefreshToken(HttpClient httpClient, string auth0domain, string audience, string clientId, string clientSecret, string token)
         {
             if (httpClient is null)
             {
@@ -62,9 +62,9 @@ namespace Blazor.Auth0
                 throw new ArgumentException(nameof(clientSecret));
             }
 
-            if (string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(token))
             {
-                throw new ArgumentException(nameof(refreshToken));
+                throw new ArgumentException(nameof(token));
             }
 
             AuthorizationResponse response;
@@ -76,7 +76,7 @@ namespace Blazor.Auth0
                         grant_type = "refresh_token",
                         client_id = clientId,
                         client_secret = clientSecret,
-                        refresh_token = refreshToken,
+                        refresh_token = token,
                         audience,
                     },
                     new JsonSerializerOptions
