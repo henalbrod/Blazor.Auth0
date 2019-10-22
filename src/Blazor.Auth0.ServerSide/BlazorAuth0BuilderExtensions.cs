@@ -34,7 +34,7 @@ namespace Blazor.Auth0
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
         /// <param name="options">The <see cref="ClientOptions"/> instance.</param>
-        public static void AddDefaultBlazorAuth0Authentication(this IServiceCollection services, ClientOptions options = null)
+        public static void AddDefaultBlazorAuth0Authentication(this IServiceCollection services, ClientOptions options)
         {
             services.AddBlazorAuth0ClientOptions(options);
             services.AddDefaultBlazorAuth0Authentication();
@@ -46,8 +46,7 @@ namespace Blazor.Auth0
         /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
         public static void AddDefaultBlazorAuth0Authentication(this IServiceCollection services)
         {
-            // TODO: This method is too convulted, it should be separeted in smaller pieces
-
+            // TODO: This method is too convulted, it should be separeted into smaller pieces
             if (services is null)
             {
                 throw new ArgumentNullException(nameof(services));
@@ -88,7 +87,7 @@ namespace Blazor.Auth0
 
                 options.ResponseType = CommonAuthentication.ParseResponseType(clientOptions.ResponseType);
 
-                string[] scopes = clientOptions.Scope.Trim().ToLower().Split(",");
+                string[] scopes = clientOptions.Scope.Trim().ToLowerInvariant().Split(",");
 
                 options.Scope.Clear();
 
@@ -155,7 +154,7 @@ namespace Blazor.Auth0
                         Authentication.ClearAspNetCookies(context.HttpContext);
 
                         string redirectUri = context.Request.Query
-                                            .Where(x => x.Key.ToLower() == "redirect_uri")
+                                            .Where(x => x.Key.ToLowerInvariant() == "redirect_uri")
                                             .Select(x => x.Value)
                                             .FirstOrDefault();
 
@@ -256,7 +255,7 @@ namespace Blazor.Auth0
         /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
         /// <param name="options">The <see cref="ClientOptions"/> instance.</param>
         /// <returns>A <see cref="IServiceCollection"/> instance.</returns>
-        public static IServiceCollection AddBlazorAuth0(this IServiceCollection services, ClientOptions options = null)
+        public static IServiceCollection AddBlazorAuth0(this IServiceCollection services, ClientOptions options)
         {
             services.AddBlazorAuth0ClientOptions(options);
 
@@ -283,9 +282,19 @@ namespace Blazor.Auth0
         /// Add Blazor.Auth0 client options.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
+        /// <returns>A <see cref="IServiceCollection"/> instance.</returns>
+        public static IServiceCollection AddBlazorAuth0ClientOptions(this IServiceCollection services)
+        {
+            return AddBlazorAuth0ClientOptions(services, null);
+        }
+
+        /// <summary>
+        /// Add Blazor.Auth0 client options.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
         /// <param name="options">The <see cref="ClientOptions"/> instance.</param>
         /// <returns>A <see cref="IServiceCollection"/> instance.</returns>
-        public static IServiceCollection AddBlazorAuth0ClientOptions(this IServiceCollection services, ClientOptions options = null)
+        public static IServiceCollection AddBlazorAuth0ClientOptions(this IServiceCollection services, ClientOptions options)
         {
             services.AddSingleton(resolver => options ?? resolver.GetRequiredService<IOptions<ClientOptions>>().Value);
 

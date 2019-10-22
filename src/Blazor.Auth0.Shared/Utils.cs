@@ -39,14 +39,14 @@ namespace Blazor.Auth0
 
             if (!isValid)
             {
-                string error = string.Empty;
+                var stringBuilder = new StringBuilder();
 
                 foreach (ValidationResult validationResult in results.Where(x => x != null))
                 {
-                    error += $"{validationResult.ErrorMessage}; ";
+                    stringBuilder.Append($"{validationResult.ErrorMessage}; ");
                 }
 
-                ValidationException ex = new ValidationException($"Invalid {item.GetType().Name}: {error}");
+                ValidationException ex = new ValidationException($"Invalid {item.GetType().Name}: {stringBuilder}");
 
                 throw ex;
             }

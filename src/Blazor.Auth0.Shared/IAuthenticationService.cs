@@ -16,7 +16,6 @@ namespace Blazor.Auth0
     /// </summary>
     public interface IAuthenticationService
     {
-
         /// <summary>
         /// The event fired just after the session state has changed.
         /// </summary>
@@ -59,9 +58,15 @@ namespace Blazor.Auth0
         /// <summary>
         /// Initiates the Log Out flow by calling the IDP's /v2/logout endpoint.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task LogOut();
+
+        /// <summary>
+        /// Initiates the Log Out flow by calling the IDP's /v2/logout endpoint.
+        /// </summary>
         /// <param name="redirectUri">URL to redirect the user after the logout.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task LogOut(string redirectUri = null);
+        Task LogOut(string redirectUri);
 
         /// <summary>
         /// Validates the current session status.

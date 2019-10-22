@@ -57,13 +57,12 @@ namespace Blazor.Auth0
         /// <inheritdoc/>
         public SessionInfo SessionInfo { get; private set; }
 
-        private bool RequiresNonce => this.clientOptions.ResponseType == ResponseTypes.IdToken || this.clientOptions.ResponseType == ResponseTypes.TokenAndIdToken;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> instance.</param>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
+        /// /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/> instance.</param>
         /// <param name="navigationManager">The <see cref="NavigationManager"/> instance.</param>
         /// <param name="options">The <see cref="ClientOptions"/> instance.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "I like it best ;)")]
@@ -94,6 +93,7 @@ namespace Blazor.Auth0
                         AccessToken = accessToken,
                         IdToken = idToken,
                         RefreshToken = refreshToken,
+                        ExpiresIn = string.IsNullOrEmpty(expiresIn) ? 0 : int.Parse(expiresIn),
                     }).ConfigureAwait(false);
                 });
             }
@@ -154,7 +154,13 @@ namespace Blazor.Auth0
         }
 
         /// <inheritdoc/>
-        public async Task LogOut(string redirectUri = null)
+        public async Task LogOut()
+        {
+            await this.LogOut(null).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task LogOut(string redirectUri)
         {
             this.ClearSession();
 
@@ -167,7 +173,7 @@ namespace Blazor.Auth0
 
             query = query.Add("redirect_uri", redirectUri);
 
-            var uri = new UriBuilder()
+            var uri = new UriBuilder
             {
                 Scheme = abosulteUri.Scheme,
                 Host = abosulteUri.Host,
@@ -177,7 +183,6 @@ namespace Blazor.Auth0
             };
 
             this.navigationManager.NavigateTo(uri.Uri.AbsoluteUri, true);
-
         }
 
         private void InitiateUserSession(UserInfo userInfo, SessionInfo sessionInfo)
@@ -254,7 +259,7 @@ namespace Blazor.Auth0
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -262,8 +267,8 @@ namespace Blazor.Auth0
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
-                    ((IDisposable)this.logOutTimer)?.Dispose();
+                    // TODO: dispose managed state (managed objects).                    
+                    this.logOutTimer?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

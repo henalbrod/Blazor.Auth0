@@ -8,6 +8,7 @@ namespace Blazor.Auth0
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Security.Authentication;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Text.Json;
@@ -77,7 +78,7 @@ namespace Blazor.Auth0
         /// <param name="navigationManager">A <see cref="NavigationManager"/> param.</param>
         /// <param name="options">A <see cref="ClientOptions"/> param.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "I like this best ;)")]
-        public AuthenticationService(ILogger<AuthenticationService> logger,  HttpClient httpClient, IJSRuntime jsRuntime, NavigationManager navigationManager, ClientOptions options)
+        public AuthenticationService(ILogger<AuthenticationService> logger, HttpClient httpClient, IJSRuntime jsRuntime, NavigationManager navigationManager, ClientOptions options)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -107,7 +108,13 @@ namespace Blazor.Auth0
         }
 
         /// <inheritdoc/>
-        public async Task LogOut(string redirectUri = null)
+        public async Task LogOut()
+        {
+            await this.LogOut(null).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task LogOut(string redirectUri)
         {
             string logoutUrl = CommonAuthentication.BuildLogoutUrl(this.clientOptions.Domain, this.clientOptions.ClientId, redirectUri);
 
@@ -120,6 +127,10 @@ namespace Blazor.Auth0
             else if (this.clientOptions.RequireAuthenticatedUser)
             {
                 await this.Authorize().ConfigureAwait(false);
+            }
+            else
+            {
+                // There's no redirectUri and an authenticated user is not required
             }
 
             if (this.clientOptions.RequireAuthenticatedUser)
@@ -135,10 +146,8 @@ namespace Blazor.Auth0
         {
             GenericIdentity identity = null;
 
-            switch (this.SessionState)
+            if (this.SessionState == SessionStates.Active)
             {
-                case SessionStates.Active:
-
                 identity = new GenericIdentity(this.User?.Name ?? string.Empty, "JWT");
 
                 if (!string.IsNullOrEmpty(this.User.Sub?.Trim()))
@@ -235,14 +244,10 @@ namespace Blazor.Auth0
                 identity.AddClaims(this.User.CustomClaims.Select(customClaim => new Claim(customClaim.Key, customClaim.Value.GetRawText(), customClaim.Value.ValueKind.ToString())));
 
                 identity.AddClaims(this.User.Permissions.Select(permission => new Claim($"{permission}", "true", "permissions")));
-
-                break;
-                case SessionStates.Undefined:
-                case SessionStates.Inactive:
-
+            }
+            else
+            {
                 identity = new GenericIdentity(string.Empty, "JWT");
-
-                break;
             }
 
             return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity)));
@@ -319,7 +324,7 @@ namespace Blazor.Auth0
 
                 this.ScheduleLogOut();
             }
-            catch (ApplicationException ex)
+            catch (AuthenticationException ex)
             {
                 await this.OnLoginRequestValidationError(authorizationResponse.Error, ex.Message).ConfigureAwait(false);
             }
@@ -351,7 +356,7 @@ namespace Blazor.Auth0
                 return await this.GetSessionInfoAsync(authorizationResponse.Code).ConfigureAwait(false);
             }
 
-            return new SessionInfo()
+            return new SessionInfo
             {
                 AccessToken = authorizationResponse.AccessToken,
                 ExpiresIn = authorizationResponse.ExpiresIn,
@@ -401,20 +406,20 @@ namespace Blazor.Auth0
 
                 if (nonceIsValid.HasValue && !nonceIsValid.Value)
                 {
-                    throw new ApplicationException(Resources.InvalidNonceError);
+                    throw new AuthenticationException(Resources.InvalidNonceError);
                 }
 
-                if (string.IsNullOrEmpty(idTokenInfo.AtHash))
+                if (string.IsNullOrEmpty(idTokenInfo?.AtHash))
                 {
-                    Console.WriteLine(Resources.NotAltChashWarning);
+                    this.logger.LogWarning(Resources.NotAltChashWarning);
                 }
                 else
                 {
-                    bool atHashIsValid = Authentication.ValidateAccessTokenHash(idTokenInfo.AtHash, accessToken);
+                    bool atHashIsValid = Authentication.ValidateAccessTokenHash(idTokenInfo?.AtHash, accessToken);
 
                     if (!atHashIsValid)
                     {
-                        throw new ApplicationException(Resources.InvalidAccessTokenHashError);
+                        throw new AuthenticationException(Resources.InvalidAccessTokenHashError);
                     }
                 }
             }
@@ -442,9 +447,9 @@ namespace Blazor.Auth0
             {
                 this.ClearSession();
 
-                Console.WriteLine("Login Error: " + validationMessage);
+                this.logger.LogError("Login Error: " + validationMessage);
 
-                if (error.ToLower() == "login_required" && this.clientOptions.RequireAuthenticatedUser)
+                if (error.ToLowerInvariant() == "login_required" && this.clientOptions.RequireAuthenticatedUser)
                 {
                     await this.Authorize().ConfigureAwait(false);
                     System.Threading.Thread.Sleep(30000);
@@ -546,7 +551,7 @@ namespace Blazor.Auth0
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -555,27 +560,16 @@ namespace Blazor.Auth0
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-
                     this.dotnetObjectRef.Dispose();
                     this.httpClient.Dispose();
-                    ((IDisposable)this.logOutTimer).Dispose();
+                    this.logOutTimer?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-
                 this.disposedValue = true;
             }
         }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~AuthenticationService()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
 
         /// <inheritdoc/>
         public void Dispose()
