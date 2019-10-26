@@ -47,19 +47,7 @@ jobs:
         dotnet build examples/Examples.ServerSide --source packages --source https://api.nuget.org/v3/index.json --configuration Release
        
        
-    - name: Publish Blazor-Auth0-Shared Nuget package.
+    - name: Publish Nuget packages.
       continue-on-error: true          
       run: |            
-        dotnet nuget push $HOME/Blazor-Auth0-Shared*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-        
-        
-    - name: Publish Blazor-Auth0-ClientSide Nuget package. 
-      continue-on-error: true   
-      run: |           
-        dotnet nuget push $HOME/Blazor-Auth0-ClientSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-        
-        
-    - name: Publish Blazor-Auth0-ServerSide Nuget package. 
-      continue-on-error: true    
-      run: |           
-        dotnet nuget push $HOME/Blazor-Auth0-ServerSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  
+        dotnet nuget push packages/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate    
