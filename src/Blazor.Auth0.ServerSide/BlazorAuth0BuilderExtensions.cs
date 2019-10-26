@@ -10,6 +10,7 @@ namespace Blazor.Auth0
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Principal;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using System.Web;
     using Blazor.Auth0.Models;
@@ -187,6 +188,7 @@ namespace Blazor.Auth0
                                 HttpRequest request = context.Request;
                                 postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
                             }
+
                             logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
                         }
 
@@ -215,7 +217,7 @@ namespace Blazor.Auth0
 
                                 identity.AddClaims(u.Principal.Claims);
 
-                                identity.AddClaims(permissions.Select(permission => new Claim($"{permission}", "true", "permissions")));
+                                identity.AddClaims(permissions.Select(permission => new Claim("permissions", permission, "permissions")));
 
                                 identity.AddClaim(new Claim("exp", parsedAccessToken.Exp.ToString(), ClaimValueTypes.Integer64));
 

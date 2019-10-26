@@ -40,7 +40,7 @@ namespace Examples.AspNetCoreHosted.Server
 
             services.AddAuthorizationCore(options =>
             {
-                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("read:weather_forecast"));
+                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("permissions","read:weather_forecast"));
             });
 
             services.AddResponseCompression(opts =>
@@ -62,12 +62,13 @@ namespace Examples.AspNetCoreHosted.Server
             }
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseStaticFiles();
             app.UseClientSideBlazorFiles<Client.Startup>();
 
             app.UseRouting();
+            
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

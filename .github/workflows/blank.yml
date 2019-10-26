@@ -6,7 +6,7 @@ jobs:
   build:    
     
     container: 
-      image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-disco
+      image: mcr.microsoft.com/dotnet/core/sdk:3.1.100-preview1-bionic
     
     runs-on: ubuntu-16.04    
     
@@ -20,39 +20,31 @@ jobs:
     - name: Build Blazor-Auth0-Shared project.
       run: |        
         dotnet build src/Blazor.Auth0.Shared
-        dotnet pack src/Blazor.Auth0.Shared/Blazor.Auth0.Shared.csproj --no-build --output $HOME
         
         
     - name: Build Blazor-Auth0-ClientSide project.   
       run: |
-        dotnet restore src/Blazor.Auth0.ClientSide -s $HOME -s https://api.nuget.org/v3/index.json
-        dotnet build src/Blazor.Auth0.ClientSide        
-        dotnet pack src/Blazor.Auth0.ClientSide/Blazor.Auth0.ClientSide.csproj --no-build --output $HOME
+        dotnet build src/Blazor.Auth0.ClientSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build Blazor-Auth0-ServerSide project.
       run: |
-        dotnet restore src/Blazor.Auth0.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
-        dotnet build src/Blazor.Auth0.ServerSide
-        dotnet pack src/Blazor.Auth0.ServerSide/Blazor.Auth0.ServerSide.csproj --no-build --output $HOME
+        dotnet build src/Blazor.Auth0.ServerSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build AspNetCoreHosted Example.
       run: |        
-        dotnet restore examples/Examples.AspNetCoreHosted/Client -s $HOME -s https://api.nuget.org/v3/index.json
-        dotnet build examples/Examples.AspNetCoreHosted/Server
+        dotnet build examples/Examples.AspNetCoreHosted/Server --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build ClientSide Example.
       run: |                
-        dotnet restore examples/Examples.ClientSide -s $HOME -s https://api.nuget.org/v3/index.json
-        dotnet build examples/Examples.ClientSide
+        dotnet build examples/Examples.ClientSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build ServerSide Example.
       run: |                      
-        dotnet restore examples/Examples.ServerSide -s $HOME -s https://api.nuget.org/v3/index.json
-        dotnet build examples/Examples.ServerSide
+        dotnet build examples/Examples.ServerSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
        
        
     - name: Publish Blazor-Auth0-Shared Nuget package.

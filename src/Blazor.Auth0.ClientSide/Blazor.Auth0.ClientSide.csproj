@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
-
-    <Version>1.0.0-Preview3</Version>
+    <LangVersion>8.0</LangVersion>
+    <Version>2.0.0-Preview1</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Auth0 library for Balzor</Description>
     <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
@@ -16,17 +16,21 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>Upgraded to .Net Core 3.0.0
-</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .Net Core 3.1.0-preview1
+
+BREAKING CHANGES:
+
+Auth0 permissions are now accesible as an any other array claim: policy.RequireClaim("permissions", "permission_name")</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>..\..\packages</PackageOutputPath>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.5-beta1.final">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0-preview1.19508.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0-preview1.19508.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.1.0-preview1.19508.20" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -51,9 +55,18 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'=='Debug'">
+      <ItemGroup>
+        <ProjectReference Include="..\Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Blazor-Auth0-Shared" Version="1.0.0-Preview3" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

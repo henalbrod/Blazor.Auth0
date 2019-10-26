@@ -36,11 +36,11 @@ namespace Examples.ServerSide
             // New Blazor.Auth0 one liner intantiation
             services.AddDefaultBlazorAuth0Authentication(Configuration.GetSection("Auth0").Get<ClientOptions>());
 
-            // Policy based authorization, learn more here: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.0
-            services.AddAuthorization(options =>
+            // Policy based authorization, learn more here: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1
+            services.AddAuthorizationCore(options =>
             {
-                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("read:weather_forecast"));
-                options.AddPolicy("execute:increment_counter", policy => policy.RequireClaim("execute:increment_counter"));
+                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("permissions", "read:weather_forecast"));
+                options.AddPolicy("execute:increment_counter", policy => policy.RequireClaim("permissions", "execute:increment_counter"));
             });
 
             services.AddSingleton<WeatherForecastService>();

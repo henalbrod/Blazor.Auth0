@@ -243,7 +243,7 @@ namespace Blazor.Auth0
 
                 identity.AddClaims(this.User.CustomClaims.Select(customClaim => new Claim(customClaim.Key, customClaim.Value.GetRawText(), customClaim.Value.ValueKind.ToString())));
 
-                identity.AddClaims(this.User.Permissions.Select(permission => new Claim($"{permission}", "true", "permissions")));
+                identity.AddClaims(this.User.Permissions.Select(permission => new Claim("permissions", permission, "permissions")));
             }
             else
             {

@@ -16,7 +16,7 @@ namespace Examples.ClientSide
                 options.Domain = "[Auth0_Domain]";
 
                 // Required
-                options.ClientId = "[Auth0_client_Id]";
+                options.ClientId = "[Auth0_Client_Id]";
 
                 //// Required if you want to make use of Auth0's RBAC
                 options.Audience = "[Auth0_Audience]";
@@ -31,11 +31,11 @@ namespace Examples.ClientSide
                 // options.SlidingExpiration = true;
             });
 
-            // Policy based authorization, learn more here: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.0
+            // Policy based authorization, learn more here: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1
             services.AddAuthorizationCore(options =>
             {
-                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("read:weather_forecast"));
-                options.AddPolicy("execute:increment_counter", policy => policy.RequireClaim("execute:increment_counter"));
+                options.AddPolicy("read:weather_forecast", policy => policy.RequireClaim("permissions", "read:weather_forecast"));
+                options.AddPolicy("execute:increment_counter", policy => policy.RequireClaim("permissions", "execute:increment_counter"));
             });
 
         }

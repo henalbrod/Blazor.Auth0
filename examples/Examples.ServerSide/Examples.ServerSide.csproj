@@ -1,15 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-
-    
+    <TargetFramework>netcoreapp3.1</TargetFramework>    
     <UserSecretsId>6c2330d9-84c7-4bf5-80a9-6b48c017bbab</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazor-Auth0-ServerSide" Version="1.0.0-Preview3" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'=='Debug'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\src\Blazor.Auth0.ServerSide\Blazor.Auth0.ServerSide.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="Blazor-Auth0-ServerSide" Version="1.0.0-Preview3" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <Content Update="wwwroot\css\site.css">

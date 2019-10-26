@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png" height="150" alt="Blazor Auth0 Library" align="right"/>
 
-This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .NET Core v3.0.0 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
+This is a library for Blazor authentication with OIDC Authorization Code-Grant and Implicit-Grant flows, using Auth0's Universal Login and Silent Login for [Blazor](http://blazor.net) over .Net Core 3.1.0-preview1 client & server-side solutions, the idea behind this is to have an easy way of using Auth0's services in Blazor without the need of the auth0.js library.
 
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ServerSide?color=green&label=Nuget%3A%20Blazor-Auth0-ServerSide)](https://www.nuget.org/packages/Blazor-Auth0-ServerSide)
 [![Nuget](https://img.shields.io/nuget/v/Blazor-Auth0-ClientSide?color=green&label=Nuget%3A%20Blazor-Auth0-Clientside)](https://www.nuget.org/packages/Blazor-Auth0-ClientSide)
@@ -36,12 +36,12 @@ Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 1.0.0-Preview3
+Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview1
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 1.0.0-Preview3
+Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview1
 ````
 
 ## Usage
@@ -134,13 +134,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 4.  Push to the branch (`git push origin feature/fooBar`)
 5.  Create a new Pull Request
 
+* Especial thanks for its help to all the [contributors](https://github.com/henalbrod/Blazor.Auth0/graphs/contributors)
+
 ## Authors
 **Henry Alberto Rodriguez** - _Initial work_ - [GitHub](https://github.com/henalbrod) -  [Twitter](https://twitter.com/henalbrod)  - [Linkedin](https://www.linkedin.com/in/henalbrod/)
-
-* Especial thanks for its contributions to:
-
-**jbomhold3** [GitHub](https://github.com/jbomhold3)
-**TopSwagCode** [GitHub](https://github.com/TopSwagCode)
 
 ## License
 
@@ -153,6 +150,17 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v2.0.0-Preview1**
+
+BREAKING CHANGES:
+
+* Upgraded to .Net Core 3.1.0-preview1
+* Server side projects upgraded to netcoreapp3.1
+* Auth0 permissions are now accesible as an any other array claim:
+```C#
+policy.RequireClaim("permissions", "permission_name")
+```
 
 **v1.0.0-Preview3**
 * Overall upgrade to .Net Core 3.0
