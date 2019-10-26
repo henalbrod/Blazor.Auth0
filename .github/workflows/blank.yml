@@ -24,27 +24,27 @@ jobs:
         
     - name: Build Blazor-Auth0-ClientSide project.   
       run: |
-        dotnet build src/Blazor.Auth0.ClientSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
+        dotnet build src/Blazor.Auth0.ClientSide --source packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build Blazor-Auth0-ServerSide project.
       run: |
-        dotnet build src/Blazor.Auth0.ServerSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
+        dotnet build src/Blazor.Auth0.ServerSide --source packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build AspNetCoreHosted Example.
       run: |        
-        dotnet build examples/Examples.AspNetCoreHosted/Server --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
+        dotnet build examples/Examples.AspNetCoreHosted/Server --source packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build ClientSide Example.
       run: |                
-        dotnet build examples/Examples.ClientSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
+        dotnet build examples/Examples.ClientSide --source packages --source https://api.nuget.org/v3/index.json --configuration Release
         
         
     - name: Build ServerSide Example.
       run: |                      
-        dotnet build examples/Examples.ServerSide --source /__w/Blazor.Auth0/packages --source https://api.nuget.org/v3/index.json --configuration Release
+        dotnet build examples/Examples.ServerSide --source packages --source https://api.nuget.org/v3/index.json --configuration Release
        
        
     - name: Publish Blazor-Auth0-Shared Nuget package.
