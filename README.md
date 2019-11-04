@@ -38,12 +38,12 @@ Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview2
+Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview3
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview2
+Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview3
 ````
 
 ## Usage
@@ -152,6 +152,11 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v2.0.0-Preview3**
+
+* Upgraded to .Net core 3.1.0-preview2
+
 
 **v2.0.0-Preview2**
 
