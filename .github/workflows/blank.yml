@@ -48,19 +48,19 @@ jobs:
        
        
     - name: Publish Blazor-Auth0-Share Nuget package.
-      if: github.ref == 'master'
+      if: github.ref == 'refs/heads/master'
       continue-on-error: true          
       run: |            
         dotnet nuget push packages/Blazor-Auth0-Share*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json 
 
     - name: Publish Blazor-Auth0-ClientSide Nuget package.
-      if: github.ref == 'master'
+      if: github.ref == 'refs/heads/master'
       continue-on-error: true          
-      run: |            
+      run: |
         dotnet nuget push packages/Blazor-Auth0-ClientSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json 
 
     - name: Publish Blazor-Auth0-ServerSide Nuget package.
-      if: github.ref == 'master'
+      if: github.ref == 'refs/heads/master'
       continue-on-error: true          
       run: |            
         dotnet nuget push packages/Blazor-Auth0-ServerSide*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json 

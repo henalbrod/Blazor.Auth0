@@ -27,6 +27,9 @@ namespace Examples.AspNetCoreHosted.Client
 
                 //// Uncomment the following line if you don't want your users to be automatically logged-off on token expiration
                 // options.SlidingExpiration = true;
+
+                //// Uncomment the following line if you want your users to log in via a pop-up window instead of being redirected
+                // options.LoginMode = LoginModes.Popup;
             });
 
             // Policy based authorization, learn more here: https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-3.1

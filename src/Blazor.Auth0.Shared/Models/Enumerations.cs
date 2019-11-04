@@ -56,4 +56,10 @@ namespace Blazor.Auth0.Models.Enumerations
         None = 0,
         S256,
     }
+
+    public enum LoginModes
+    {
+        Redirect = 0,
+        Popup
+    }
 }

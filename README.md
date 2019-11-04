@@ -36,12 +36,12 @@ Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview1
+Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview2
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview1
+Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview2
 ````
 
 ## Usage
@@ -150,6 +150,19 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v2.0.0-Preview2**
+
+This relase comes with Client Side changes primarly
+
+* New LoginMode parameter in ClientOptions 
+
+  Redirect = Classic behavior (default)
+  PopUp = Loads Universal Login inside a popup window
+  
+  The new PopUp behavior comes in handy to avoid the full client side app reloading
+
+* New AuthorizePopup method in Blazor.Auth0.Authentication for client side
 
 **v2.0.0-Preview1**
 

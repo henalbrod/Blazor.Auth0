@@ -88,6 +88,8 @@ namespace Blazor.Auth0.Models
 
         public string Realm { get; set; }
 
+        public LoginModes LoginMode { get; set; } = LoginModes.Redirect;
+
         #endregion
 
         /// <inheritdoc/>

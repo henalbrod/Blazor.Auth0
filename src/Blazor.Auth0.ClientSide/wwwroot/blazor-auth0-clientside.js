@@ -1,5 +1,10 @@
 ﻿"use strict";
 
+if (window.opener && window.name === "auth0_signup_popup") {
+    window.opener.___blazor_auth0.popupCallback(window.location.href);
+    close();
+}
+
 window.___blazor_auth0 = {
     logOut: (src) => {
         "use strict";
@@ -42,5 +47,22 @@ window.___blazor_auth0 = {
             }
         };
         window.addEventListener("message", messageListener);
+    },
+    popupLogin: (instance, src) => {
+        "use strict";        
+
+        let top = 100;
+        let left = (window.innerWidth / 2) - 225;
+
+        window.___blazor_auth0.popupCallback = (path) => {
+            instance.invokeMethodAsync("ValidateSession", path)
+                .then((r) => {
+                    window.___blazor_auth0.popupCallback = null;
+                });
+        };
+
+        let popup = window.open(src, "auth0_signup_popup", "width=450,height=700,top=" + top + ",left=" + left + ",menubar=no,location=no,resizable=no,scrollbars=no,status=no,personalbar=no");
+        popup.focus();
+
     }
 };

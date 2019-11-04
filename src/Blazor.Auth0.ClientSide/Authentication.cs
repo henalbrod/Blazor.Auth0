@@ -97,6 +97,32 @@ namespace Blazor.Auth0
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         public static async Task Authorize(IJSRuntime jsRuntime, NavigationManager navigationManager, AuthorizeOptions authorizeOptions)
         {
+            await Authorize(jsRuntime, null, navigationManager, authorizeOptions).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Initiates the Authorization flow by calling the IDP's /authorize enpoint inside a popup window.
+        /// </summary>
+        /// <param name="jsRuntime">A <see cref="IJSRuntime"/> param.</param>
+        /// <param name="objectReference">A <see cref="DotNetObjectReference"/> param.</param>
+        /// <param name="navigationManager">A <see cref="NavigationManager"/> param.</param>
+        /// <param name="authorizeOptions">A <see cref="AuthorizeOptions"/> param.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        public static async Task AuthorizePopup(IJSRuntime jsRuntime, object objectReference, NavigationManager navigationManager, AuthorizeOptions authorizeOptions)
+        {
+            await Authorize(jsRuntime, objectReference, navigationManager, authorizeOptions).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Initiates the Authorization flow by calling the IDP's /authorize endpoint, if an objectReference is passed as param a popup login will be triggered.
+        /// </summary>
+        /// <param name="jsRuntime">A <see cref="IJSRuntime"/> param.</param>
+        /// <param name="objectReference">A <see cref="DotNetObjectReference"/> param.</param>
+        /// <param name="navigationManager">A <see cref="NavigationManager"/> param.</param>
+        /// <param name="authorizeOptions">A <see cref="AuthorizeOptions"/> param.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        internal static async Task Authorize(IJSRuntime jsRuntime, object objectReference, NavigationManager navigationManager, AuthorizeOptions authorizeOptions)
+        {
             if (jsRuntime is null)
             {
                 throw new ArgumentNullException(nameof(jsRuntime));
@@ -118,7 +144,15 @@ namespace Blazor.Auth0
 
             string authorizeUrl = BuildAuthorizeUrl(authorizeOptions);
 
-            navigationManager.NavigateTo(authorizeUrl);
+            // If an objectReference is passed as param a popup login will be triggered.
+            if (objectReference == null)
+            {
+                navigationManager.NavigateTo(authorizeUrl);
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync($"{Resources.InteropElementName}.popupLogin", objectReference, authorizeUrl).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

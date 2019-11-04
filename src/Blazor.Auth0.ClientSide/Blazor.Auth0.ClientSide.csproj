@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <LangVersion>8.0</LangVersion>
-    <Version>2.0.0-Preview1</Version>
+    <Version>2.0.0-Preview2</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Auth0 library for Balzor</Description>
     <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
@@ -16,11 +16,16 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>Upgraded to .Net Core 3.1.0-preview1
+    <PackageReleaseNotes>This relase comes with Client Side changes primarly
 
-BREAKING CHANGES:
+- New LoginMode parameter in ClientOptions 
 
-Auth0 permissions are now accesible as an any other array claim: policy.RequireClaim("permissions", "permission_name")</PackageReleaseNotes>
+  * Redirect = Classic behavior (default)
+  * PopUp = Loads Universal Login inside a popup window
+  
+  The new PopUp behavior comes in handy to avoid the full client side app reloading
+
+- New AuthorizePopup method in Blazor.Auth0.Authentication for client side</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\..\packages</PackageOutputPath>
   </PropertyGroup>
@@ -63,7 +68,7 @@ Auth0 permissions are now accesible as an any other array claim: policy.RequireC
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Blazor-Auth0-Shared" Version="1.0.0-Preview3" />
+        <PackageReference Include="Blazor-Auth0-Shared" Version="2.0.0-Preview2" />
       </ItemGroup>
     </Otherwise>
   </Choose>

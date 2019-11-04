@@ -104,7 +104,14 @@ namespace Blazor.Auth0
         {
             AuthorizeOptions options = this.BuildAuthorizeOptions();
 
-            await Authentication.Authorize(this.jsRuntime, this.navigationManager, options).ConfigureAwait(false);
+            if (this.clientOptions.LoginMode == LoginModes.Popup)
+            {
+                await Authentication.AuthorizePopup(this.jsRuntime, this.dotnetObjectRef, this.navigationManager, options).ConfigureAwait(false);
+            }
+            else
+            {
+                await Authentication.Authorize(this.jsRuntime, this.navigationManager, options).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>
@@ -256,8 +263,16 @@ namespace Blazor.Auth0
         /// <inheritdoc/>
         public async Task ValidateSession()
         {
+            await this.ValidateSession(this.navigationManager.Uri).ConfigureAwait(false);
+        }
+
+        [JSInvokable]
+        public async Task ValidateSession(string path)
+        {
+            // TODO: Add validation such as same host and similars
+
             // Let's validate the hash
-            Uri absoluteUri = this.navigationManager.ToAbsoluteUri(this.navigationManager.Uri);
+            Uri absoluteUri = this.navigationManager.ToAbsoluteUri(path);
 
             ParsedHash parsedHash = Authentication.ParseHash(new ParseHashOptions
             {
@@ -496,7 +511,6 @@ namespace Blazor.Auth0
             this.SessionInfo = null;
             this.sessionAuthorizationTransaction = null;
             this.logOutTimer?.Stop();
-            this.logOutTimer?.Dispose();
         }
 
         private async Task SilentLogin()

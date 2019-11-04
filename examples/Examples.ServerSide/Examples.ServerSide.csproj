@@ -13,7 +13,7 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Blazor-Auth0-ServerSide" Version="1.0.0-Preview3" />
+        <PackageReference Include="Blazor-Auth0-ServerSide" Version="2.0.0-Preview2" />
       </ItemGroup>
     </Otherwise>
   </Choose>
