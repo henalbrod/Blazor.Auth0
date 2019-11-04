@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <LangVersion>8.0</LangVersion>
-    <Version>2.0.0-Preview2</Version>
+    <Version>2.0.0-Preview3</Version>
     <Authors>Henry Alberto Rodriguez Rodriguez</Authors>
     <Description>Auth0 library for Balzor</Description>
     <PackageProjectUrl>https://github.com/henalbrod/Blazor.Auth0</PackageProjectUrl>
@@ -16,26 +16,17 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/henalbrod/Blazor.Auth0/master/src/Blazor.Auth0.ClientSide/icon.png</PackageIconUrl>
     <PackageId>Blazor-Auth0-ClientSide</PackageId>
-    <PackageReleaseNotes>This relase comes with Client Side changes primarly
-
-- New LoginMode parameter in ClientOptions 
-
-  * Redirect = Classic behavior (default)
-  * PopUp = Loads Universal Login inside a popup window
-  
-  The new PopUp behavior comes in handy to avoid the full client side app reloading
-
-- New AuthorizePopup method in Blazor.Auth0.Authentication for client side</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to .Net core 3.1.0-preview2</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\..\packages</PackageOutputPath>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0-preview1.19508.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0-preview1.19508.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.1.0-preview1.19508.20" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0-preview2.19528.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0-preview2.19528.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.1.0-preview2.19528.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -68,7 +59,7 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Blazor-Auth0-Shared" Version="2.0.0-Preview2" />
+        <PackageReference Include="Blazor-Auth0-Shared" Version="2.0.0-Preview3" />
       </ItemGroup>
     </Otherwise>
   </Choose>

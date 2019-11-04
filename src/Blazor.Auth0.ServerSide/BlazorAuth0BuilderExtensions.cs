@@ -145,6 +145,10 @@ namespace Blazor.Auth0
                         if (!string.IsNullOrEmpty(clientOptions.Audience))
                         {
                             context.ProtocolMessage.SetParameter("audience", clientOptions.Audience);
+
+                            HttpRequest request = context.Request;
+                            var errorUri = request.Scheme + "://" + request.Host + request.PathBase;
+                            context.ProtocolMessage.SetParameter("error_uri", errorUri);
                         }
 
                         return Task.FromResult(0);
@@ -226,6 +230,21 @@ namespace Blazor.Auth0
                                 u.Principal = user;
                             }
                         }
+
+                        return Task.CompletedTask;
+                    },
+                    OnAccessDenied = (u) =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = (u) =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = (context) =>
+                    {
+                        context.Response.Redirect("/");
+                        context.HandleResponse();
 
                         return Task.CompletedTask;
                     },
