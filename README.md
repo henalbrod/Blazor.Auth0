@@ -38,12 +38,12 @@ Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview3
+Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview4
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview3
+Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview4
 ````
 
 ## Usage
