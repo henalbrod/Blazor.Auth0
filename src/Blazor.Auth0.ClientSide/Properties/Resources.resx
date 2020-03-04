@@ -120,6 +120,76 @@
   <data name="ApplicationJsonMediaType" xml:space="preserve">
     <value>application/json</value>
   </data>
+  <data name="ClientSideJs" xml:space="preserve">
+    <value>"use strict";
+
+if (window.opener &amp;&amp; window.name === "auth0_signup_popup") {
+    window.opener.___blazor_auth0.popupCallback(window.location.href);
+    close();
+}else{
+	window.___blazor_auth0 = {
+		logOut: (src) =&gt; {
+			"use strict";
+			return new Promise((resolve) =&gt; {
+				let iframe = document.createElement("iframe");
+				iframe.setAttribute("src", src);
+				iframe.style.display = "none";
+				document.body.appendChild(iframe);
+				iframe.onload = () =&gt; {                
+					document.body.removeChild(iframe);
+					resolve();
+				};
+			});
+		},
+		drawIframe: (instance, src) =&gt; {
+			"use strict";
+			let iframe = document.createElement("iframe");
+			iframe.setAttribute("src", src);
+			iframe.style.display = "none";
+			document.body.appendChild(iframe);
+			var messageListener = (msg) =&gt; {
+				if (msg.data.type === "authorization_response") {
+					window.removeEventListener("message", messageListener);
+					instance.invokeMethodAsync("HandleAuthorizationResponseAsync", {
+						isTrusted: msg.isTrusted,
+						origin: msg.origin,
+						type: msg.data.type,
+						state: msg.data.response.state,
+						error: msg.data.response.error,
+						errorDescription: msg.data.response.error_description,
+						// Code Grant (Recommended)
+						code: msg.data.response.code,
+						// Implicit Grant (Legacy)
+						accessToken: msg.data.response.access_token,
+						idToken: msg.data.response.id_token,
+						scope: msg.data.response.scope,
+						tokenType: msg.data.response.token_type,
+						expiresIn: msg.data.response.expires_in
+					}).then((r) =&gt; { document.body.removeChild(iframe); });
+				}
+			};
+			window.addEventListener("message", messageListener);
+		},
+		popupLogin: (instance, src) =&gt; {
+			"use strict";        
+
+			let top = 100;
+			let left = (window.innerWidth / 2) - 225;
+
+			window.___blazor_auth0.popupCallback = (path) =&gt; {
+				instance.invokeMethodAsync("ValidateSession", path)
+					.then((r) =&gt; {
+						window.___blazor_auth0.popupCallback = null;
+					});
+			};
+
+			let popup = window.open(src, "auth0_signup_popup", "width=450,height=700,top=" + top + ",left=" + left + ",menubar=no,location=no,resizable=no,scrollbars=no,status=no,personalbar=no");
+			popup.focus();
+
+		}
+	};
+}</value>
+  </data>
   <data name="DuplicatedPKCERequiredParamError" xml:space="preserve">
     <value>You must indicate either the SECRET when using Authorization Code or the CODE_VERIFIER when using Authorization Code with PKCE, you're providing both.</value>
   </data>

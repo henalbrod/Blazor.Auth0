@@ -88,7 +88,12 @@ namespace Blazor.Auth0
 
             this.dotnetObjectRef = DotNetObjectReference.Create(this);
 
-            Task.Run(async () => await this.ValidateSession().ConfigureAwait(false));
+            Task.Run(async () =>
+            {
+                // Ugly but necesary :\
+                await this.jsRuntime.InvokeVoidAsync("window.eval", Resources.ClientSideJs);
+                await this.ValidateSession().ConfigureAwait(false);
+            });
         }
 
         /// <summary>

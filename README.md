@@ -26,7 +26,7 @@ Learn more at:
 
 ### Blazor
 
->You'll want to follow the [Getting Started](https://docs.microsoft.com/en-us/aspnet/core/blazor/get-started?view=aspnetcore-3.0&tabs=visual-studio) instructions in [Blazor website](https://blazor.net)
+>You'll want to follow the [Getting Started](https://docs.microsoft.com/en-us/aspnet/core/blazor/get-started?view=aspnetcore-3.1&tabs=visual-studio) instructions in [Blazor website](https://blazor.net)
 
 ### Auth0
 
@@ -38,60 +38,58 @@ Install via [Nuget](https://www.nuget.org/).
 
 >Server Side
 ```bash
-Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview4
+Install-Package Blazor-Auth0-ServerSide -Version 2.0.0-Preview5
 ````
 
 >Client Side
 ```bash
-Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview4
+Install-Package Blazor-Auth0-ClientSide -Version 2.0.0-Preview5
 ````
 
 ## Usage
 
- **Note**: Following example is for a server-side with require authenticated user implementation, for client-side and core-hosted example implementations please refer to the [examples](https://github.com/henalbrod/Blazor.Auth0/tree/master/examples)
+ **Note**: Following example is for a client-side with require-authenticated-user implementation, for server-side and core-hosted example implementations please refer to the [examples](https://github.com/henalbrod/Blazor.Auth0/tree/master/examples)
 
-> #### appsettings.json or [Secrets file](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.0&tabs=windows#secret-manager) (recommended)
 
-```Json
-{
-	"Auth0":{
-		"Domain": "[Your_Auth0_Tenant_Domain]",
-		"ClientId": "[Your_Auth0_Client/Application_Id]",
-		"ClientSecret": "[Your_Auth0_Client/Application_Secret]",
-		"Audience": "[Your_Auth0_Audience/API_Identifier]"
-	}
-}
-```
-> #### Startup.cs
+> #### Program.cs
 
 ```C#
-// Import Blazor.Auth0
+
 using Blazor.Auth0;
-using Blazor.Auth0.Models;
+
 // ...
 
-public void ConfigureServices(IServiceCollection services)
+
+public static async Task Main(string[] args)
 {
-	// Other code...
+	var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-	/// This one-liner will initialize Blazor.Auth0 with all the defaults
-	services.AddDefaultBlazorAuth0Authentication(Configuration.GetSection("Auth0").Get<ClientOptions>());	
+	builder.Services.AddBlazorAuth0(options =>
+	{
+		// Required
+		options.Domain = "[Auth0_Domain]";
 
-	// Other code...
+		// Required
+		options.ClientId = "[Auth0_Client_Id]";
+
+		//// Required if you want to make use of Auth0's RBAC
+		options.Audience = "[Auth0_Audience]";
+
+		//// Uncomment the following line if you don't want your users to be automatically logged-off on token expiration
+		// options.SlidingExpiration = true;
+
+		//// Uncomment the following two lines if you want your users to log in via a pop-up window instead of being redirected
+		// options.LoginMode = LoginModes.Popup;
+
+		//// Uncomment the following line if you don't want your unauthenticated users to be automatically redirected to Auth0's Universal Login page 
+		// options.RequireAuthenticatedUser = false;
+	});
+
+	builder.RootComponents.Add<App>("app");
+
+	await builder.Build().RunAsync();
 }
 
- public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
- {
-    // Otrher code...
-
-	app.UseHttpsRedirection();
-	app.UseStaticFiles();
-     
-	// Add Blazor.Auth0 middleware     
-	app.UseBlazorAuth0();
-
-	// Other code...
- }
 ```
 
 ###
@@ -152,6 +150,11 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 * This README file is based on the great examples form: [makeareadme](https://www.makeareadme.com/), [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) & [dbader](https://github.com/dbader/readme-template/blob/master/README.md)
 
 ## Release History
+
+**v2.0.0-Preview5**
+
+* Upgraded to .Net Core v3.2.0-preview1
+* Fixed issue #41
 
 **v2.0.0-Preview4**
 

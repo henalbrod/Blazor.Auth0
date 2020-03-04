@@ -70,6 +70,30 @@ namespace Blazor.Auth0.ClientSide.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;use strict&quot;;
+        ///
+        ///if (window.opener &amp;&amp; window.name === &quot;auth0_signup_popup&quot;) {
+        ///    window.opener.___blazor_auth0.popupCallback(window.location.href);
+        ///    close();
+        ///}else{
+        ///	window.___blazor_auth0 = {
+        ///		logOut: (src) =&gt; {
+        ///			&quot;use strict&quot;;
+        ///			return new Promise((resolve) =&gt; {
+        ///				let iframe = document.createElement(&quot;iframe&quot;);
+        ///				iframe.setAttribute(&quot;src&quot;, src);
+        ///				iframe.style.display = &quot;none&quot;;
+        ///				document.body.appendChild(iframe);
+        ///				iframe.onload = () =&gt; {                
+        ///					document.body.re [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ClientSideJs {
+            get {
+                return ResourceManager.GetString("ClientSideJs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You must indicate either the SECRET when using Authorization Code or the CODE_VERIFIER when using Authorization Code with PKCE, you&apos;re providing both..
         /// </summary>
         internal static string DuplicatedPKCERequiredParamError {

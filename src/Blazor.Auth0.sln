@@ -6,20 +6,35 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.Shared", "Blazor.Auth0.Shared\Blazor.Auth0.Shared.csproj", "{20F66828-6565-489D-B197-E8251B200737}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.ClientSide", "Blazor.Auth0.ClientSide\Blazor.Auth0.ClientSide.csproj", "{A8C1B957-C46E-4936-B470-0E6D03CD0EFB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20F66828-6565-489D-B197-E8251B200737} = {20F66828-6565-489D-B197-E8251B200737}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Auth0.ServerSide", "Blazor.Auth0.ServerSide\Blazor.Auth0.ServerSide.csproj", "{CE138C35-6B00-4BE4-A172-F4E641070348}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20F66828-6565-489D-B197-E8251B200737} = {20F66828-6565-489D-B197-E8251B200737}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{30AEBE64-A293-424D-A26A-ADCDAAAF7391}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.ClientSide", "..\examples\Examples.ClientSide\Examples.ClientSide.csproj", "{7C0D133F-DCB3-4C3B-B13F-D20BF9D97DA2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8C1B957-C46E-4936-B470-0E6D03CD0EFB} = {A8C1B957-C46E-4936-B470-0E6D03CD0EFB}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.ServerSide", "..\examples\Examples.ServerSide\Examples.ServerSide.csproj", "{041EF1E4-B4E2-4A44-884E-144F2FE6F566}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CE138C35-6B00-4BE4-A172-F4E641070348} = {CE138C35-6B00-4BE4-A172-F4E641070348}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ASP.Net Core Hosted", "ASP.Net Core Hosted", "{7AC81899-F4AF-4B85-8B8F-BE6E3BD2E4AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.AspNetCoreHosted.Shared", "..\examples\Examples.AspNetCoreHosted\Shared\Examples.AspNetCoreHosted.Shared.csproj", "{C0690880-66EB-49CE-99BA-6A5099B85306}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.AspNetCoreHosted.Client", "..\examples\Examples.AspNetCoreHosted\Client\Examples.AspNetCoreHosted.Client.csproj", "{3242EA63-B755-485B-9ECB-C873B5F7DDE7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8C1B957-C46E-4936-B470-0E6D03CD0EFB} = {A8C1B957-C46E-4936-B470-0E6D03CD0EFB}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.AspNetCoreHosted.Server", "..\examples\Examples.AspNetCoreHosted\Server\Examples.AspNetCoreHosted.Server.csproj", "{50045E62-8938-4C58-AC2A-7C7946A67E0B}"
 EndProject
