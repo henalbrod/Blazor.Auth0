@@ -153,8 +153,8 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 
 **v2.0.0-Preview5**
 
-* Upgraded to .Net Core v3.2.0-preview1
 * Fixed issue #41
+* Upgraded to .Net Core v3.1.102
 
 **v2.0.0-Preview4**
 
