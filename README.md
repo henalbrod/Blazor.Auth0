@@ -84,12 +84,22 @@ public static async Task Main(string[] args)
 		//// Uncomment the following line if you don't want your unauthenticated users to be automatically redirected to Auth0's Universal Login page 
 		// options.RequireAuthenticatedUser = false;
 	});
+	
+	builder.Services.AddAuthorizationCore();
 
 	builder.RootComponents.Add<App>("app");
 
 	await builder.Build().RunAsync();
 }
 
+```
+
+###
+Add a reference to Microsoft.AspNetCore.Components.Authorization
+> #### _Imports.razor
+
+```
+@using Microsoft.AspNetCore.Components.Authorization
 ```
 
 ###
