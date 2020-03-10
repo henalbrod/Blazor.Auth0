@@ -98,8 +98,9 @@ public static async Task Main(string[] args)
 Add a reference to Microsoft.AspNetCore.Components.Authorization
 > #### _Imports.razor
 
-```
+```C#
 @using Microsoft.AspNetCore.Components.Authorization
+//...
 ```
 
 ###
